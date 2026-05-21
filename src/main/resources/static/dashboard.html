@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Contratación - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <nav class="bg-blue-800 text-white shadow-lg px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-bold tracking-wide">Sistema de Contratación</h1>
+        <div class="flex items-center space-x-4">
+            <span id="user-display" class="font-medium bg-blue-700 px-3 py-1 rounded-full text-sm">Cargando...</span>
+            <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white font-semibold text-sm py-1.5 px-4 rounded transition duration-200">
+                Cerrar Sesión
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6 mt-8">
+        <div class="bg-white p-8 rounded-lg shadow-md border border-gray-200 mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">¡Hola de nuevo, <span id="welcome-name" class="text-blue-600">...</span>!</h2>
+            <p class="text-gray-600">Bienvenido al panel administrativo de control de contrataciones.</p>
+        </div>
+
+        <div id="admin-section" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Modelos de Contrato</h3>
+                <p class="text-xs text-gray-500 mb-4">Selecciona un tipo de contrato para auditar o estructurar sus etapas de selección.</p>
+                
+                <div id="lista-contratos" class="space-y-4">
+                    <p class="text-sm text-gray-500">Cargando tipos de contratos...</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md border border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800 mb-4 border-b pb-2">Línea de Tiempo del Proceso</h3>
+                
+                <div id="flujo-contenedor" class="bg-gray-50 border border-dashed border-gray-300 rounded-lg p-8 text-center text-gray-500">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                    Selecciona un modelo de contrato a la izquierda para inspeccionar la secuencia obligatoria de reclutamiento.
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // Variables globales para almacenar los datos del backend
+        let listaTiposContrato = [];
+
+        // 1. Filtro de Autenticación de Seguridad
+        const usuarioSesion = localStorage.getItem('usuario');
+        if (!usuarioSesion) {
+            alert('Acceso denegado. Por favor, inicia sesión primero.');
+            window.location.href = '/';
+        } else {
+            const usuario = JSON.parse(usuarioSesion);
+            document.getElementById('user-display').innerText = `${usuario.nombreCompleto} (${usuario.rol.nombre})`;
+            document.getElementById('welcome-name').innerText = usuario.nombreCompleto;
+
+            // Mostrar sección solo si el rol es válido
+            if (usuario.rol.nombre === 'ROLE_ADMIN') {
+                document.getElementById('admin-section').classList.remove('hidden');
+                // Invocar la API para obtener los contratos
+                cargarTiposContrato();
+            }
+        }
+
+        // 2. Consumir API de Tipos de Contratos
+        async function cargarTiposContrato() {
+            try {
+                const response = await fetch('/api/tipos-contrato');
+                if (!response.ok) throw new Error('Error al obtener los contratos');
+                
+                listaTiposContrato = await response.json();
+                renderizarContratos();
+            } catch (error) {
+                console.error(error);
+                document.getElementById('lista-contratos').innerHTML = `<p class="text-red-500 text-sm">Error al conectar con la API.</p>`;
+            }
+        }
+
+        // 3. Pintar los contratos en la interfaz
+        function renderizarContratos() {
+            const contenedor = document.getElementById('lista-contratos');
+            contenedor.innerHTML = ''; // Limpiar mensaje de carga
+
+            listaTiposContrato.forEach(contrato => {
+                const div = document.createElement('div');
+                div.className = "p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition shadow-sm bg-white";
+                div.onclick = () => verDetallePasos(contrato.id);
+                div.innerHTML = `
+                    <h4 class="font-bold text-gray-800 text-md">${contrato.nombre}</h4>
+                    <p class="text-xs text-gray-600 mt-1">${contrato.descripcion || 'Sin descripción disponible.'}</p>
+                    <span class="inline-block mt-2 text-[11px] font-semibold bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
+                        ${contrato.pasos.length} etapas definidas
+                    </span>
+                `;
+                contenedor.appendChild(div);
+            });
+        }
+
+        // 4. Mostrar de forma estructurada los pasos del contrato seleccionado
+        function verDetallePasos(contratoId) {
+            const contrato = listaTiposContrato.find(c => c.id === contratoId);
+            const contenedorDerecho = document.getElementById('flujo-contenedor');
+
+            if (!contrato) return;
+
+            // Ordenar los pasos por su atributo 'orden' de forma ascendente
+            const pasosOrdenados = contrato.pasos.sort((a, b) => a.orden - b.orden);
+
+            let htmlPasos = `
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-blue-800">${contrato.nombre}</h3>
+                    <p class="text-sm text-gray-600 mt-1">${contrato.descripcion}</p>
+                </div>
+                <div class="relative pl-6 border-l-2 border-blue-200 space-y-6 text-left">
+            `;
+
+            pasosOrdenados.forEach(paso => {
+                htmlPasos += `
+                    <div class="relative">
+                        <div class="absolute -left-[31px] top-0.5 bg-blue-600 text-white font-bold rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md">
+                            ${paso.orden}
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition">
+                            <h5 class="font-bold text-gray-800">${paso.nombrePaso}</h5>
+                            <p class="text-xs text-gray-500 mt-0.5">Etapa obligatoria del proceso secuencial</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            htmlPasos += `</div>`;
+            
+            // Reemplazar el contenedor por la línea de tiempo dinámica
+            contenedorDerecho.className = "bg-transparent p-0 text-left";
+            contenedorDerecho.innerHTML = htmlPasos;
+        }
+
+        // 5. Botón de Salida del Sistema
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('usuario');
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html>
