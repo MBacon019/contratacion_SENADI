@@ -24,34 +24,81 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // 1. Inicializar Rol de forma segura usando el método exacto de tu entidad Role
+
+
         Optional<Role> roleOpt = roleRepository.findByNombre("ROLE_ADMIN");
+
         Role adminRole = roleOpt.orElseGet(() -> {
+
             Role nuevoRol = new Role();
-            // Si tu método en Role.java cambia de nombre, ajústalo aquí:
-            nuevoRol.setNombre("ROLE_ADMIN"); 
+
+            nuevoRol.setNombre("ROLE_ADMIN");
+
             return roleRepository.save(nuevoRol);
         });
 
-        // Inicializar Administrador
+
+        Optional<Role> userRoleOpt = roleRepository.findByNombre("ROLE_USER");
+
+        Role userRole = userRoleOpt.orElseGet(() -> {
+
+            Role nuevoRol = new Role();
+
+            nuevoRol.setNombre("ROLE_USER");
+
+            return roleRepository.save(nuevoRol);
+        });
+
+
         if (usuarioRepository.findByEmail("admin@correo.com").isEmpty()) {
+
             Usuario admin = new Usuario();
+
             admin.setEmail("admin@correo.com");
-            admin.setPassword(BCrypt.hashpw("admin123", BCrypt.gensalt()));
+
+            admin.setPassword(
+                    BCrypt.hashpw("admin123", BCrypt.gensalt())
+            );
+
             admin.setNombreCompleto("Administrador del Sistema");
+
             admin.setActivo(true);
+
             admin.setRol(adminRole);
+
             usuarioRepository.save(admin);
         }
 
-        // 2. Inicializar el contrato de ÍNFIMA CUANTÍA con los pasos reales de tu Excel
+        if (usuarioRepository.findByEmail("user@correo.com").isEmpty()) {
+
+            Usuario user = new Usuario();
+
+            user.setEmail("user@correo.com");
+
+            user.setPassword(
+                    BCrypt.hashpw("user123", BCrypt.gensalt())
+            );
+
+            user.setNombreCompleto("Usuario del Sistema");
+
+            user.setActivo(true);
+
+            user.setRol(userRole);
+
+            usuarioRepository.save(user);
+        }
+
         inicializarInfimaCuantia();
     }
 
     private void inicializarInfimaCuantia() {
+
         if (tipoContratoRepository.findByNombre("Contrato ÍNFIMA CUANTÍA").isEmpty()) {
+
             TipoContrato ic = new TipoContrato();
+
             ic.setNombre("Contrato ÍNFIMA CUANTÍA");
+
             ic.setDescripcion("Procedimiento para la adquisición de bienes o prestación de servicios no normalizados.");
 
             // Pasos extraídos exactamente de tu matriz de Excel:
