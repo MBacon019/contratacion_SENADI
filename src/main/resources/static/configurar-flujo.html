@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCP - Configurar Flujo Personalizado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
+
+    <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-2">
+                <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span class="text-xs font-bold text-gray-700 tracking-wider uppercase">SENADI</span>
+            </div>
+            <span class="text-gray-300">|</span>
+            <div class="flex items-center space-x-4 text-xs font-medium text-gray-500">
+                <a href="#" class="hover:text-blue-600 flex items-center space-x-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <span>Inicio</span>
+                </a>
+                <a href="#" class="hover:text-blue-600 flex items-center space-x-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                    <span>Iniciar Sesión</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <div class="bg-white border border-gray-200 px-3 py-1 rounded-xl text-xs font-semibold text-gray-500 flex items-center space-x-1 shadow-sm cursor-pointer hover:bg-gray-50">
+                <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 4.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span>Claro</span>
+            </div>
+        </div>
+    </nav>
+
+    <header class="max-w-7xl mx-auto pt-6 px-6 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+            <button onclick="regresarAFormulario()" class="bg-white p-2.5 rounded-xl border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition shadow-sm text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            </button>
+            <div>
+                <h2 id="contrato-titulo-flujo" class="text-2xl font-bold text-gray-900 tracking-tight">Ínfima Cuantía</h2>
+                <p id="actividad-subtitulo-flujo" class="text-sm text-gray-400 mt-0.5">Cargando detalles del proceso...</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+            <button onclick="seleccionarTodosLosPasos()" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs py-2.5 px-4 rounded-xl border border-gray-200 shadow-sm transition flex items-center space-x-2">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                <span>Seleccionar todos los pasos</span>
+            </button>
+            <button onclick="iniciarProcesoFinal()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs py-2.5 px-5 rounded-xl shadow-sm hover:shadow transition flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Iniciar Proceso</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-gray-900">Pasos Disponibles</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Selecciona los pasos que necesites para tu proceso personalizado</p>
+                </div>
+            </div>
+
+            <div id="lista-disponibles" class="space-y-4 max-h-[65vh] overflow-y-auto pr-2 custom-scrollbar">
+                <p class="text-xs text-gray-400 text-center py-12">Leyendo la secuencia de la matriz parametrizada...</p>
+            </div>
+        </section>
+
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-gray-900">Tu Proceso Personalizado</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">Arrastra para reordenar o haz clic en X para quitar pasos</p>
+                </div>
+                <span id="contador-seleccionados" class="bg-gray-50 border border-gray-200 text-gray-500 text-[11px] font-bold px-2.5 py-1 rounded-lg">
+                    0 pasos seleccionados
+                </span>
+            </div>
+
+            <div id="lista-personalizados" class="space-y-4 min-h-[45vh] max-h-[65vh] overflow-y-auto border-2 border-dashed border-gray-100 rounded-2xl p-4 bg-gray-50/50 flex flex-col justify-start">
+                <div id="placeholder-vacio" class="m-auto text-center py-16 space-y-3">
+                    <div class="w-12 h-12 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center mx-auto text-gray-400">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    </div>
+                    <p class="text-xs text-gray-400 font-medium max-w-xs mx-auto">
+                        Haz clic en el botón "+" de los pasos de la izquierda para agregarlos a tu secuencia personalizada de contratación.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        let contratoOriginal = null;
+        let pasosDisponibles = [];
+        let pasosSeleccionados = [];
+
+        // 1. Evento de inicialización de la página
+        document.addEventListener('DOMContentLoaded', () => {
+            const contratoData = localStorage.getItem('contratoSeleccionado');
+            const actividadData = localStorage.getItem('detallesActividad');
+
+            if (!contratoData) {
+                // Si el usuario accede directamente, lo devolvemos al panel administrativo principal
+                window.location.href = '/dashboard.html';
+                return;
+            }
+
+            contratoOriginal = JSON.parse(contratoData);
+            
+            // Asignar el título del contrato seleccionado limpiando prefijos redundantes
+            document.getElementById('contrato-titulo-flujo').innerText = contratoOriginal.nombre.replace("Contrato ", "");
+            
+            // Inyectar el subtítulo descriptivo de la actividad ingresada en la pantalla previa
+            if (actividadData) {
+                const actividad = JSON.parse(actividadData);
+                document.getElementById('actividad-subtitulo-flujo').innerText = actividad.actividadEspecifica || "Sin descripción de actividad";
+            }
+
+            // Procesar y ordenar de forma alfanumérica los pasos de la matriz vinculados al tipo de contrato
+            if (contratoOriginal.pasos) {
+                pasosDisponibles = contratoOriginal.pasos.sort((a, b) => a.orden.localeCompare(b.orden, undefined, {numeric: true, sensitivity: 'base'}));
+                renderizarPasosDisponibles();
+            }
+        });
+
+        // 2. Renderizador de la columna izquierda (Catálogo de pasos de la Matriz)
+        function renderizarPasosDisponibles() {
+            const contenedor = document.getElementById('lista-disponibles');
+            contenedor.innerHTML = '';
+
+            pasosDisponibles.forEach(paso => {
+                const yaSeleccionado = pasosSeleccionados.some(p => p.id === paso.id);
+                const card = document.createElement('div');
+                
+                // Si el paso ya fue añadido, reducimos su opacidad simulando el comportamiento reactivo de tu diseño
+                card.className = `p-4 bg-white border rounded-xl shadow-sm transition relative flex flex-col space-y-3 ${yaSeleccionado ? 'opacity-40 border-gray-200 shadow-none select-none' : 'border-gray-100 hover:border-blue-200 hover:shadow-md'}`;
+                
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start space-x-3">
+                            <span class="bg-gray-900 text-white font-mono text-[11px] font-bold w-6 h-6 flex items-center justify-center rounded-md flex-shrink-0 mt-0.5">
+                                ${paso.orden}
+                            </span>
+                            <div class="space-y-1">
+                                <div class="flex items-center space-x-2">
+                                    <span class="bg-blue-50 text-blue-600 text-[9px] font-extrabold px-1.5 py-0.5 rounded tracking-wide uppercase">FASE PREPARATORIA</span>
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${paso.area || 'UNIDAD REQUERIENTE'}</span>
+                                </div>
+                                <h4 class="text-xs font-semibold text-gray-700 leading-relaxed">${paso.nombrePaso}</h4>
+                            </div>
+                        </div>
+                        
+                        <button onclick="agregarPaso('${paso.id}')" ${yaSeleccionado ? 'disabled' : ''} class="bg-blue-50 hover:bg-blue-100 text-blue-600 p-1.5 rounded-lg transition disabled:opacity-0">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="pl-9 space-y-2 border-t border-gray-50 pt-2">
+                        <span class="text-[10px] font-bold text-blue-500 tracking-wide block">Sub-pasos (1):</span>
+                        <div class="bg-[#fcfdfe] p-3 rounded-xl border border-gray-100 text-[11px] text-gray-600 flex flex-col space-y-1">
+                            <div class="flex items-center space-x-1.5 text-[10px] font-bold text-blue-600 uppercase tracking-wide">
+                                <span>${paso.medio || 'QUIPUX'}</span>
+                                <span class="text-gray-300">➔</span>
+                                <span>${paso.dirigidoA || 'DGI'}</span>
+                            </div>
+                            <span class="text-gray-500 font-medium leading-normal">${paso.anexos || 'Gestión y verificación instrumental interna del flujo de procesos.'}</span>
+                        </div>
+                    </div>
+                `;
+                contenedor.appendChild(card);
+            });
+        }
+
+        // 3. Agregar un paso específico a la mesa de trabajo personalizada
+        function agregarPaso(pasoId) {
+            const paso = pasosDisponibles.find(p => p.id == pasoId);
+            if (paso && !pasosSeleccionados.some(p => p.id === paso.id)) {
+                pasosSeleccionados.push(paso);
+                actualizarColumnaPersonalizada();
+                renderizarPasosDisponibles();
+            }
+        }
+
+        // 4. Inyección en masa (Botón seleccionar todos los pasos de la matriz original)
+        function seleccionarTodosLosPasos() {
+            pasosSeleccionados = [...pasosDisponibles];
+            actualizarColumnaPersonalizada();
+            renderizarPasosDisponibles();
+        }
+
+        // 5. Retirar paso del listado dinámico
+        function removerPaso(pasoId) {
+            pasosSeleccionados = pasosSeleccionados.filter(p => p.id != pasoId);
+            actualizarColumnaPersonalizada();
+            renderizarPasosDisponibles();
+        }
+
+        // 6. Sincronizador reactivo de la columna de secuencia personalizada (Derecha)
+        function actualizarColumnaPersonalizada() {
+            const contenedor = document.getElementById('lista-personalizados');
+            const placeholder = document.getElementById('placeholder-vacio');
+            const contador = document.getElementById('contador-seleccionados');
+
+            // Si se vacía el listado, restauramos el estado inicial de invitación visual
+            if (pasosSeleccionados.length === 0) {
+                contenedor.innerHTML = '';
+                contenedor.appendChild(placeholder);
+                contador.innerText = "0 pasos seleccionados";
+                return;
+            }
+
+            // Eliminar el elemento placeholder del DOM si existen pasos cargados
+            if (placeholder) placeholder.remove();
+            
+            // Limpiar tarjetas inyectadas previamente para evitar solapamientos visuales
+            const elementosViejos = contenedor.querySelectorAll('.card-personalizado');
+            elementosViejos.forEach(el => el.remove());
+
+            // Actualizar la insignia numérica del contador
+            contador.innerText = `${pasosSeleccionados.length} paso${pasosSeleccionados.length > 1 ? 's' : ''} seleccionado${pasosSeleccionados.length > 1 ? 's' : ''}`;
+
+            // Renderizar la cola secuencial definitiva con su índice de orden local (#1, #2, #3...)
+            pasosSeleccionados.forEach((paso, index) => {
+                const card = document.createElement('div');
+                card.className = "card-personalizado p-4 bg-white border border-gray-200 rounded-xl shadow-sm flex items-start justify-between space-x-3 transition hover:shadow-md";
+                
+                card.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <div class="flex flex-col items-center space-y-1 flex-shrink-0 mt-0.5">
+                            <span class="bg-blue-600 text-white font-bold text-[10px] w-5 h-5 flex items-center justify-center rounded-md shadow-sm">
+                                #${index + 1}
+                            </span>
+                            <span class="bg-gray-100 text-gray-500 font-mono text-[9px] px-1 rounded font-bold">
+                                ${paso.orden}
+                            </span>
+                        </div>
+                        <div class="space-y-0.5">
+                            <div class="flex items-center space-x-2">
+                                <span class="bg-gray-50 text-gray-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-gray-100 uppercase tracking-wide">
+                                    ${paso.area || 'UNIDAD'}
+                                </span>
+                                <span class="text-[10px] text-gray-400 font-medium">Fase Preparatoria</span>
+                            </div>
+                            <h4 class="text-xs font-semibold text-gray-800 leading-relaxed">${paso.nombrePaso}</h4>
+                        </div>
+                    </div>
+                    
+                    <button onclick="removerPaso('${paso.id}')" class="text-gray-400 hover:text-red-500 p-1 rounded-lg transition flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                `;
+                contenedor.appendChild(card);
+            });
+        }
+
+        // 7. Navegación hacia atrás
+        function regresarAFormulario() {
+            window.location.href = '/detalles-proceso.html';
+        }
+
+        // 8. Disparador de persistencia final de la configuración
+        function iniciarProcesoFinal() {
+    if (pasosSeleccionados.length === 0) {
+        alert('Debes seleccionar al menos 1 paso para estructurar tu proceso personalizado de compras públicas.');
+        return;
+    }
+    
+    // Guardamos la selección estructural del usuario
+    localStorage.setItem('flujoPersonalizado', JSON.stringify(pasosSeleccionados));
+    
+    // Redirigimos a la nueva interfaz de ejecución secuencial
+    window.location.href = '/ejecutar-proceso.html';
+}
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.example.sistema_contratacion.entity;
 
 import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,12 +19,29 @@ public class TipoContrato {
     @Column(length = 255)
     private String descripcion;
 
-    // Relación uno a muchos: Un tipo de contrato tiene muchos pasos ordenados
+    // 1. Agregamos @JsonManagedReference para evitar recursividad infinita al transformar a JSON
     @OneToMany(mappedBy = "tipoContrato", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference
     private List<PasoContrato> pasos = new ArrayList<>();
 
     public TipoContrato() {}
 
+    // =========================================================================
+    // METODO HELPER RECOMENDADO: Sincroniza la relación bidireccional en memoria
+    // =========================================================================
+    public void addPaso(PasoContrato paso) {
+        this.pasos.add(paso);
+        paso.setTipoContrato(this); // Sincroniza el lado del hijo automáticamente
+    }
+
+    public void removePaso(PasoContrato paso) {
+        this.pasos.remove(paso);
+        paso.setTipoContrato(null);
+    }
+
+    // =========================================================================
+    // Getters y Setters
+    // =========================================================================
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

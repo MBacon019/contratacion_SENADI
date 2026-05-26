@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCP - Ejecución del Proceso</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
+
+    <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
+        <div class="flex items-center space-x-3">
+            <span class="text-xs font-bold text-gray-700 tracking-wider uppercase">SENADI - Servicio Nacional de Derechos Intelectuales</span>
+            <span class="text-gray-300">|</span>
+            <div class="flex items-center space-x-2 text-xs font-medium text-gray-500">
+                <a href="#" onclick="guardarYSalirAlDashboard()" class="hover:text-blue-600 flex items-center space-x-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <span>Inicio</span>
+                </a>
+                <span class="text-gray-300">/</span>
+                <a href="#" class="hover:text-blue-600 flex items-center space-x-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                    <span>Iniciar Sesión</span>
+                </a>
+            </div>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="bg-white border border-gray-200 px-3 py-1 rounded-xl text-xs font-semibold text-gray-500 flex items-center space-x-1 shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span>Claro</span>
+            </div>
+        </div>
+    </nav>
+
+    <header class="max-w-7xl mx-auto pt-6 px-6">
+        <div class="flex justify-between items-start">
+            <div class="flex items-start space-x-4">
+                <button onclick="guardarYSalirAlDashboard()" class="mt-1 bg-white p-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition shadow-sm text-gray-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </button>
+                <div>
+                    <h2 id="txt-actividad-titulo" class="text-2xl font-bold text-gray-900 tracking-tight">Cargando Actividad...</h2>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <span id="badge-pasos-totales" class="text-xs text-gray-500 font-medium">Paso 0 de 0</span>
+                        <span class="text-gray-300">•</span>
+                        <span id="txt-tipo-contrato" class="text-xs text-gray-400 italic">Ínfima Cuantía</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <button onclick="persistirProgresoTemporal(); alert('¡Progreso guardado con éxito!');" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs py-2.5 px-4 rounded-xl border border-gray-200 shadow-sm transition flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                    <span>Guardar</span>
+                </button>
+                <button class="bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs py-2.5 px-4 rounded-xl border border-gray-200 shadow-sm transition flex items-center space-x-2">
+                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Exportar</span>
+                </button>
+                <div class="flex flex-col items-end pl-4 border-l border-gray-200">
+                    <span id="txt-porcentaje" class="text-xs font-bold text-blue-600">0% Completado</span>
+                    <div class="w-32 bg-gray-200 h-1.5 rounded-full mt-1 overflow-hidden">
+                        <div id="barra-progreso" class="bg-blue-600 h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-6 bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+            <details class="group" open>
+                <summary class="flex justify-between items-center p-4 font-semibold text-sm text-gray-700 cursor-pointer select-none bg-gray-50/50 hover:bg-gray-50">
+                    <div class="flex items-center space-x-2">
+                        <div class="p-1 bg-blue-50 text-blue-600 rounded-lg">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <span>Información General del Proceso</span>
+                    </div>
+                    <span class="transition group-open:rotate-180 text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </span>
+                </summary>
+                <div id="info-poa-content" class="p-4 border-t border-gray-100 grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs text-gray-600 bg-white">
+                    <p class="text-gray-400">Cargando metadatos estructurales...</p>
+                </div>
+            </details>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+        
+        <aside class="space-y-3 lg:col-span-1">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">Pasos del Proceso</h3>
+            <div id="timeline-pasos" class="space-y-2 max-h-[65vh] overflow-y-auto pr-1">
+                </div>
+        </aside>
+
+        <section class="lg:col-span-3 space-y-6">
+            
+            <div class="bg-blue-600 rounded-2xl shadow-md p-6 text-white relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 text-blue-700/30 pointer-events-none">
+                    <svg class="w-40 h-40" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                </div>
+                
+                <div class="flex items-center space-x-2 text-[11px] font-extrabold bg-blue-700/50 w-max px-2.5 py-1 rounded-md tracking-wider uppercase">
+                    <span id="panel-identificador-paso">PASO 1 DE 5</span>
+                    <span>•</span>
+                    <span id="panel-flujo-codigo">CONTRATO ACTIVO</span>
+                </div>
+                
+                <h3 class="text-xl font-bold mt-3 tracking-tight">FASE PREPARATORIA</h3>
+                
+                <div class="mt-4 space-y-3 max-w-3xl">
+                    <div>
+                        <span class="text-blue-200 text-[10px] font-bold uppercase tracking-wider block">Área Responsable:</span>
+                        <p id="panel-area-responsable" class="text-sm font-semibold mt-0.5">UNIDAD REQUERIENTE</p>
+                    </div>
+                    <div class="pt-2 border-t border-blue-500/30">
+                        <span class="text-blue-200 text-[10px] font-bold uppercase tracking-wider block">Actividad / Paso Operativo:</span>
+                        <p id="panel-nombre-paso" class="text-sm font-medium leading-relaxed mt-1">Cargando descripción del paso...</p>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex flex-wrap gap-2 pt-4 border-t border-blue-500/40 relative z-10">
+                    <button onclick="solicitarAgregarSubpaso()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs py-2 px-3.5 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        <span>Añadir Sub-paso</span>
+                    </button>
+                    <button id="btn-eliminar-dinamico" onclick="eliminarPasoActual()" class="bg-red-500 hover:bg-red-600 text-white font-bold text-xs py-2 px-3.5 rounded-xl transition flex items-center space-x-1.5 shadow-sm hidden">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        <span>Eliminar Sub-paso</span>
+                    </button>
+                    <button onclick="omitirPasoActual()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs py-2 px-3.5 rounded-xl transition flex items-center space-x-1.5 shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.143m7.414-7.414a4 4 0 115.656 5.143l-4 4a4 4 0 01-5.656 0M9 10h.01M15 14h.01"/></svg>
+                        <span>Omitir Paso / Sub-paso</span>
+                    </button>
+                </div>
+            </div>
+
+            <form id="form-ejecucion" class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Estado del Proceso</label>
+                    <select id="select-estado" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option>Seleccionar...</option>
+                        <option>En Curso</option>
+                        <option>Completado</option>
+                        <option>Pendiente de Firma</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">¿Quién tiene el proceso?</label>
+                    <input type="text" id="input-responsable" placeholder="Nombre del responsable" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Fecha</label>
+                    <input type="date" id="input-fecha" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Medio</label>
+                    <select id="select-medio" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option>Seleccionar...</option>
+                        <option>QUIPUX</option>
+                        <option>ZIMBRA</option>
+                        <option>PORTAL</option>
+                        <option>FÍSICO</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Número de Memorando</label>
+                    <input type="text" id="input-memo" placeholder="Ej: SENADI-DTIC-2026-0083-M" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs font-mono focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Elaborado por</label>
+                    <input type="text" id="input-elaborado" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Revisado por</label>
+                    <input type="text" id="input-revisado" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Aprobado por</label>
+                    <input type="text" id="input-aprobado" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Dirigido a</label>
+                    <input type="text" id="input-dirigido" placeholder="Nombre o área destinataria" class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-gray-500 mb-1">Observaciones</label>
+                    <textarea id="input-observaciones" rows="4" placeholder="Notas adicionales, comentarios o detalles importantes..." class="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-blue-500 outline-none resize-none"></textarea>
+                </div>
+
+                <div class="md:col-span-2 flex justify-between items-center pt-4 border-t border-gray-100 mt-2">
+                    <button type="button" onclick="navegarAnterior()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs py-2.5 px-5 rounded-xl transition flex items-center space-x-1.5">
+                        <span>← Anterior</span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <button type="button" onclick="omitirPasoActual()" class="bg-gray-700 hover:bg-gray-800 text-white font-bold text-xs py-2.5 px-5 rounded-xl transition">
+                            <span>Saltar →</span>
+                        </button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 px-6 rounded-xl transition flex items-center space-x-1 shadow-sm">
+                            <span>Completar ✓</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        let pipelinePasosDefinitivos = [];
+        let indiceActivo = 0;
+        let porcentajeActualGlobal = 0;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const flujoData = localStorage.getItem('flujoPersonalizado');
+            const actividadData = localStorage.getItem('detallesActividad');
+            const contratoData = localStorage.getItem('contratoSeleccionado');
+            const instanciaExistente = localStorage.getItem('instanciaProcesoEnProgreso');
+
+            if (!flujoData) {
+                window.location.href = '/configurar-flujo.html';
+                return;
+            }
+
+            // Inyectar Metadatos en el acordeón superior
+            if (actividadData && contratoData) {
+                const act = JSON.parse(actividadData);
+                const con = JSON.parse(contratoData);
+                document.getElementById('txt-actividad-titulo').innerText = act.actividadEspecifica || "Proceso de Compras";
+                document.getElementById('txt-tipo-contrato').innerText = con.nombre;
+                
+                document.getElementById('info-poa-content').innerHTML = `
+                    <div><span class="font-bold text-gray-400 block uppercase tracking-wider">POA Nro:</span> <span class="text-gray-800 font-semibold">${act.noPoa || '-'}</span></div>
+                    <div><span class="font-bold text-gray-400 block uppercase tracking-wider">Item Presupuestario:</span> <span class="text-gray-800 font-semibold">${act.item || '-'}</span></div>
+                    <div><span class="font-bold text-gray-400 block uppercase tracking-wider">Código CPC:</span> <span class="text-gray-800 font-semibold">${act.cpc || '-'}</span></div>
+                    <div><span class="font-bold text-gray-400 block uppercase tracking-wider">Asignación:</span> <span class="text-blue-600 font-bold">$ ${parseFloat(act.asignacion || 0).toLocaleString('es-EC', {minimumFractionDigits: 2})}</span></div>
+                `;
+            }
+
+            // Si ya hay una instancia en progreso guardada en el Dashboard, cargamos su snapshot exacto
+            if (instanciaExistente) {
+                const instancia = JSON.parse(instanciaExistente);
+                pipelinePasosDefinitivos = instancia.pipelineSnapshot;
+                indiceActivo = instancia.indiceCursor || 0;
+                cargarPasoEnPantalla(indiceActivo);
+            } else {
+                // Si es un flujo completamente limpio, aplanamos desde la matriz origen
+                const pasosSeleccionados = JSON.parse(flujoData);
+                construirPipelineSecuencial(pasosSeleccionados);
+                cargarPasoEnPantalla(0);
+            }
+        });
+
+        // Convierte la estructura jerárquica en una lista plana indexada decimalmente
+        function construirPipelineSecuencial(pasos) {
+            pipelinePasosDefinitivos = [];
+            
+            pasos.forEach((pasoPrincipal, indexP) => {
+                const numeroPasoPrincipal = indexP + 1;
+                
+                pipelinePasosDefinitivos.push({
+                    id: pasoPrincipal.id + "_p",
+                    esSubpaso: false,
+                    nomenclatura: `${numeroPasoPrincipal}`,
+                    nombrePaso: pasoPrincipal.nombrePaso,
+                    area: pasoPrincipal.area || 'UNIDAD REQUERIENTE',
+                    medio: pasoPrincipal.medio || '',
+                    dirigidoA: pasoPrincipal.dirigidoA || '',
+                    completado: false,
+                    omitido: false,
+                    datosFormulario: {} // Almacenará los inputs de cada paso de forma independiente
+                });
+
+                // Inyección controlada de subpasos instrumentales por defecto
+                if(pasoPrincipal.nombrePaso.includes("Stock de Bodega")) {
+                    pipelinePasosDefinitivos.push({
+                        id: pasoPrincipal.id + "_s1",
+                        esSubpaso: true,
+                        nomenclatura: `${numeroPasoPrincipal}.1`,
+                        nombrePaso: "Emisión de Certificación Stock de Bodega",
+                        area: "RESPONSABLE DA",
+                        medio: "QUIPUX",
+                        dirigidoA: "UNIDAD REQUERIENTE",
+                        completado: false,
+                        omitido: false,
+                        datosFormulario: {}
+                    });
+                } else if(pasoPrincipal.nombrePaso.includes("actividad en POA")) {
+                    const subs = [
+                        "Solicitud de inclusión o modificación en POA (EN CASO DE REQUERIRSE)",
+                        "Autorización y reasignación a Planificación"
+                    ];
+                    subs.forEach((subTxt, indexS) => {
+                        pipelinePasosDefinitivos.push({
+                            id: pasoPrincipal.id + `_s${indexS}`,
+                            esSubpaso: true,
+                            nomenclatura: `${numeroPasoPrincipal}.${indexS + 1}`,
+                            nombrePaso: subTxt,
+                            area: indexS === 0 ? "RESPONSABLE DE UNIDAD REQUERIENTE" : "DGI",
+                            medio: "QUIPUX",
+                            dirigidoA: indexS === 0 ? "DGI" : "PLANIFICACIÓN",
+                            completado: false,
+                            omitido: false,
+                            datosFormulario: {}
+                        });
+                    });
+                }
+            });
+        }
+
+        // Serializa y guarda el estado global en tiempo real para que el Dashboard lo lea al instante
+        function persistirProgresoTemporal() {
+            // Guardar datos del formulario del paso actual antes de recalcular
+            guardarDatosFormularioActual();
+
+            const gestionados = pipelinePasosDefinitivos.filter(p => p.completado || p.omitido).length;
+            const completadosReal = pipelinePasosDefinitivos.filter(p => p.completado).length;
+            
+            porcentajeActualGlobal = Math.round((completadosReal / pipelinePasosDefinitivos.length) * 100) || 0;
+            
+            const actividadData = localStorage.getItem('detallesActividad');
+            const act = actividadData ? JSON.parse(actividadData) : {};
+            
+            const registroProgreso = {
+                actividadNombre: act.actividadEspecifica || "Proceso de Compras Activo",
+                codigoPoa: act.noPoa || "POA 00000",
+                porcentaje: porcentajeActualGlobal,
+                pasosCompletados: completadosReal,
+                pasosTotales: pipelinePasosDefinitivos.length,
+                fechaModificacion: new Date().toLocaleString('es-EC', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                pipelineSnapshot: pipelinePasosDefinitivos,
+                indiceCursor: indiceActivo
+            };
+            
+            localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(registroProgreso));
+        }
+
+        // Salva los inputs ingresados en la vista operativa dentro del objeto del paso activo
+        function guardarDatosFormularioActual() {
+            if(pipelinePasosDefinitivos[indiceActivo]) {
+                pipelinePasosDefinitivos[indiceActivo].datosFormulario = {
+                    estado: document.getElementById('select-estado').value,
+                    responsable: document.getElementById('input-responsable').value,
+                    fecha: document.getElementById('input-fecha').value,
+                    medio: document.getElementById('select-medio').value,
+                    memo: document.getElementById('input-memo').value,
+                    elaborado: document.getElementById('input-elaborado').value,
+                    revisado: document.getElementById('input-revisado').value,
+                    aprobado: document.getElementById('input-aprobado').value,
+                    dirigidoA: document.getElementById('input-dirigido').value,
+                    observaciones: document.getElementById('input-observaciones').value
+                };
+            }
+        }
+
+        // Renderiza el asider izquierdo con los estilos reactivos correctos
+        function refrescarUIAsider() {
+            const contenedor = document.getElementById('timeline-pasos');
+            contenedor.innerHTML = '';
+
+            pipelinePasosDefinitivos.forEach((paso, index) => {
+                const item = document.createElement('div');
+                item.onclick = () => {
+                    persistirProgresoTemporal();
+                    cargarPasoEnPantalla(index);
+                };
+                
+                let clasesEstado = "bg-white border-gray-200 text-gray-700 hover:border-blue-300";
+                if(index === indiceActivo) {
+                    clasesEstado = "bg-blue-50 border-blue-500 text-blue-900 font-semibold ring-1 ring-blue-500/20";
+                } else if (paso.completado) {
+                    clasesEstado = "bg-green-50 border-green-300 text-green-800 opacity-80";
+                } else if (paso.omitido) {
+                    clasesEstado = "bg-amber-50/60 border-amber-200 text-amber-700 line-through opacity-70";
+                }
+
+                const margenSubpaso = paso.esSubpaso ? "ml-5 bg-[#fcfdfe]" : "ml-0";
+
+                item.className = `p-3 border rounded-xl shadow-sm cursor-pointer transition flex items-center justify-between space-x-2 ${clasesEstado} ${margenSubpaso}`;
+                item.innerHTML = `
+                    <div class="flex items-center space-x-2.5 overflow-hidden">
+                        <span class="${paso.esSubpaso ? 'bg-gray-800' : 'bg-blue-600'} text-white font-mono text-[10px] font-bold px-2 py-0.5 rounded flex-shrink-0">
+                            ${paso.nomenclatura}
+                        </span>
+                        <div class="truncate">
+                            <p class="text-[9px] uppercase tracking-wider font-bold text-gray-400 truncate">${paso.area}</p>
+                            <h4 class="text-xs truncate">${paso.nombrePaso}</h4>
+                        </div>
+                    </div>
+                    ${paso.completado ? '<span class="text-green-600 text-xs font-bold">✓</span>' : ''}
+                    ${paso.omitido ? '<span class="text-amber-500 text-[10px] font-bold">Omitido</span>' : ''}
+                `;
+                contenedor.appendChild(item);
+            });
+
+            // Sincronización e inyección de progreso en caliente en las barras del header
+            const completadosReal = pipelinePasosDefinitivos.filter(p => p.completado).length;
+            const pct = Math.round((completadosReal / pipelinePasosDefinitivos.length) * 100) || 0;
+            document.getElementById('txt-porcentaje').innerText = `${pct}% Completado`;
+            document.getElementById('barra-progreso').style.width = `${pct}%`;
+            document.getElementById('badge-pasos-totales').innerText = `Paso ${indiceActivo + 1} de ${pipelinePasosDefinitivos.length}`;
+        }
+
+        // Monta el paso en el formulario recuperando sus valores si ya fue editado previamente
+        function cargarPasoEnPantalla(index) {
+            if(index < 0 || index >= pipelinePasosDefinitivos.length) return;
+            indiceActivo = index;
+            
+            const paso = pipelinePasosDefinitivos[indiceActivo];
+            
+            document.getElementById('panel-identificador-paso').innerText = `PASO ${indiceActivo + 1} DE ${pipelinePasosDefinitivos.length}`;
+            document.getElementById('panel-area-responsable').innerText = paso.area;
+            document.getElementById('panel-nombre-paso').innerText = paso.nombrePaso;
+
+            // Cargar datos guardados del paso o rellenar valores por defecto del objeto raíz
+            const datos = paso.datosFormulario || {};
+            document.getElementById('select-estado').value = datos.estado || "Seleccionar...";
+            document.getElementById('input-responsable').value = datos.responsable || "";
+            document.getElementById('input-fecha').value = datos.fecha || "";
+            document.getElementById('select-medio').value = datos.medio || paso.medio || "Seleccionar...";
+            document.getElementById('input-memo').value = datos.memo || "";
+            document.getElementById('input-elaborado').value = datos.elaborado || "";
+            document.getElementById('input-revisado').value = datos.revisado || "";
+            document.getElementById('input-aprobado').value = datos.aprobado || "";
+            document.getElementById('input-dirigido').value = datos.dirigidoA || paso.dirigidoA || "";
+            document.getElementById('input-observaciones').value = datos.observaciones || "";
+
+            const btnEliminar = document.getElementById('btn-eliminar-dinamico');
+            if(paso.esSubpasoDinamico) {
+                btnEliminar.classList.remove('hidden');
+            } else {
+                btnEliminar.classList.add('hidden');
+            }
+
+            refrescarUIAsider();
+        }
+
+        // Inserción secuencial ordenada de subpasos operativos
+        function solicitarAgregarSubpaso() {
+            const nombreNuevoSub = prompt("Introduce la descripción para el nuevo Sub-paso operativo:");
+            if(!nombreNuevoSub || nombreNuevoSub.trim() === "") return;
+
+            const pasoActual = pipelinePasosDefinitivos[indiceActivo];
+            const raizPrincipal = pasoActual.nomenclatura.split('.')[0];
+            
+            const hermanos = pipelinePasosDefinitivos.filter(p => p.nomenclatura.startsWith(`${raizPrincipal}.`) || p.nomenclatura === raizPrincipal);
+            const numeroDecimalSiguiente = hermanos.length;
+
+            const nuevoSubpaso = {
+                id: "dinamico_" + Date.now(),
+                esSubpaso: true,
+                esSubpasoDinamico: true,
+                nomenclatura: `${raizPrincipal}.${numeroDecimalSiguiente}`,
+                nombrePaso: nombreNuevoSub,
+                area: "UNIDAD REQUERIENTE (Ad-hoc)",
+                medio: "QUIPUX",
+                dirigidoA: "",
+                completado: false,
+                omitido: false,
+                datosFormulario: {}
+            };
+
+            pipelinePasosDefinitivos.splice(indiceActivo + 1, 0, nuevoSubpaso);
+            reorganizarNomenclaturasDecimales(raizPrincipal);
+            
+            persistirProgresoTemporal();
+            cargarPasoEnPantalla(indiceActivo + 1);
+        }
+
+        function reorganizarNomenclaturasDecimales(raiz) {
+            let contadorSubpasos = 1;
+            pipelinePasosDefinitivos.forEach(paso => {
+                if(paso.nomenclatura.startsWith(`${raiz}.`) || paso.nomenclatura === raiz) {
+                    if(paso.esSubpaso) {
+                        paso.nomenclatura = `${raiz}.${contadorSubpasos}`;
+                        contadorSubpasos++;
+                    }
+                }
+            });
+        }
+
+        function eliminarPasoActual() {
+            const paso = pipelinePasosDefinitivos[indiceActivo];
+            if(!paso.esSubpasoDinamico) return;
+
+            if(confirm(`¿Estás seguro de eliminar el sub-paso secuencial ${paso.nomenclatura}?`)) {
+                const raiz = paso.nomenclatura.split('.')[0];
+                pipelinePasosDefinitivos.splice(indiceActivo, 1);
+                reorganizarNomenclaturasDecimales(raiz);
+                
+                indiceActivo = Math.max(0, indiceActivo - 1);
+                persistirProgresoTemporal();
+                cargarPasoEnPantalla(indiceActivo);
+            }
+        }
+
+        function omitirPasoActual() {
+            pipelinePasosDefinitivos[indiceActivo].omitido = true;
+            pipelinePasosDefinitivos[indiceActivo].completado = false;
+            persistirProgresoTemporal();
+            navegarSiguiente();
+        }
+
+        document.getElementById('form-ejecucion').addEventListener('submit', (e) => {
+            e.preventDefault();
+            pipelinePasosDefinitivos[indiceActivo].completado = true;
+            pipelinePasosDefinitivos[indiceActivo].omitido = false;
+            persistirProgresoTemporal();
+            navegarSiguiente();
+        });
+
+        function navegarSiguiente() {
+            if(indiceActivo < pipelinePasosDefinitivos.length - 1) {
+                cargarPasoEnPantalla(indiceActivo + 1);
+            } else {
+                refrescarUIAsider();
+                alert("¡Felicidades! Se han gestionado todas las etapas de la secuencia de contratación.");
+                guardarYSalirAlDashboard();
+            }
+        }
+
+        function navegarAnterior() {
+            if(indiceActivo > 0) {
+                persistirProgresoTemporal();
+                cargarPasoEnPantalla(indiceActivo - 1);
+            }
+        }
+
+        // Redirección y guardado preventivo seguro para la barra superior
+        function guardarYSalirAlDashboard() {
+            persistirProgresoTemporal();
+            window.location.href = '/dashboard.html';
+        }
+    </script>
+</body>
+</html>
