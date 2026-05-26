@@ -16,7 +16,7 @@
             </div>
             <span class="text-gray-300">|</span>
             <div class="flex items-center space-x-4 text-xs font-medium text-gray-500">
-                <a href="#" class="hover:text-blue-600 flex items-center space-x-1">
+                <a href="/dashboard.html" class="hover:text-blue-600 flex items-center space-x-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     <span>Inicio</span>
                 </a>
@@ -102,6 +102,8 @@
         let contratoOriginal = null;
         let pasosDisponibles = [];
         let pasosSeleccionados = [];
+        let nombreActividadGlobal = "Sin descripción de actividad";
+        let codigoPOAGlobal = "POA 00000";
 
         // 1. Evento de inicialización de la página
         document.addEventListener('DOMContentLoaded', () => {
@@ -109,30 +111,27 @@
             const actividadData = localStorage.getItem('detallesActividad');
 
             if (!contratoData) {
-                // Si el usuario accede directamente, lo devolvemos al panel administrativo principal
                 window.location.href = '/dashboard.html';
                 return;
             }
 
             contratoOriginal = JSON.parse(contratoData);
-            
-            // Asignar el título del contrato seleccionado limpiando prefijos redundantes
             document.getElementById('contrato-titulo-flujo').innerText = contratoOriginal.nombre.replace("Contrato ", "");
             
-            // Inyectar el subtítulo descriptivo de la actividad ingresada en la pantalla previa
             if (actividadData) {
                 const actividad = JSON.parse(actividadData);
-                document.getElementById('actividad-subtitulo-flujo').innerText = actividad.actividadEspecifica || "Sin descripción de actividad";
+                nombreActividadGlobal = actividad.actividadEspecifica || "Sin descripción de actividad";
+                codigoPOAGlobal = actividad.poa || "POA 12121"; // Tomamos tu POA por defecto
+                document.getElementById('actividad-subtitulo-flujo').innerText = nombreActividadGlobal;
             }
 
-            // Procesar y ordenar de forma alfanumérica los pasos de la matriz vinculados al tipo de contrato
             if (contratoOriginal.pasos) {
                 pasosDisponibles = contratoOriginal.pasos.sort((a, b) => a.orden.localeCompare(b.orden, undefined, {numeric: true, sensitivity: 'base'}));
                 renderizarPasosDisponibles();
             }
         });
 
-        // 2. Renderizador de la columna izquierda (Catálogo de pasos de la Matriz)
+        // 2. Renderizador de la columna izquierda
         function renderizarPasosDisponibles() {
             const contenedor = document.getElementById('lista-disponibles');
             contenedor.innerHTML = '';
@@ -141,7 +140,6 @@
                 const yaSeleccionado = pasosSeleccionados.some(p => p.id === paso.id);
                 const card = document.createElement('div');
                 
-                // Si el paso ya fue añadido, reducimos su opacidad simulando el comportamiento reactivo de tu diseño
                 card.className = `p-4 bg-white border rounded-xl shadow-sm transition relative flex flex-col space-y-3 ${yaSeleccionado ? 'opacity-40 border-gray-200 shadow-none select-none' : 'border-gray-100 hover:border-blue-200 hover:shadow-md'}`;
                 
                 card.innerHTML = `
@@ -180,7 +178,7 @@
             });
         }
 
-        // 3. Agregar un paso específico a la mesa de trabajo personalizada
+        // 3. Agregar un paso específico
         function agregarPaso(pasoId) {
             const paso = pasosDisponibles.find(p => p.id == pasoId);
             if (paso && !pasosSeleccionados.some(p => p.id === paso.id)) {
@@ -190,27 +188,26 @@
             }
         }
 
-        // 4. Inyección en masa (Botón seleccionar todos los pasos de la matriz original)
+        // 4. Inyección en masa
         function seleccionarTodosLosPasos() {
             pasosSeleccionados = [...pasosDisponibles];
             actualizarColumnaPersonalizada();
             renderizarPasosDisponibles();
         }
 
-        // 5. Retirar paso del listado dinámico
+        // 5. Retirar paso
         function removerPaso(pasoId) {
             pasosSeleccionados = pasosSeleccionados.filter(p => p.id != pasoId);
             actualizarColumnaPersonalizada();
             renderizarPasosDisponibles();
         }
 
-        // 6. Sincronizador reactivo de la columna de secuencia personalizada (Derecha)
+        // 6. Sincronizador de columna derecha
         function actualizarColumnaPersonalizada() {
             const contenedor = document.getElementById('lista-personalizados');
             const placeholder = document.getElementById('placeholder-vacio');
             const contador = document.getElementById('contador-seleccionados');
 
-            // Si se vacía el listado, restauramos el estado inicial de invitación visual
             if (pasosSeleccionados.length === 0) {
                 contenedor.innerHTML = '';
                 contenedor.appendChild(placeholder);
@@ -218,17 +215,13 @@
                 return;
             }
 
-            // Eliminar el elemento placeholder del DOM si existen pasos cargados
             if (placeholder) placeholder.remove();
             
-            // Limpiar tarjetas inyectadas previamente para evitar solapamientos visuales
             const elementosViejos = contenedor.querySelectorAll('.card-personalizado');
             elementosViejos.forEach(el => el.remove());
 
-            // Actualizar la insignia numérica del contador
             contador.innerText = `${pasosSeleccionados.length} paso${pasosSeleccionados.length > 1 ? 's' : ''} seleccionado${pasosSeleccionados.length > 1 ? 's' : ''}`;
 
-            // Renderizar la cola secuencial definitiva con su índice de orden local (#1, #2, #3...)
             pasosSeleccionados.forEach((paso, index) => {
                 const card = document.createElement('div');
                 card.className = "card-personalizado p-4 bg-white border border-gray-200 rounded-xl shadow-sm flex items-start justify-between space-x-3 transition hover:shadow-md";
@@ -262,24 +255,62 @@
             });
         }
 
-        // 7. Navegación hacia atrás
         function regresarAFormulario() {
             window.location.href = '/detalles-proceso.html';
         }
 
-        // 8. Disparador de persistencia final de la configuración
+        // 8. DISPARADOR DE PERSISTENCIA COMPLETAMENTE CORREGIDO Y VINCULADO AL DASHBOARD
         function iniciarProcesoFinal() {
-    if (pasosSeleccionados.length === 0) {
-        alert('Debes seleccionar al menos 1 paso para estructurar tu proceso personalizado de compras públicas.');
-        return;
-    }
-    
-    // Guardamos la selección estructural del usuario
-    localStorage.setItem('flujoPersonalizado', JSON.stringify(pasosSeleccionados));
-    
-    // Redirigimos a la nueva interfaz de ejecución secuencial
-    window.location.href = '/ejecutar-proceso.html';
-}
+            if (pasosSeleccionados.length === 0) {
+                alert('Debes seleccionar al menos 1 paso para estructurar tu proceso personalizado de compras públicas.');
+                return;
+            }
+            
+            const tipoContrato = contratoOriginal ? contratoOriginal.nombre : "Contrato Ínfima Cuantía";
+            
+            // Estructura exacta que requiere el dashboard.html
+            const nuevaInstanciaProceso = {
+                id: localStorage.getItem('idProcesoActivo') || Date.now().toString(), // Mantiene el ID si se estaba editando uno existente
+                tipoContrato: tipoContrato,
+                actividadNombre: nombreActividadGlobal,
+                codigoPoa: codigoPOAGlobal,
+                fechaModificacion: new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                pasosTotales: pasosSeleccionados.length,
+                pasosCompletados: 0, 
+                porcentaje: 0, 
+                pipelineSnapshot: pasosSeleccionados // Mapeado directo a lo que lee el Dashboard al continuar
+            };
+
+            // Traer listado actual
+            let rawProcesos = localStorage.getItem('instanciaProcesoEnProgreso');
+            let procesosEnProgreso = [];
+            
+            if (rawProcesos) {
+                try {
+                    const parsed = JSON.parse(rawProcesos);
+                    procesosEnProgreso = Array.isArray(parsed) ? parsed : [parsed];
+                } catch (e) {
+                    procesosEnProgreso = [];
+                }
+            }
+            
+            // Si el proceso ya existía en la lista (estábamos reconfigurándolo), lo actualizamos; si no, lo agregamos
+            const indexExistente = procesosEnProgreso.findIndex(p => p.id === nuevaInstanciaProceso.id);
+            if (indexExistente !== -1) {
+                procesosEnProgreso[indexExistente] = nuevaInstanciaProceso;
+            } else {
+                procesosEnProgreso.push(nuevaInstanciaProceso);
+            }
+            
+            // Guardamos el array final bajo el nombre exacto que usa tu Dashboard
+            localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosEnProgreso));
+
+            // Guardamos también en 'flujoPersonalizado' para la pantalla de ejecución inmediata
+            localStorage.setItem('flujoPersonalizado', JSON.stringify(pasosSeleccionados));
+            
+            // Redirección definitiva al inicio
+            window.location.href = '/dashboard.html';
+        }
     </script>
 </body>
 </html>

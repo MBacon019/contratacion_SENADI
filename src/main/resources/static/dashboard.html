@@ -107,7 +107,7 @@
             verificarProcesosActivos();
         });
 
-        // NOTA DE COMPATIBILIDAD: Migra automáticamente si encuentra un objeto viejo (single structure) a un arreglo
+        // Obtiene la lista unificada de procesos en progreso
         function obtenerListaProcesos() {
             const raw = localStorage.getItem('instanciaProcesoEnProgreso');
             if (!raw) return [];
@@ -119,6 +119,7 @@
             }
         }
 
+        // Renderiza las tarjetas activas de forma dinámica
         function verificarProcesosActivos() {
             const procesos = obtenerListaProcesos();
             const seccionProgreso = document.getElementById('seccion-en-progreso');
@@ -126,11 +127,9 @@
 
             if (procesos.length > 0) {
                 seccionProgreso.classList.remove('hidden');
-                contenedorTarjetas.innerHTML = ''; // Limpiamos la vista previa
+                contenedorTarjetas.innerHTML = ''; 
 
-                // Generamos dinámicamente una tarjeta independiente por cada proceso guardado
                 procesos.forEach((instancia, index) => {
-                    // Extraemos un título limpio (Remueve "Contrato " si existe para la vista)
                     const tituloLimpio = (instancia.tipoContrato || 'Ínfima Cuantía').replace('Contrato ', '');
                     
                     const tarjetaHtml = `
@@ -175,24 +174,22 @@
             }
         }
 
-        // Abre la mesa de ejecución en base al índice de la tarjeta clickeada
+        // Continuar un proceso existente
         function continuarProcesoEstructurado(index) {
             const procesos = obtenerListaProcesos();
             if (procesos[index]) {
                 const instancia = procesos[index];
-                
-                // Le pasamos a la siguiente pantalla cuál es el proceso activo actual para que sepa dónde guardar cambios
-                localStorage.setItem('indiceProcesoActual', index);
+                localStorage.setItem('idProcesoActivo', instancia.id); // Guardamos el ID único para saber cuál editar
                 localStorage.setItem('flujoPersonalizado', JSON.stringify(instancia.pipelineSnapshot));
                 window.location.href = '/ejecutar-proceso.html';
             }
         }
 
-        // Iniciar un flujo desde cero sin alterar los otros procesos en progreso de la lista
+        // Crear un flujo desde cero
         function iniciarNuevoContrato(tipoContrato) {
             localStorage.removeItem('flujoPersonalizado');
+            localStorage.removeItem('idProcesoActivo'); // Limpiamos ID anterior para indicar que es nuevo
             
-            // Mock base inicial para enganchar la pantalla de detalles
             const contratoMock = {
                 nombre: tipoContrato,
                 pasos: [
@@ -206,12 +203,11 @@
             window.location.href = '/detalles-proceso.html';
         }
 
-        // Elimina únicamente el proceso seleccionado mediante su índice
+        // Eliminar proceso de la lista
         function eliminarInstanciaProceso(index) {
             if (confirm('¿Estás seguro de que deseas eliminar este proceso en progreso? Se perderán todos sus cambios guardados.')) {
                 let procesos = obtenerListaProcesos();
-                procesos.splice(index, 1); // Quita solo el elemento seleccionado
-                
+                procesos.splice(index, 1); 
                 localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
                 verificarProcesosActivos();
             }
