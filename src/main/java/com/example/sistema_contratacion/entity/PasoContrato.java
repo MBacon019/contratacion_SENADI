@@ -2,20 +2,27 @@ package com.example.sistema_contratacion.entity;
 
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "pasos_contrato")
-public class PasoContrato {
+public class PasoContrato implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // NUEVO: Campo indispensable para mapear la fase (Preparatoria, Precontractual, Contractual, etc.)
+    @Column(nullable = true, length = 100)
+    private String fase;
+
     @Column(nullable = false, length = 500)
-    private String nombrePaso; // Equivalente a FLUJO en tu Excel
+    private String nombrePaso; // Equivalente a la descripción del flujo
 
     @Column(nullable = false, length = 20)
-    private String orden; // Cambiado a String para soportar "2.1", "2.2", "4.1", etc.
+    private String orden; // Soporta formatos jerárquicos de tu Excel como "1", "1.1", "2.1", etc.
 
     @Column(length = 150)
     private String area;
@@ -29,26 +36,45 @@ public class PasoContrato {
     @Column(length = 255)
     private String anexos;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tipo_contrato_id", nullable = false)
-    @JsonIgnore
+    @JsonIgnore // Corta el bucle JSON de manera limpia sin afectar la base de datos
     private TipoContrato tipoContrato;
 
+    // Constructor Vacío Obligatorio para JPA
     public PasoContrato() {}
 
-    // Constructor completo para facilitar la inserción de datos del Excel
-    public PasoContrato(String nombrePaso, String orden, String area, String medio, String dirigidoA, String anexos) {
-        this.nombrePaso = nombrePaso;
-        this.orden = orden;
-        this.area = area;
-        this.medio = medio;
-        this.dirigidoA = dirigidoA;
-        this.anexos = anexos;
-    }
+// 2. Constructor antiguo de 6 parámetros (Repara los errores en rojo de tu DataInitializer)
+public PasoContrato(String nombrePaso, String orden, String area, String medio, String dirigidoA, String anexos) {
+    this.fase = "FASE PREPARATORIA"; // Le asignamos una por defecto para tu flujo inicial
+    this.nombrePaso = nombrePaso;
+    this.orden = orden;
+    this.area = area;
+    this.medio = medio;
+    this.dirigidoA = dirigidoA;
+    this.anexos = anexos;
+}
 
-    // --- GETTERS Y SETTERS ---
+// 3. Constructor nuevo de 7 parámetros (Por si en el futuro introduces fases dinámicas)
+public PasoContrato(String fase, String nombrePaso, String orden, String area, String medio, String dirigidoA, String anexos) {
+    this.fase = fase;
+    this.nombrePaso = nombrePaso;
+    this.orden = orden;
+    this.area = area;
+    this.medio = medio;
+    this.dirigidoA = dirigidoA;
+    this.anexos = anexos;
+}
+
+    // =========================================================================
+    // --- GETTERS Y SETTERS COMPLETOS ---
+    // =========================================================================
+    
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public String getFase() { return fase; }
+    public void setFase(String fase) { this.fase = fase; }
 
     public String getNombrePaso() { return nombrePaso; }
     public void setNombrePaso(String nombrePaso) { this.nombrePaso = nombrePaso; }
