@@ -1,19 +1,67 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCP - Sistema de Contratación Pública</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
+        .tema-oscuro .bg-white,
+        .tema-oscuro .bg-gray-50,
+        .tema-oscuro .bg-gray-100,
+        .tema-oscuro .bg-blue-50,
+        .tema-oscuro .bg-amber-50 {
+            background-color: #111827 !important;
+            color: #e2e8f0 !important;
+        }
+        .tema-oscuro .text-gray-900,
+        .tema-oscuro .text-gray-800,
+        .tema-oscuro .text-gray-700,
+        .tema-oscuro .text-gray-600,
+        .tema-oscuro .text-gray-500,
+        .tema-oscuro .text-gray-400 {
+            color: #cbd5e1 !important;
+        }
+        .tema-oscuro .text-blue-600 { color: #7dd3fc !important; }
+        .tema-oscuro .border-gray-200,
+        .tema-oscuro .border-gray-100,
+        .tema-oscuro .border-blue-100,
+        .tema-oscuro .border-blue-200,
+        .tema-oscuro .border-amber-200 {
+            border-color: #334155 !important;
+        }
+        .tema-oscuro input,
+        .tema-oscuro select,
+        .tema-oscuro textarea {
+            background-color: #1e293b !important;
+            color: #e2e8f0 !important;
+            border-color: #475569 !important;
+        }
+        .tema-oscuro input::placeholder,
+        .tema-oscuro textarea::placeholder {
+            color: #94a3b8 !important;
+        }
+        .tema-oscuro .bg-blue-50\/60,
+        .tema-oscuro .bg-white\/20,
+        .tema-oscuro .bg-white\/30,
+        .tema-oscuro .bg-blue-700\/60,
+        .tema-oscuro .bg-blue-700\/50,
+        .tema-oscuro .bg-blue-900\/40,
+        .tema-oscuro .bg-blue-900\/30 {
+            background-color: rgba(30, 41, 59, 0.35) !important;
+        }
+        .tema-oscuro .hover\:bg-gray-50:hover { background-color: #1e293b !important; }
+    </style>
 </head>
 <body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
 
     <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
         <span class="text-xs font-bold text-gray-700 tracking-wider uppercase">Sistema de Contratación Pública</span>
-        <div class="bg-white border border-gray-200 px-3 py-1 rounded-xl text-xs font-semibold text-gray-500 flex items-center space-x-1 shadow-sm">
+        <button id="theme-toggle" onclick="toggleTema()" class="bg-white border border-gray-200 px-3 py-1 rounded-xl text-xs font-semibold text-gray-500 flex items-center space-x-1 shadow-sm hover:bg-gray-50 transition">
             <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-            <span>Claro</span>
-        </div>
+            <span id="theme-label">Claro</span>
+        </button>
     </nav>
 
     <header class="max-w-6xl mx-auto pt-8 px-6 text-center">
@@ -105,6 +153,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             verificarProcesosActivos();
+            initTema();
         });
 
         // Obtiene la lista unificada de procesos en progreso
@@ -190,13 +239,28 @@
             localStorage.removeItem('flujoPersonalizado');
             localStorage.removeItem('idProcesoActivo'); // Limpiamos ID anterior para indicar que es nuevo
             
-            const contratoMock = {
-                nombre: tipoContrato,
-                pasos: [
+            const pasosPorTipo = {
+                'Contrato Ínfima Cuantía': [
                     { id: 101, orden: "1", nombrePaso: "Solicitar revisión de Stock de Bodega en el caso de bienes", area: "UNIDAD REQUERIENTE", medio: "QUIPUX", dirigidoA: "RESPONSABLE DA", anexos: "Revisión instrumental técnica de inventario." },
                     { id: 102, orden: "2", nombrePaso: "Revisión de la actividad en POA", area: "UNIDAD REQUERIENTE", medio: "REGISTROS INTERNOS", dirigidoA: "DGI" },
                     { id: 103, orden: "3", nombrePaso: "Elaboración de informe de necesidad para revisión y aprobación", area: "UNIDAD/ÁREA REQUERIENTE (TÉCNICO)", medio: "ZIMBRA", dirigidoA: "RESPONSABLE DE UNIDAD" }
+                ],
+                'Contrato Catálogo Electrónico': [],
+                'Contrato Subasta Inversa': [
+                    { id: 301, orden: "1", nombrePaso: "Publicar requerimiento para puja inversa", area: "UNIDAD REQUERIENTE", medio: "PORTAL ELECTRÓNICO", dirigidoA: "PROVEEDOR" },
+                    { id: 302, orden: "2", nombrePaso: "Recibir propuestas y evaluar oferta mínima", area: "UNIDAD REQUERIENTE", medio: "SISTEMA", dirigidoA: "DGI" },
+                    { id: 303, orden: "3", nombrePaso: "Adjudicar al proveedor ganador y notificar fallo", area: "UNIDAD REQUERIENTE", medio: "CORREO", dirigidoA: "RESPONSABLE DE UNIDAD" }
+                ],
+                'Contrato Régimen Especial': [
+                    { id: 401, orden: "1", nombrePaso: "Revisión de condiciones especiales del régimen", area: "UNIDAD REQUERIENTE", medio: "DOCUMENTO", dirigidoA: "DGI" },
+                    { id: 402, orden: "2", nombrePaso: "Aprobación interna del proceso por la jefatura", area: "UNIDAD REQUERIENTE", medio: "SISTEMA", dirigidoA: "JEFE DE UNIDAD" },
+                    { id: 403, orden: "3", nombrePaso: "Publicación de la orden de contratación especial", area: "UNIDAD REQUERIENTE", medio: "PORTAL ELECTRÓNICO", dirigidoA: "PROVEEDOR" }
                 ]
+            };
+            
+            const contratoMock = {
+                nombre: tipoContrato,
+                pasos: pasosPorTipo[tipoContrato] || []
             };
             
             localStorage.setItem('contratoSeleccionado', JSON.stringify(contratoMock));
@@ -210,6 +274,26 @@
                 procesos.splice(index, 1); 
                 localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
                 verificarProcesosActivos();
+            }
+        }
+
+        function aplicarTema(oscuro) {
+            document.documentElement.classList.toggle('tema-oscuro', oscuro);
+            document.body.classList.toggle('tema-oscuro', oscuro);
+            const label = document.getElementById('theme-label');
+            if (label) label.innerText = oscuro ? 'Oscuro' : 'Claro';
+            localStorage.setItem('temaPreferido', oscuro ? 'oscuro' : 'claro');
+        }
+
+        function toggleTema() {
+            const esOscuro = !document.body.classList.contains('tema-oscuro');
+            aplicarTema(esOscuro);
+        }
+
+        function initTema() {
+            const temaGuardado = localStorage.getItem('temaPreferido');
+            if (temaGuardado === 'oscuro') {
+                aplicarTema(true);
             }
         }
     </script>

@@ -5,6 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCP - Detalles del Proceso</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
+        .tema-oscuro .bg-white,
+        .tema-oscuro .bg-gray-50,
+        .tema-oscuro .bg-gray-100,
+        .tema-oscuro .bg-blue-50,
+        .tema-oscuro .bg-amber-50 {
+            background-color: #111827 !important;
+            color: #e2e8f0 !important;
+        }
+        .tema-oscuro .text-gray-900,
+        .tema-oscuro .text-gray-800,
+        .tema-oscuro .text-gray-700,
+        .tema-oscuro .text-gray-600,
+        .tema-oscuro .text-gray-500,
+        .tema-oscuro .text-gray-400 {
+            color: #cbd5e1 !important;
+        }
+        .tema-oscuro .text-blue-600 { color: #7dd3fc !important; }
+        .tema-oscuro .border-gray-200,
+        .tema-oscuro .border-gray-100,
+        .tema-oscuro .border-blue-100,
+        .tema-oscuro .border-blue-200,
+        .tema-oscuro .border-amber-200 {
+            border-color: #334155 !important;
+        }
+        .tema-oscuro input,
+        .tema-oscuro select,
+        .tema-oscuro textarea {
+            background-color: #1e293b !important;
+            color: #e2e8f0 !important;
+            border-color: #475569 !important;
+        }
+        .tema-oscuro input::placeholder,
+        .tema-oscuro textarea::placeholder {
+            color: #94a3b8 !important;
+        }
+        .tema-oscuro .bg-blue-50\/60,
+        .tema-oscuro .bg-white\/20,
+        .tema-oscuro .bg-white\/30,
+        .tema-oscuro .bg-blue-700\/60,
+        .tema-oscuro .bg-blue-700\/50,
+        .tema-oscuro .bg-blue-900\/40,
+        .tema-oscuro .bg-blue-900\/30 {
+            background-color: rgba(30, 41, 59, 0.35) !important;
+        }
+        .tema-oscuro .hover\:bg-gray-50:hover { background-color: #1e293b !important; }
+    </style>
 </head>
 <body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
 
@@ -15,10 +63,10 @@
             </svg>
             <span>Detalles del Proceso</span>
         </button>
-        <div class="bg-white border border-gray-200 px-3 py-1 rounded-lg text-xs font-semibold text-gray-500 shadow-sm flex items-center space-x-1">
+        <button id="theme-toggle" onclick="toggleTema()" class="bg-white border border-gray-200 px-3 py-1 rounded-lg text-xs font-semibold text-gray-500 shadow-sm flex items-center space-x-1 hover:bg-gray-50 transition">
             <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-            <span>Claro</span>
-        </div>
+            <span id="theme-label">Claro</span>
+        </button>
     </header>
 
     <div class="max-w-4xl mx-auto px-4 mt-2 mb-4">
@@ -143,6 +191,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            initTema();
             // 1. Recuperamos los datos que guardamos en la pantalla anterior
             const datosContrato = localStorage.getItem('contratoSeleccionado');
             
@@ -160,6 +209,26 @@
 
         function regresarAlDashboard() {
             window.location.href = '/dashboard.html';
+        }
+
+        function aplicarTema(oscuro) {
+            document.documentElement.classList.toggle('tema-oscuro', oscuro);
+            document.body.classList.toggle('tema-oscuro', oscuro);
+            const label = document.getElementById('theme-label');
+            if (label) label.innerText = oscuro ? 'Oscuro' : 'Claro';
+            localStorage.setItem('temaPreferido', oscuro ? 'oscuro' : 'claro');
+        }
+
+        function toggleTema() {
+            const esOscuro = !document.body.classList.contains('tema-oscuro');
+            aplicarTema(esOscuro);
+        }
+
+        function initTema() {
+            const temaGuardado = localStorage.getItem('temaPreferido');
+            if (temaGuardado === 'oscuro') {
+                aplicarTema(true);
+            }
         }
 
         // Manejo del envío del formulario (aquí puedes conectar tu fetch POST al backend después)
@@ -180,6 +249,12 @@ document.getElementById('form-actividad').addEventListener('submit', (e) => {
 
     // Guardamos los datos de la actividad en el navegador
     localStorage.setItem('detallesActividad', JSON.stringify(detallesActividad));
+
+    // Reescribimos el contrato seleccionado para que no se pierda si el navegador realiza algún refresco intermedio
+    const contratoActual = localStorage.getItem('contratoSeleccionado');
+    if (contratoActual) {
+        localStorage.setItem('contratoSeleccionado', contratoActual);
+    }
 
     // Redirigimos a la pantalla de configuración de flujos que crearemos a continuación
     window.location.href = '/configurar-flujo.html';

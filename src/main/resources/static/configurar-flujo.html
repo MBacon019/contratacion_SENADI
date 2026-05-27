@@ -1,10 +1,58 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCP - Configurar Flujo Personalizado</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
+        .tema-oscuro .bg-white,
+        .tema-oscuro .bg-gray-50,
+        .tema-oscuro .bg-gray-100,
+        .tema-oscuro .bg-blue-50,
+        .tema-oscuro .bg-amber-50 {
+            background-color: #111827 !important;
+            color: #e2e8f0 !important;
+        }
+        .tema-oscuro .text-gray-900,
+        .tema-oscuro .text-gray-800,
+        .tema-oscuro .text-gray-700,
+        .tema-oscuro .text-gray-600,
+        .tema-oscuro .text-gray-500,
+        .tema-oscuro .text-gray-400 {
+            color: #cbd5e1 !important;
+        }
+        .tema-oscuro .text-blue-600 { color: #7dd3fc !important; }
+        .tema-oscuro .border-gray-200,
+        .tema-oscuro .border-gray-100,
+        .tema-oscuro .border-blue-100,
+        .tema-oscuro .border-blue-200,
+        .tema-oscuro .border-amber-200 {
+            border-color: #334155 !important;
+        }
+        .tema-oscuro input,
+        .tema-oscuro select,
+        .tema-oscuro textarea {
+            background-color: #1e293b !important;
+            color: #e2e8f0 !important;
+            border-color: #475569 !important;
+        }
+        .tema-oscuro input::placeholder,
+        .tema-oscuro textarea::placeholder {
+            color: #94a3b8 !important;
+        }
+        .tema-oscuro .bg-blue-50\/60,
+        .tema-oscuro .bg-white\/20,
+        .tema-oscuro .bg-white\/30,
+        .tema-oscuro .bg-blue-700\/60,
+        .tema-oscuro .bg-blue-700\/50,
+        .tema-oscuro .bg-blue-900\/40,
+        .tema-oscuro .bg-blue-900\/30 {
+            background-color: rgba(30, 41, 59, 0.35) !important;
+        }
+        .tema-oscuro .hover\:bg-gray-50:hover { background-color: #1e293b !important; }
+    </style>
 </head>
 <body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
 
@@ -28,10 +76,10 @@
         </div>
         
         <div class="flex items-center space-x-4">
-            <div class="bg-white border border-gray-200 px-3 py-1 rounded-xl text-xs font-semibold text-gray-500 flex items-center space-x-1 shadow-sm cursor-pointer hover:bg-gray-50">
+            <button id="theme-toggle" onclick="toggleTema()" class="bg-white border border-gray-200 px-3 py-1 rounded-xl text-xs font-semibold text-gray-500 flex items-center space-x-1 shadow-sm hover:bg-gray-50 transition">
                 <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 4.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                <span>Claro</span>
-            </div>
+                <span id="theme-label">Claro</span>
+            </button>
         </div>
     </nav>
 
@@ -125,45 +173,180 @@
                 document.getElementById('actividad-subtitulo-flujo').innerText = nombreActividadGlobal;
             }
 
-            if (contratoOriginal.pasos) {
-                pasosDisponibles = contratoOriginal.pasos.sort((a, b) => a.orden.localeCompare(b.orden, undefined, {numeric: true, sensitivity: 'base'}));
-                renderizarPasosDisponibles();
+            if (Array.isArray(contratoOriginal.pasos) && contratoOriginal.pasos.length > 0) {
+                pasosDisponibles = contratoOriginal.pasos.sort((a, b) => String(a.orden).localeCompare(String(b.orden), undefined, {numeric: true, sensitivity: 'base'}));
+            } else {
+                pasosDisponibles = buscarPasosPorTipoContrato(contratoOriginal.nombre);
+            }
+            renderizarPasosDisponibles();
+
+            const flujoGuardadoRaw = localStorage.getItem('flujoPersonalizado');
+            if (flujoGuardadoRaw) {
+                try {
+                    const pasosGuardados = JSON.parse(flujoGuardadoRaw);
+                    if (Array.isArray(pasosGuardados) && pasosGuardados.length > 0) {
+                        const idsDisponibles = new Set(pasosDisponibles.map(p => p.id));
+                        const pasosCoincidentes = pasosGuardados.filter(p => idsDisponibles.has(p.id));
+                        if (pasosCoincidentes.length > 0) {
+                            pasosSeleccionados = pasosCoincidentes;
+                            pasosDisponibles = pasosDisponibles.filter(p => !pasosSeleccionados.some(sel => sel.id === p.id));
+                            actualizarColumnaPersonalizada();
+                            renderizarPasosDisponibles();
+                        }
+                    }
+                } catch (e) {}
             }
         });
+
+        function buscarPasosPorTipoContrato(nombreContrato) {
+            const nombreLimpio = (nombreContrato || '').replace('Contrato ', '').trim();
+
+            const pasosPorTipo = {
+                'Ínfima Cuantía': [
+                    { id: 101, orden: '1', nombrePaso: 'Solicitar revisión de Stock de Bodega en el caso de bienes', area: 'UNIDAD REQUERIENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Revisión instrumental técnica de inventario.' },
+                    { id: 102, orden: '2', nombrePaso: 'Revisión de la actividad en POA', area: 'UNIDAD REQUERIENTE', medio: 'REGISTROS INTERNOS', dirigidoA: 'DGI' },
+                    { id: 103, orden: '3', nombrePaso: 'Elaboración de informe de necesidad para revisión y aprobación', area: 'UNIDAD/ÁREA REQUERIENTE (TÉCNICO)', medio: 'ZIMBRA', dirigidoA: 'RESPONSABLE DE UNIDAD' }
+                ],
+                'Catálogo Electrónico': [
+                    // ── FASE PREPARATORIA ──
+                    { id: 200, orden: 'A', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de reunión previa para coordinación, análisis preliminar y directrices del proceso a ejecutarse', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'ZIMBRA', dirigidoA: 'UNIDAD REQUIRIENTE / DGI / DF / DA', anexos: '', subpasos: [] },
+                    { id: 201, orden: '1', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitar revisión de Stock de Bodega en el caso de bienes', area: 'RESPONSABLE DE LA DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: [
+                        { nombreSubpaso: '1.1 – Emisión de Certificación Stock de Bodega', area: 'RESPONSABLE DIRECCIÓN/UNIDAD', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Certificación Stock', completado: false }
+                    ]},
+                    { id: 202, orden: '2', fase: 'FASE PREPARATORIA', nombrePaso: 'Revisión de la actividad en POA', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'REGISTROS INTERNOS', dirigidoA: '', anexos: '', subpasos: [
+                        { nombreSubpaso: '2.1 – Solicitud de inclusión o modificación en POA (EN CASO DE REQUERIRSE)', area: 'RESPONSABLE DE UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DGI', completado: false },
+                        { nombreSubpaso: '2.1.1 – Autorización y reasignación a Planificación', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'PLANIFICACIÓN', completado: false }
+                    ]},
+                    { id: 203, orden: '3', fase: 'FASE PREPARATORIA', nombrePaso: 'Elaboración de informe de necesidad para revisión y aprobación (Previa revisión de Compras Públicas y Control Previo).', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE (TÉCNICO)', medio: 'ZIMBRA', dirigidoA: 'RESPONSABLE DE UNIDAD / ÁREA REQUIRIENTE', anexos: 'Proyecto de Informe de Necesidad', subpasos: [
+                        { nombreSubpaso: '3.1 – Revisa y aprueba Informe de Necesidad como insumo para iniciar proceso de contratación.', area: 'RESPONSABLE DE UNIDAD / ÁREA REQUIRIENTE', medio: 'ZIMBRA', dirigidoA: 'UNIDAD/ÁREA REQUIRIENTE', anexos: 'Informe de necesidad aprobado', completado: false }
+                    ]},
+                    { id: 204, orden: '4', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de Certificación (Verificación Catálogo Electrónico)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: [
+                        { nombreSubpaso: '4.1 – Entrega Certificación CATE (Verificación Catálogo Electrónico)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Certificación CATE', completado: false }
+                    ]},
+                    { id: 205, orden: '5', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de autorización para Inicio de Etapa Preparatoria', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Informe de necesidad', subpasos: [
+                        { nombreSubpaso: '5.1 – Sumilla electrónica autorización de Inicio Etapa Preparatoria', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', completado: false }
+                    ]},
+                    { id: 206, orden: '6', fase: 'FASE PREPARATORIA', nombrePaso: 'Elaboración y aprobación de términos de referencia o especificaciones técnicas (incluye Presupuesto referencial basado en catálogo electrónico) (Recomienda Administrador)', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Términos de referencia o especificaciones técnicas', subpasos: [] },
+                    { id: 207, orden: '7', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud para análisis de viabilidad para asignación, Incremento-disminución presupuestaria. (EN CASO DE REQUERIRSE)', area: 'RESPONSABLE DE DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: '', subpasos: [
+                        { nombreSubpaso: '7.1 – Informe de viabilidad favorable o no favorable de asignación, incremento-disminución presupuestaria.', area: 'FINANCIERO/PLANIFICACIÓN', medio: 'QUIPUX', dirigidoA: 'DGI', completado: false },
+                        { nombreSubpaso: '7.2 – Traslada informe de viabilidad a la Unidad Requiriente / Remite autorización de modificación presupuestaria', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'FINANCIERO / DAI / UNIDAD REQUIRIENTE', completado: false },
+                        { nombreSubpaso: '7.2.1 – Emisión y entrega de Resolución Modificación Presupuestaria (EN CASO DE REQUERIRSE)', area: 'JURÍDICO', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Resolución', completado: false },
+                        { nombreSubpaso: '7.3 – Revisión del PAC de la Unidad Requiriente para verificar si existen modificaciones.', area: 'RESPONSABLE DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'PORTAL', dirigidoA: '', completado: false },
+                        { nombreSubpaso: '7.3.1 – Solicitar Certificaciones POA, Presupuestaria y PAC (SI NO HAY MODIFICACIÓN)', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'PLANIFICACIÓN-DF-DA', completado: false },
+                        { nombreSubpaso: '7.4 – Reasigna pedido de Certificación a Control Interno para revisión previa', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX TEMPORAL', dirigidoA: 'CONTROL INTERNO', anexos: 'Matriz Ejecución', completado: false },
+                        { nombreSubpaso: '7.5.1 – Entrega de Certificación POA', area: 'PLANIFICACIÓN', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Certificación POA', completado: false },
+                        { nombreSubpaso: '7.5.2 – Entrega de Certificación Presupuestaria', area: 'FINANCIERO', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Certificación Presupuestaria', completado: false },
+                        { nombreSubpaso: '7.5.3 – Entrega de Certificación PAC (SI NO HUBO MODIFICACIÓN)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Certificación PAC', completado: false }
+                    ]},
+                    { id: 208, orden: '8', fase: 'FASE PREPARATORIA', nombrePaso: 'Procedimiento de Reforma al PAC para entrega de certificación PAC', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DA-DGI', anexos: '', subpasos: [
+                        { nombreSubpaso: '8.1 – Solicitud de Reforma al PAC (EN CASO DE REQUERIRSE) y Certificación PAC', area: 'RESPONSABLE DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', completado: false },
+                        { nombreSubpaso: '8.2 – Revisa Reforma y reasigna solicitud de elaboración de Resolución de Reforma a PAC hacia DGI', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Matriz reforma suscrita y anexos de lo actuado', completado: false },
+                        { nombreSubpaso: '8.3 – Solicitud de elaboración de Resolución de Reforma a PAC', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DAJ', anexos: 'Documentación habilitante', completado: false },
+                        { nombreSubpaso: '8.4 – Elaboración y envío de Resolución Reforma PAC suscrita por DGI', area: 'RESPONSABLE DAJ', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Resolución reforma PAC', completado: false },
+                        { nombreSubpaso: '8.5 – Emisión y entrega de Resolución Reforma PAC debidamente suscrita', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Resolución reforma PAC', completado: false },
+                        { nombreSubpaso: '8.6 – Reasigna a Compras Públicas para publicación y ejecución de Reforma en el SOCE.', area: 'RESPONSABLE DA', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Resolución reforma PAC', completado: false },
+                        { nombreSubpaso: '8.7 – Registro Reforma PAC en portal y elaboración de certificación PAC', area: 'COMPRAS PUBLICAS', medio: 'PORTAL', dirigidoA: 'SERCOP', anexos: 'Matriz Reforma suscrita y Resolución Reforma PAC', completado: false },
+                        { nombreSubpaso: '8.8 – Entrega de Certificación PAC, luego de Reforma', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Certificación', completado: false }
+                    ]},
+                    { id: 209, orden: '9', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de autorización de contratación y recomendación de Administrador de Orden Compra', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: '', subpasos: [
+                        { nombreSubpaso: '9.1 – Autorizar mediante sumilla electrónica la contratación y aceptación de recomendación de Administrador de Orden de Compra', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Expediente', completado: false }
+                    ]},
+                    { id: 210, orden: '10', fase: 'FASE PREPARATORIA', nombrePaso: 'Entrega de expediente fase preparatoria', area: 'DIRECCIÓN / UNIDAD REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Documentación habilitante', subpasos: [] },
+                    // ── FASE PRECONTRACTUAL ──
+                    { id: 212, orden: '12', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Reasigna a la DGI solicitud para elaboración de Resolución de Inicio', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DAJ', anexos: 'Documentación habilitante', subpasos: [
+                        { nombreSubpaso: '12.1 – Remite solicitud de elaboración de Resolución de Inicio', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DAJ', anexos: 'Documentación habilitante', completado: false },
+                        { nombreSubpaso: '12.2 – Elaboración y envío de Resolución de Inicio', area: 'RESPONSABLE DAJ', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Resolución de Inicio', completado: false },
+                        { nombreSubpaso: '12.3 – Emisión y entrega de Resolución de Inicio debidamente suscrita', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Resolución de Inicio', completado: false },
+                        { nombreSubpaso: '12.4 – Reasigna Resolución de Inicio a Compras Públicas', area: 'RESPONSABLE DA', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Resolución de Inicio', completado: false }
+                    ]},
+                    { id: 213, orden: '13', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Generación de órdenes de compra mediante catálogo Electrónico', area: 'COMPRAS PÚBLICAS', medio: 'PORTAL', dirigidoA: '', anexos: '', subpasos: [
+                        { nombreSubpaso: '13.1 – Notificación de órdenes de compra generadas y aceptadas', area: 'COMPRAS PÚBLICAS', medio: 'CORREO', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Órdenes de Compra', completado: false },
+                        { nombreSubpaso: '13.2 – Solicitud de suscripción de órdenes de compra', area: 'COMPRAS PÚBLICAS', medio: 'CORREO', dirigidoA: 'DGI', anexos: 'Órdenes de Compra', completado: false }
+                    ]},
+                    { id: 214, orden: '14', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Entrega de órdenes de compra suscritas', area: 'DGI', medio: 'CORREO', dirigidoA: 'RESPONSABLE DA', anexos: 'Órdenes de Compra Suscritas', subpasos: [] },
+                    { id: 215, orden: '15', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Notificación designación como Administrador de órdenes de compra', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'SERVIDOR DESIGNADO', anexos: 'Órdenes y expediente', subpasos: [] },
+                    { id: 216, orden: '16', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Entregar expediente físico-digital fases preparatoria, precontractual y contractual al Administrador de Contrato designado.', area: 'COMPRAS PÚBLICAS', medio: 'QUIPUX', dirigidoA: 'ADMINISTRADOR DE ORDEN', anexos: 'Expediente', subpasos: [] },
+                    // ── FASE CONTRACTUAL ──
+                    { id: 219, orden: '19', fase: 'FASE CONTRACTUAL', nombrePaso: 'Supervisión de cumplimiento de orden de compra', area: 'ADMINISTRADOR DE ORDEN DE COMPRA', medio: 'CANALES DIGITALES O FÍSICOS', dirigidoA: 'PROVEEDOR', anexos: '', subpasos: [
+                        { nombreSubpaso: '19 – Notificación designación como Técnico no interviniente', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'SERVIDOR DESIGNADO', completado: false }
+                    ]},
+                    { id: 221, orden: '21', fase: 'FASE CONTRACTUAL', nombrePaso: 'Elaboración y suscripción de acta entrega recepción parcial/única y definitiva (SEGÚN CORRESPONDA) conforme el capítulo V del Reglamento de la LOSNCP.', area: 'ADMINISTRADOR/A DE ORDEN/ES DE COMPRA', medio: 'CANALES DIGITALES', dirigidoA: 'PROVEEDOR/GUARDALMACÉN / COMISIÓN DE RECEPCIÓN', anexos: 'Acta entrega recepción', subpasos: [] },
+                    // ── FASE DE EVALUACIÓN ──
+                    { id: 222, orden: '22', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Liquidación de orden de compra en sistema informático de catálogo electrónico cargando el acta entrega recepción suscrita.', area: 'COMPRAS PÚBLICAS', medio: 'CANALES DIGITALES', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Acta entrega recepción única/definitiva', subpasos: [] },
+                    { id: 223, orden: '23', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Registro de la factura en el portal institucional SOCE.', area: 'COMPRAS PÚBLICAS', medio: 'SOCE - CATE', dirigidoA: 'SERCOP', anexos: '', subpasos: [] },
+                    { id: 224, orden: '24', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Solicitud de pago', area: 'ADMINISTRADOR DE ORDEN DE COMPRA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Acta entrega recepción, constancia de liquidación de orden de compra en sistema SERCOP', subpasos: [
+                        { nombreSubpaso: '24.1 – Autorización y disposición de pago', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'FINANCIERO', anexos: 'Acta entrega recepción, constancia de liquidación', completado: false },
+                        { nombreSubpaso: '24.2 – Pago a proveedor', area: 'FINANCIERO', medio: 'QUIPUX', dirigidoA: 'PROVEEDOR', completado: false }
+                    ]}
+                ],
+                'Subasta Inversa': [
+                    { id: 301, orden: '1', nombrePaso: 'Publicar requerimiento para puja inversa', area: 'UNIDAD REQUERIENTE', medio: 'PORTAL ELECTRÓNICO', dirigidoA: 'PROVEEDOR' },
+                    { id: 302, orden: '2', nombrePaso: 'Recibir propuestas y evaluar oferta mínima', area: 'UNIDAD REQUERIENTE', medio: 'SISTEMA', dirigidoA: 'DGI' },
+                    { id: 303, orden: '3', nombrePaso: 'Adjudicar al proveedor ganador y notificar fallo', area: 'UNIDAD REQUERIENTE', medio: 'CORREO', dirigidoA: 'RESPONSABLE DE UNIDAD' }
+                ],
+                'Régimen Especial': [
+                    { id: 401, orden: '1', nombrePaso: 'Revisión de condiciones especiales del régimen', area: 'UNIDAD REQUERIENTE', medio: 'DOCUMENTO', dirigidoA: 'DGI' },
+                    { id: 402, orden: '2', nombrePaso: 'Aprobación interna del proceso por la jefatura', area: 'UNIDAD REQUERIENTE', medio: 'SISTEMA', dirigidoA: 'JEFE DE UNIDAD' },
+                    { id: 403, orden: '3', nombrePaso: 'Publicación de la orden de contratación especial', area: 'UNIDAD REQUERIENTE', medio: 'PORTAL ELECTRÓNICO', dirigidoA: 'PROVEEDOR' }
+                ],
+                'Genérico': [
+                    { id: 901, orden: '1', nombrePaso: 'Definir requerimientos básicos del proceso', area: 'UNIDAD REQUERIENTE', medio: 'DOCUMENTO', dirigidoA: 'DGI' },
+                    { id: 902, orden: '2', nombrePaso: 'Validar aprobación interna y POA', area: 'UNIDAD REQUERIENTE', medio: 'REGISTROS', dirigidoA: 'RESPONSABLE DA' },
+                    { id: 903, orden: '3', nombrePaso: 'Enviar documentación al sistema de contratación', area: 'UNIDAD REQUERIENTE', medio: 'PLATAFORMA', dirigidoA: 'PROVEEDOR' }
+                ]
+            };
+
+            if (pasosPorTipo[nombreLimpio]) {
+                return pasosPorTipo[nombreLimpio];
+            }
+
+            const claveBuscada = Object.keys(pasosPorTipo).find(key => {
+                return key.toLowerCase().includes(nombreLimpio.toLowerCase()) || nombreLimpio.toLowerCase().includes(key.toLowerCase());
+            });
+
+            return pasosPorTipo[claveBuscada] || pasosPorTipo['Genérico'];
+        }
 
         // 2. Renderizador de la columna izquierda
         function renderizarPasosDisponibles() {
             const contenedor = document.getElementById('lista-disponibles');
             contenedor.innerHTML = '';
 
+            if (pasosDisponibles.length === 0) {
+                contenedor.innerHTML = '<p class="text-xs text-gray-400 text-center py-12">No hay pasos disponibles para este tipo de contrato.</p>';
+                return;
+            }
+
+            const faseBadge = {
+                'FASE PREPARATORIA':   'bg-blue-50 text-blue-600',
+                'FASE PRECONTRACTUAL': 'bg-purple-50 text-purple-600',
+                'FASE CONTRACTUAL':    'bg-green-50 text-green-600',
+                'FASE DE EVALUACIÓN':  'bg-amber-50 text-amber-600'
+            };
+
             pasosDisponibles.forEach(paso => {
                 const yaSeleccionado = pasosSeleccionados.some(p => p.id === paso.id);
-                const card = document.createElement('div');
-                
-                card.className = `p-4 bg-white border rounded-xl shadow-sm transition relative flex flex-col space-y-3 ${yaSeleccionado ? 'opacity-40 border-gray-200 shadow-none select-none' : 'border-gray-100 hover:border-blue-200 hover:shadow-md'}`;
-                
-                card.innerHTML = `
-                    <div class="flex items-start justify-between">
-                        <div class="flex items-start space-x-3">
-                            <span class="bg-gray-900 text-white font-mono text-[11px] font-bold w-6 h-6 flex items-center justify-center rounded-md flex-shrink-0 mt-0.5">
-                                ${paso.orden}
-                            </span>
-                            <div class="space-y-1">
-                                <div class="flex items-center space-x-2">
-                                    <span class="bg-blue-50 text-blue-600 text-[9px] font-extrabold px-1.5 py-0.5 rounded tracking-wide uppercase">FASE PREPARATORIA</span>
-                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${paso.area || 'UNIDAD REQUERIENTE'}</span>
+                const faseLabel = paso.fase || 'FASE PREPARATORIA';
+                const faseClass = faseBadge[faseLabel] || 'bg-blue-50 text-blue-600';
+
+                const subpasosArray = paso.subpasos && paso.subpasos.length > 0 ? paso.subpasos : null;
+                const numSubpasos = subpasosArray ? subpasosArray.length : 1;
+
+                let subpasosHTML = `<span class="text-[10px] font-bold text-blue-500 tracking-wide block">Sub-pasos (${numSubpasos}):</span>`;
+                if (subpasosArray) {
+                    subpasosArray.forEach(sub => {
+                        subpasosHTML += `
+                            <div class="bg-[#fcfdfe] p-2.5 rounded-xl border border-gray-100 text-[11px] text-gray-600 flex flex-col space-y-1">
+                                <div class="flex items-center space-x-1.5 text-[10px] font-bold text-blue-600 uppercase tracking-wide flex-wrap gap-y-0.5">
+                                    ${sub.medio ? `<span>${sub.medio}</span><span class="text-gray-300">➔</span>` : ''}
+                                    ${sub.dirigidoA ? `<span>${sub.dirigidoA}</span>` : ''}
                                 </div>
-                                <h4 class="text-xs font-semibold text-gray-700 leading-relaxed">${paso.nombrePaso}</h4>
-                            </div>
-                        </div>
-                        
-                        <button onclick="agregarPaso('${paso.id}')" ${yaSeleccionado ? 'disabled' : ''} class="bg-blue-50 hover:bg-blue-100 text-blue-600 p-1.5 rounded-lg transition disabled:opacity-0">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                        </button>
-                    </div>
-                    
-                    <div class="pl-9 space-y-2 border-t border-gray-50 pt-2">
-                        <span class="text-[10px] font-bold text-blue-500 tracking-wide block">Sub-pasos (1):</span>
+                                <span class="text-gray-500 font-medium leading-normal">${sub.nombreSubpaso || ''}</span>
+                                ${sub.anexos ? `<span class="text-gray-400 text-[10px] italic">Anexo: ${sub.anexos}</span>` : ''}
+                            </div>`;
+                    });
+                } else {
+                    subpasosHTML += `
                         <div class="bg-[#fcfdfe] p-3 rounded-xl border border-gray-100 text-[11px] text-gray-600 flex flex-col space-y-1">
                             <div class="flex items-center space-x-1.5 text-[10px] font-bold text-blue-600 uppercase tracking-wide">
                                 <span>${paso.medio || 'QUIPUX'}</span>
@@ -171,9 +354,32 @@
                                 <span>${paso.dirigidoA || 'DGI'}</span>
                             </div>
                             <span class="text-gray-500 font-medium leading-normal">${paso.anexos || 'Gestión y verificación instrumental interna del flujo de procesos.'}</span>
+                        </div>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = `p-4 bg-white border rounded-xl shadow-sm transition relative flex flex-col space-y-3 ${yaSeleccionado ? 'opacity-40 border-gray-200 shadow-none select-none' : 'border-gray-100 hover:border-blue-200 hover:shadow-md'}`;
+                card.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-start space-x-3">
+                            <span class="bg-gray-900 text-white font-mono text-[11px] font-bold min-w-[1.5rem] h-6 px-1 flex items-center justify-center rounded-md flex-shrink-0 mt-0.5">
+                                ${paso.orden}
+                            </span>
+                            <div class="space-y-1">
+                                <div class="flex items-center flex-wrap gap-1">
+                                    <span class="${faseClass} text-[9px] font-extrabold px-1.5 py-0.5 rounded tracking-wide uppercase">${faseLabel}</span>
+                                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">${paso.area || 'UNIDAD REQUERIENTE'}</span>
+                                </div>
+                                <h4 class="text-xs font-semibold text-gray-700 leading-relaxed">${paso.nombrePaso}</h4>
+                            </div>
                         </div>
+                        <button onclick="agregarPaso('${paso.id}')" ${yaSeleccionado ? 'disabled' : ''} class="bg-blue-50 hover:bg-blue-100 text-blue-600 p-1.5 rounded-lg transition disabled:opacity-0 flex-shrink-0 ml-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        </button>
                     </div>
-                `;
+                    <div class="pl-9 space-y-2 border-t border-gray-50 pt-2">
+                        ${subpasosHTML}
+                    </div>`;
                 contenedor.appendChild(card);
             });
         }
@@ -258,6 +464,24 @@
         function regresarAFormulario() {
             window.location.href = '/detalles-proceso.html';
         }
+
+        function aplicarTema(oscuro) {
+            document.body.classList.toggle('tema-oscuro', oscuro);
+            document.getElementById('theme-label').innerText = oscuro ? 'Oscuro' : 'Claro';
+            localStorage.setItem('temaPreferido', oscuro ? 'oscuro' : 'claro');
+        }
+
+        function toggleTema() {
+            const esOscuro = !document.body.classList.contains('tema-oscuro');
+            aplicarTema(esOscuro);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const temaGuardado = localStorage.getItem('temaPreferido');
+            if (temaGuardado === 'oscuro') {
+                aplicarTema(true);
+            }
+        });
 
         // 8. DISPARADOR DE PERSISTENCIA COMPLETAMENTE CORREGIDO Y VINCULADO AL DASHBOARD
         function iniciarProcesoFinal() {
