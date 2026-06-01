@@ -115,32 +115,34 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             
             <div class="lg:col-span-2 space-y-6">
-                <div class="bg-blue-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden">
+                <!-- TARJETA DINÁMICA DE FASES -->
+                <div id="tarjeta-fase-dinamica" class="bg-blue-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500">
                     <div class="absolute -right-6 -bottom-6 opacity-10 text-white">
                         <svg class="w-36 h-36" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
                     </div>
 
                     <div class="flex items-center space-x-2">
-                        <span id="badge-contador-paso" class="bg-blue-700/60 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">PASO 1 DE 1</span>
+                        <span id="badge-contador-paso" class="bg-black/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">PASO 1 DE 1</span>
                         <span class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">CONTRATO ACTIVO</span>
                     </div>
 
-                    <h3 class="text-xl font-black tracking-tight mt-3 uppercase">FASE PREPARATORIA</h3>
+                    <h3 id="txt-fase-nombre" class="text-xl font-black tracking-tight mt-3 uppercase">FASE PREPARATORIA</h3>
                     
-                    <div class="mt-4 pt-4 border-t border-white/10 space-y-1">
-                        <span class="text-blue-200 text-[10px] font-bold tracking-wider uppercase block">Área Responsable:</span>
+                    <div class="mt-4 pt-4 border-t border-white/20 space-y-1">
+                        <span class="text-white/80 text-[10px] font-bold tracking-wider uppercase block">Área Responsable:</span>
                         <span id="txt-paso-area" class="font-bold text-sm tracking-wide">Cargando...</span>
                     </div>
 
-                    <div class="mt-4 pt-4 border-t border-white/10 space-y-1">
-                        <span class="text-blue-200 text-[10px] font-bold tracking-wider uppercase block">Actividad / Paso Operativo:</span>
+                    <div class="mt-4 pt-4 border-t border-white/20 space-y-1">
+                        <span class="text-white/80 text-[10px] font-bold tracking-wider uppercase block">Actividad / Paso Operativo:</span>
                         <p id="txt-paso-nombre" class="text-sm font-medium leading-relaxed">Cargando descripción del paso...</p>
                     </div>
 
-                    <div class="mt-5 pt-4 border-t border-white/10 space-y-2">
-                        <span class="text-blue-200 text-[10px] font-bold tracking-wider uppercase block">Subpasos / Requisitos Requeridos:</span>
+                    <div class="mt-5 pt-4 border-t border-white/20 space-y-2 relative z-10">
+                        <span class="text-white/80 text-[10px] font-bold tracking-wider uppercase block">Subpasos / Requisitos Requeridos:</span>
                         <div id="contenedor-subpasos" class="space-y-2 mt-2">
-                            </div>
+                            <!-- Se cargan dinámicamente -->
+                        </div>
                     </div>
                 </div>
 
@@ -211,7 +213,8 @@
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 space-y-3">
                 <h4 class="text-xs font-bold text-gray-900 tracking-tight uppercase border-b border-gray-100 pb-2">Índice del Flujo</h4>
                 <div id="lista-navegacion-pasos" class="space-y-1.5 max-h-[60vh] overflow-y-auto pr-1">
-                    </div>
+                    <!-- Dinámico -->
+                </div>
             </div>
 
         </div>
@@ -285,7 +288,7 @@
             }
         }
 
-        // 2. Carga un paso en el formulario y pinta los subpasos guardados
+        // 2. Carga un paso en el formulario y pinta colores dinámicos
         function cargarPasoActual() {
             const paso = pasosFlujo[indicePasoActual];
 
@@ -295,33 +298,50 @@
             document.getElementById('txt-paso-area').innerText = paso.area || 'UNIDAD REQUERIENTE';
             document.getElementById('txt-paso-nombre').innerText = paso.nombrePaso;
 
-            // Renderizar Subpasos de forma dinámica dentro de la tarjeta azul
+            // --- LÓGICA DE FASES Y COLORES DINÁMICOS ---
+            const faseActual = paso.fase || 'FASE PREPARATORIA';
+            document.getElementById('txt-fase-nombre').innerText = faseActual;
+
+            const tarjetaPaso = document.getElementById('tarjeta-fase-dinamica');
+            // Resetear clases base para la tarjeta dinámica
+            tarjetaPaso.className = "text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500";
+            
+            if (faseActual === 'FASE PRECONTRACTUAL') {
+                tarjetaPaso.classList.add('bg-purple-600');
+            } else if (faseActual === 'FASE CONTRACTUAL') {
+                tarjetaPaso.classList.add('bg-green-600');
+            } else if (faseActual === 'FASE DE EVALUACIÓN') {
+                tarjetaPaso.classList.add('bg-amber-500');
+            } else {
+                tarjetaPaso.classList.add('bg-blue-600'); // Por defecto Preparatoria
+            }
+
+            // --- RENDERIZADO DE SUB-PASOS ---
             const contenedorSubpasos = document.getElementById('contenedor-subpasos');
             contenedorSubpasos.innerHTML = '';
 
-            // Si existen subpasos definidos en este paso, los pintamos
             if (paso.subpasos && paso.subpasos.length > 0) {
-                // Recuperar si ya había estados de subpasos guardados previamente
                 const subpasosGuardados = paso.respuestasUsuario?.estadosSubpasos || {};
 
                 paso.subpasos.forEach((sub, i) => {
-                    // Verificamos si estaba chequeado en el snapshot o en respuestasUsuario
                     const estaChequeado = subpasosGuardados[i] !== undefined ? subpasosGuardados[i] : (sub.completado || false);
 
                     const label = document.createElement('label');
-                    label.className = "flex items-start space-x-3 bg-blue-700/30 p-2.5 rounded-xl cursor-pointer hover:bg-blue-700/50 transition select-none text-xs text-blue-50";
+                    // Usamos colores genéricos (negro/blanco con opacidad) para que se adapte al fondo de la fase
+                    label.className = "flex items-start space-x-3 bg-black/10 p-2.5 rounded-xl cursor-pointer hover:bg-black/20 transition select-none text-xs text-white";
                     label.innerHTML = `
-                        <input type="checkbox" data-index="${i}" ${estaChequeado ? 'checked' : ''} class="subpaso-checkbox mt-0.5 w-4 h-4 rounded text-blue-600 bg-blue-900/40 border-blue-400/30 focus:ring-blue-500 focus:ring-offset-blue-700 focus:ring-2">
+                        <input type="checkbox" data-index="${i}" ${estaChequeado ? 'checked' : ''} class="subpaso-checkbox mt-0.5 w-4 h-4 rounded text-gray-900 bg-white/40 border-transparent focus:ring-white focus:ring-offset-transparent focus:ring-2">
                         <span class="leading-tight">${sub.nombreSubpaso || sub.descripcion || 'Subpaso sin nombre'}</span>
                     `;
                     contenedorSubpasos.appendChild(label);
                 });
             } else {
-                contenedorSubpasos.innerHTML = `<p class="text-[11px] text-blue-200/70 italic">Este paso no requiere subprocesos adicionales.</p>`;
+                contenedorSubpasos.innerHTML = `<p class="text-[11px] text-white/70 italic">Este paso no requiere subprocesos adicionales.</p>`;
             }
 
+            // --- CARGA DEL FORMULARIO ---
             const selectMedio = document.getElementById('input-medio');
-            selectMedio.innerHTML = `<option value="${paso.medio || 'QUIPUX'}">${paso.medio || 'QUIPUX'}</option><option value="ZIMBRA">ZIMBRA</option><option value="QUIPUX">QUIPUX</option><option value="FISICO">DOCUMENTO FÍSICO</option>`;
+            selectMedio.innerHTML = `<option value="${paso.medio || 'QUIPUX'}">${paso.medio || 'QUIPUX'}</option><option value="ZIMBRA">ZIMBRA</option><option value="QUIPUX">QUIPUX</option><option value="SOCE">SOCE</option><option value="FISICO">DOCUMENTO FÍSICO</option>`;
 
             const respuestas = paso.respuestasUsuario || {};
             document.getElementById('input-estado').value = respuestas.estado || '';
@@ -351,14 +371,12 @@
 
         // 3. Salva el estado de los campos de texto Y de los checkboxes de subpasos
         function guardarProgresoActual(silencioso = true) {
-            // Mapeamos el estado actual de cada checkbox de subpaso en pantalla
             const estadosSubpasos = {};
             const checkboxes = document.querySelectorAll('.subpaso-checkbox');
             checkboxes.forEach(chk => {
                 const idx = chk.getAttribute('data-index');
                 estadosSubpasos[idx] = chk.checked;
                 
-                // Actualizar también directamente el valor en el pipelineSnapshot subpaso original
                 if (pasosFlujo[indicePasoActual].subpasos && pasosFlujo[indicePasoActual].subpasos[idx]) {
                     pasosFlujo[indicePasoActual].subpasos[idx].completado = chk.checked;
                 }
@@ -375,7 +393,7 @@
                 aprobado: document.getElementById('input-aprobado').value,
                 dirigido: document.getElementById('input-dirigido').value,
                 observaciones: document.getElementById('input-observaciones').value,
-                estadosSubpasos: estadosSubpasos, // Guardamos los estados booleanos de los subpasos
+                estadosSubpasos: estadosSubpasos, 
                 completado: document.getElementById('input-estado').value === "Completado" || (pasosFlujo[indicePasoActual].respuestasUsuario?.completado)
             };
 
