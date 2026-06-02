@@ -146,7 +146,7 @@
 
     </main>
 
-    <script>
+ <script>
         let contratoOriginal = null;
         let pasosDisponibles = [];
         let pasosSeleccionados = [];
@@ -173,11 +173,9 @@
                 document.getElementById('actividad-subtitulo-flujo').innerText = nombreActividadGlobal;
             }
 
-            if (Array.isArray(contratoOriginal.pasos) && contratoOriginal.pasos.length > 0) {
-                pasosDisponibles = contratoOriginal.pasos.sort((a, b) => String(a.orden).localeCompare(String(b.orden), undefined, {numeric: true, sensitivity: 'base'}));
-            } else {
-                pasosDisponibles = buscarPasosPorTipoContrato(contratoOriginal.nombre);
-            }
+            // CORRECCIÓN APLICADA: Forzamos a cargar siempre la matriz parametrizada actualizada
+            pasosDisponibles = buscarPasosPorTipoContrato(contratoOriginal.nombre);
+            
             renderizarPasosDisponibles();
 
             const flujoGuardadoRaw = localStorage.getItem('flujoPersonalizado');
@@ -396,6 +394,7 @@
                         { nombreSubpaso: '13.3 – Revisión del PAC de la Unidad Requirente para verificar modificaciones', area: 'RESPONSABLE UNIDAD', medio: 'PORTAL', dirigidoA: '', completado: false },
                         { nombreSubpaso: '13.3.1 – Solicitar Certificaciones POA, Presupuestaria y (PAC SI NO HAY MODIFICACIÓN)', area: 'UNIDAD / DIRECCIÓN REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'PLANIFICACIÓN-DF-DA', completado: false },
                         { nombreSubpaso: '13.4 – Reasigna pedido de Certificación a Control Interno para revisión previa', area: 'UNIDAD / DIRECCIÓN REQUIRENTE', medio: 'QUIPUX TEMPORAL', dirigidoA: 'CONTROL INTERNO', anexos: 'Matriz Ejecución', completado: false },
+                        { nombreSubpaso: '13.5 – Entrega de Certificaciones', area: 'PLANIFICACIÓN-DAF-DAD', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', completado: false },
                         { nombreSubpaso: '13.5.1 – Entrega de Certificación POA', area: 'PLANIFICACIÓN', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación POA', completado: false },
                         { nombreSubpaso: '13.5.2 – Entrega de Certificacion Presupuestaria', area: 'FINANCIERO', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación Presupuestaria', completado: false },
                         { nombreSubpaso: '13.5.3 – Entrega de Cetificación PAC (SI NO HUBO MODIFICACIÓN)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación PAC', completado: false },
@@ -412,6 +411,7 @@
                         { nombreSubpaso: '14.1 – Autorización mediante sumilla electrónica la contratación', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', completado: false }
                     ]},
                     { id: 315, orden: '15', fase: 'FASE PREPARATORIA', nombrePaso: 'Entregar expediente fase preparatoria', area: 'UNIDAD / DIRECCIÓN REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Documentación habilitante', subpasos: []},
+
                     // ── FASE PRECONTRACTUAL ──
                     { id: 316, orden: '16', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Reasigna expediente y solicita elaboración de Pliegos - Convocatoria.', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Documentos habilitantes más Pliegos - Convocatoria', subpasos: []},
                     { id: 317, orden: '17', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Elaboración de Pliegos Formato SOCE - Convocatoria y envio para firma DGI', area: 'COMPRAS PÚBLICAS', medio: 'MFC / ZIMBRA', dirigidoA: 'DGI/RESPONSABLE DA', anexos: 'Documentos habilitantes más Pliegos - Convocatoria', subpasos: []},
@@ -443,6 +443,7 @@
                     ]},
                     { id: 330, orden: '30', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Adjudicación en el Portal y publicación de Resolución de Adjudicación', area: 'COMPRAS PÚBLICAS', medio: 'PORTAL', dirigidoA: 'SERCOP', anexos: '', subpasos: []},
                     { id: 331, orden: '31', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Notificación de Adjudicación', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Respaldo de Adjudicación', subpasos: []},
+
                     // ── FASE CONTRACTUAL ──
                     { id: 332, orden: '32', fase: 'FASE CONTRACTUAL', nombrePaso: 'Solicitar documentación habilitante (Tabla de precios, pólizas, garantías) previo a contrato.', area: 'UNIDAD REQUIRENTE/DA', medio: 'ZIMBRA', dirigidoA: 'OFERENTE ADJUDICADO', anexos: '', subpasos: []},
                     { id: 333, orden: '33', fase: 'FASE CONTRACTUAL', nombrePaso: 'Solicitar la elaboración de contrato', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DAJ', anexos: 'Documentación habilitante', subpasos: []},
@@ -457,6 +458,7 @@
                     { id: 337, orden: '37', fase: 'FASE CONTRACTUAL', nombrePaso: 'Recomendación de Técnico no inteviniente.', area: 'ADMINISTRADOR DE CONTRATO', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: '', subpasos: []},
                     { id: 338, orden: '38', fase: 'FASE CONTRACTUAL', nombrePaso: 'Notificación designación Técnico no interviniente', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'SERVIDOR DESIGNADO', anexos: '', subpasos: []},
                     { id: 339, orden: '39', fase: 'FASE CONTRACTUAL', nombrePaso: 'Supervisión de cumplimiento de contrato - Coordinar acciones para garantizar la debida ejecución.', area: 'ADMINISTRADOR DE CONTRATO', medio: 'CANALES DIGITALES O FÍSICOS', dirigidoA: 'PROVEEDOR', anexos: '', subpasos: []},
+
                     // ── FASE DE EVALUACIÓN ──
                     { id: 340, orden: '40', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Elaboración y suscripción de acta entrega recepción conforme el Capítulo V del RLOSNCP', area: 'ADMINISTRADOR DE CONTRATO', medio: 'CANALES DIGITALES', dirigidoA: 'PROVEEDOR', anexos: 'Acta entrega recepción', subpasos: []},
                     { id: 341, orden: '41', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Solicitud de pago', area: 'ADMINISTRADOR DE CONTRATO', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Acta entrega recepción, Informe de satisfacción, ingreso a bodega', subpasos: [
@@ -726,7 +728,7 @@
                                 <span class="bg-gray-50 text-gray-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-gray-100 uppercase tracking-wide">
                                     ${paso.area || 'UNIDAD'}
                                 </span>
-                                <span class="text-[10px] text-gray-400 font-medium">Fase Preparatoria</span>
+                                <span class="text-[10px] text-gray-400 font-medium">${paso.fase || 'Fase Preparatoria'}</span>
                             </div>
                             <h4 class="text-xs font-semibold text-gray-800 leading-relaxed">${paso.nombrePaso}</h4>
                         </div>
