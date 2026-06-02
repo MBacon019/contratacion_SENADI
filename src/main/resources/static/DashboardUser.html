@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENADI - Dashboard Usuario</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <nav class="bg-blue-900 text-white shadow-lg px-6 py-4 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold tracking-wide">SENADI</h1>
+            <p class="text-xs text-blue-200">Sistema de Contratación Pública</p>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <span id="user-display" class="font-medium bg-blue-800 px-3 py-1 rounded-full text-sm">Cargando...</span>
+            <button id="logout-btn" class="bg-red-600 hover:bg-red-700 text-white font-semibold text-sm py-1.5 px-4 rounded transition">
+                Cerrar Sesión
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto p-6 mt-6 space-y-6">
+
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <h2 class="text-2xl font-bold text-gray-800">
+                ¡Bienvenido, <span id="welcome-name" class="text-blue-700">Usuario</span>!
+            </h2>
+            <p class="text-sm text-gray-600 mt-1">
+                Selecciona el tipo de contratación pública que deseas iniciar o consultar.
+            </p>
+        </section>
+
+        <section class="bg-white p-8 rounded-xl shadow-md border border-gray-200">
+            <div class="text-center mb-8">
+                <h3 class="text-2xl font-extrabold text-gray-800 uppercase tracking-wide">
+                    Tipos de Contratación SENADI
+                </h3>
+                <p class="text-sm text-gray-500 mt-2">
+                    Escoge una opción para visualizar el proceso correspondiente.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                <div onclick="abrirContrato('infima')" class="cursor-pointer bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-2xl p-6 shadow hover:shadow-xl hover:-translate-y-1 transition">
+                    <div class="w-16 h-16 rounded-full bg-blue-600 text-white flex items-center justify-center text-3xl mb-5 mx-auto">
+                        📄
+                    </div>
+                    <h4 class="text-center text-lg font-bold text-blue-800">Ínfima Cuantía</h4>
+                    <p class="text-center text-sm text-gray-600 mt-3">
+                        Procesos de bajo monto para bienes o servicios no normalizados.
+                    </p>
+                </div>
+
+                <div onclick="abrirContrato('catalogo')" class="cursor-pointer bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 rounded-2xl p-6 shadow hover:shadow-xl hover:-translate-y-1 transition">
+                    <div class="w-16 h-16 rounded-full bg-emerald-600 text-white flex items-center justify-center text-3xl mb-5 mx-auto">
+                        🛒
+                    </div>
+                    <h4 class="text-center text-lg font-bold text-emerald-800">Catálogo Electrónico</h4>
+                    <p class="text-center text-sm text-gray-600 mt-3">
+                        Adquisición de bienes y servicios disponibles en catálogo.
+                    </p>
+                </div>
+
+                <div onclick="abrirContrato('subasta')" class="cursor-pointer bg-gradient-to-br from-orange-50 to-white border border-orange-200 rounded-2xl p-6 shadow hover:shadow-xl hover:-translate-y-1 transition">
+                    <div class="w-16 h-16 rounded-full bg-orange-500 text-white flex items-center justify-center text-3xl mb-5 mx-auto">
+                        ⚖️
+                    </div>
+                    <h4 class="text-center text-lg font-bold text-orange-700">Subasta Inversa</h4>
+                    <p class="text-center text-sm text-gray-600 mt-3">
+                        Procedimiento competitivo para obtener mejores condiciones.
+                    </p>
+                </div>
+
+                <div onclick="abrirContrato('regimen')" class="cursor-pointer bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-2xl p-6 shadow hover:shadow-xl hover:-translate-y-1 transition">
+                    <div class="w-16 h-16 rounded-full bg-purple-600 text-white flex items-center justify-center text-3xl mb-5 mx-auto">
+                        🏛️
+                    </div>
+                    <h4 class="text-center text-lg font-bold text-purple-800">Régimen Especial</h4>
+                    <p class="text-center text-sm text-gray-600 mt-3">
+                        Procedimientos especiales conforme a normativa vigente.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="detalle-contrato" class="bg-white p-8 rounded-xl shadow-md border border-gray-200 text-center text-gray-500">
+            Selecciona una opción para ver el detalle del proceso.
+        </section>
+
+    </main>
+
+    <script>
+        const usuarioSesion = localStorage.getItem('usuario');
+
+        if (!usuarioSesion) {
+            alert('Acceso denegado. Por favor, inicia sesión primero.');
+            window.location.href = '/';
+        } else {
+            const usuario = JSON.parse(usuarioSesion);
+            document.getElementById('user-display').innerText =
+                `${usuario.nombreCompleto} (${usuario.rol.nombre})`;
+            document.getElementById('welcome-name').innerText =
+                usuario.nombreCompleto;
+        }
+
+        function abrirContrato(tipo) {
+            const detalle = document.getElementById('detalle-contrato');
+
+            const datos = {
+                infima: {
+                    titulo: 'Ínfima Cuantía',
+                    texto: 'Proceso para adquisiciones de menor cuantía según normativa pública.'
+                },
+                catalogo: {
+                    titulo: 'Catálogo Electrónico',
+                    texto: 'Proceso para adquirir bienes y servicios normalizados disponibles en catálogo.'
+                },
+                subasta: {
+                    titulo: 'Subasta Inversa',
+                    texto: 'Proceso competitivo donde los proveedores ofertan mejores condiciones económicas.'
+                },
+                regimen: {
+                    titulo: 'Régimen Especial',
+                    texto: 'Proceso aplicable en casos específicos definidos por la normativa.'
+                }
+            };
+
+            const contrato = datos[tipo];
+
+            detalle.innerHTML = `
+                <h3 class="text-2xl font-bold text-blue-800 mb-2">${contrato.titulo}</h3>
+                <p class="text-gray-600">${contrato.texto}</p>
+                <button class="mt-5 bg-blue-700 hover:bg-blue-800 text-white px-5 py-2 rounded-lg font-semibold">
+                    Iniciar Proceso
+                </button>
+            `;
+        }
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('usuario');
+            window.location.href = '/';
+        });
+    </script>
+
+</body>
+</html>

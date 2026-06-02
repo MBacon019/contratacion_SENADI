@@ -58,10 +58,16 @@
 
     <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
         <span class="text-xs font-bold text-gray-700 tracking-wider uppercase">Sistema de Contratación Pública</span>
-        <button id="theme-toggle" onclick="toggleTema()" class="bg-white border border-gray-200 px-3 py-1 rounded-xl text-xs font-semibold text-gray-500 flex items-center space-x-1 shadow-sm hover:bg-gray-50 transition">
-            <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-            <span id="theme-label">Claro</span>
-        </button>
+        <div class="flex items-center space-x-3">
+            <span id="user-display" class="text-xs font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full hidden"></span>
+            <button id="logout-btn" onclick="cerrarSesion()" class="hidden bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-semibold text-xs py-1 px-3 rounded-lg transition duration-200">
+                Cerrar Sesión
+            </button>
+            <button id="theme-toggle" onclick="toggleTema()" class="bg-white border border-gray-200 px-3 py-1 rounded-xl text-xs font-semibold text-gray-500 flex items-center space-x-1 shadow-sm hover:bg-gray-50 transition">
+                <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                <span id="theme-label">Claro</span>
+            </button>
+        </div>
     </nav>
 
     <header class="max-w-6xl mx-auto pt-8 px-6 text-center">
@@ -237,29 +243,11 @@
         // Crear un flujo desde cero
         function iniciarNuevoContrato(tipoContrato) {
             localStorage.removeItem('flujoPersonalizado');
-            localStorage.removeItem('idProcesoActivo'); // Limpiamos ID anterior para indicar que es nuevo
-            
-            const pasosPorTipo = {
-                'Contrato Ínfima Cuantía': [
-                    { id: 101, orden: "1", nombrePaso: "Solicitar revisión de Stock de Bodega en el caso de bienes", area: "UNIDAD REQUERIENTE", medio: "QUIPUX", dirigidoA: "RESPONSABLE DA", anexos: "Revisión instrumental técnica de inventario." },
-                    { id: 102, orden: "2", nombrePaso: "Revisión de la actividad en POA", area: "UNIDAD REQUERIENTE", medio: "REGISTROS INTERNOS", dirigidoA: "DGI" },
-                    { id: 103, orden: "3", nombrePaso: "Elaboración de informe de necesidad para revisión y aprobación", area: "UNIDAD/ÁREA REQUERIENTE (TÉCNICO)", medio: "ZIMBRA", dirigidoA: "RESPONSABLE DE UNIDAD" }
-                ],
-                'Contrato Catálogo Electrónico': [],
-                'Contrato Subasta Inversa': [
-                    { id: 301, orden: "1", nombrePaso: "Publicar requerimiento para puja inversa", area: "UNIDAD REQUERIENTE", medio: "PORTAL ELECTRÓNICO", dirigidoA: "PROVEEDOR" },
-                    { id: 302, orden: "2", nombrePaso: "Recibir propuestas y evaluar oferta mínima", area: "UNIDAD REQUERIENTE", medio: "SISTEMA", dirigidoA: "DGI" },
-                    { id: 303, orden: "3", nombrePaso: "Adjudicar al proveedor ganador y notificar fallo", area: "UNIDAD REQUERIENTE", medio: "CORREO", dirigidoA: "RESPONSABLE DE UNIDAD" }
-                ],
-                'Contrato Régimen Especial': []
-            };
-            
-            const contratoMock = {
+            localStorage.removeItem('idProcesoActivo');
+            localStorage.setItem('contratoSeleccionado', JSON.stringify({
                 nombre: tipoContrato,
-                pasos: pasosPorTipo[tipoContrato] || []
-            };
-            
-            localStorage.setItem('contratoSeleccionado', JSON.stringify(contratoMock));
+                pasos: []
+            }));
             window.location.href = '/detalles-proceso.html';
         }
 
@@ -291,6 +279,26 @@
             if (temaGuardado === 'oscuro') {
                 aplicarTema(true);
             }
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem('usuario');
+            window.location.href = '/index.html';
+        }
+
+        // Mostrar usuario logueado en el nav
+        const usuarioGuardado = localStorage.getItem('usuario');
+        if (usuarioGuardado) {
+            try {
+                const u = JSON.parse(usuarioGuardado);
+                const display = document.getElementById('user-display');
+                const logoutBtn = document.getElementById('logout-btn');
+                if (display && u.nombreCompleto) {
+                    display.textContent = u.nombreCompleto;
+                    display.classList.remove('hidden');
+                }
+                if (logoutBtn) logoutBtn.classList.remove('hidden');
+            } catch (e) {}
         }
     </script>
 </body>
