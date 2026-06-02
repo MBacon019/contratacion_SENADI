@@ -169,7 +169,7 @@
             if (actividadData) {
                 const actividad = JSON.parse(actividadData);
                 nombreActividadGlobal = actividad.actividadEspecifica || "Sin descripción de actividad";
-                codigoPOAGlobal = actividad.poa || "POA 12121"; // Tomamos tu POA por defecto
+                codigoPOAGlobal = actividad.noPoa || "POA 00000";
                 document.getElementById('actividad-subtitulo-flujo').innerText = nombreActividadGlobal;
             }
 
@@ -772,16 +772,20 @@
             const tipoContrato = contratoOriginal ? contratoOriginal.nombre : "Contrato Ínfima Cuantía";
             
             // Estructura exacta que requiere el dashboard.html
+            const actividadGuardada = JSON.parse(localStorage.getItem('detallesActividad') || '{}');
             const nuevaInstanciaProceso = {
-                id: localStorage.getItem('idProcesoActivo') || Date.now().toString(), // Mantiene el ID si se estaba editando uno existente
+                id: localStorage.getItem('idProcesoActivo') || Date.now().toString(),
                 tipoContrato: tipoContrato,
                 actividadNombre: nombreActividadGlobal,
                 codigoPoa: codigoPOAGlobal,
+                itemPresupuestario: actividadGuardada.item || '-',
+                codigoCpc: actividadGuardada.cpc || '-',
+                asignacion: actividadGuardada.asignacion || '0',
                 fechaModificacion: new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
                 pasosTotales: pasosSeleccionados.length,
-                pasosCompletados: 0, 
-                porcentaje: 0, 
-                pipelineSnapshot: pasosSeleccionados // Mapeado directo a lo que lee el Dashboard al continuar
+                pasosCompletados: 0,
+                porcentaje: 0,
+                pipelineSnapshot: pasosSeleccionados
             };
 
             // Traer listado actual
