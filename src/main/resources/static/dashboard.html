@@ -1,127 +1,276 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCP - Sistema de Contratación Pública</title>
+    <title>Dashboard - SENADI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html, body { height: 100%; margin: 0; }
+        body { display: flex; overflow: hidden; }
+        #sidebar { width: 220px; flex-shrink: 0; }
+        #main-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        #main-content { flex: 1; overflow-y: auto; }
+    </style>
 </head>
 <body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
 
-    <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
-        <span class="text-xs font-bold text-gray-700 tracking-wider uppercase">Sistema de Contratación Pública</span>
-        <div class="flex items-center space-x-3">
-            <span id="user-display" class="text-xs font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full hidden"></span>
-            <button id="logout-btn" onclick="cerrarSesion()" class="hidden bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-semibold text-xs py-1 px-3 rounded-lg transition duration-200">
-                Cerrar Sesión
-            </button>
+    <!-- ===== SIDEBAR ===== -->
+    <aside id="sidebar" class="bg-white border-r border-gray-200 flex flex-col h-full">
+        <div class="px-5 pt-6 pb-5 border-b border-gray-100">
+            <p class="text-[13px] font-bold text-gray-900 leading-none">Procurement Portal</p>
+            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mt-1">Institutional System</p>
         </div>
-    </nav>
+        <nav class="flex-1 px-3 py-4 space-y-1">
+            <a href="/dashboard.html"
+               class="flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-teal-500 text-white font-semibold text-sm">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span>Home</span>
+            </a>
+            <a href="#"
+               class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-100 font-medium text-sm transition">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span>My Processes</span>
+            </a>
+        </nav>
+    </aside>
 
-    <header class="max-w-6xl mx-auto pt-8 px-6 text-center">
-        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Sistema de Contratación Pública</h1>
-        <p class="text-sm text-gray-400 mt-1">Seleccione el tipo de proceso que desea realizar</p>
-    </header>
+    <!-- ===== MAIN WRAPPER ===== -->
+    <div id="main-wrap">
 
-    <main class="max-w-6xl mx-auto p-6 space-y-8">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
+            <div class="flex items-center space-x-6">
+                <span class="text-lg font-bold text-[#1a3a6e]">SENADI</span>
+                <a href="#" class="pb-1 text-sm font-semibold text-blue-600 border-b-2 border-blue-600">Dashboard</a>
+            </div>
+            <div class="flex items-center space-x-1">
+                <span id="user-display" class="text-xs font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full hidden mr-2"></span>
+                <!-- Ayuda -->
+                <button title="Ayuda"
+                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </button>
+                <!-- Cerrar sesión -->
+                <button id="logout-btn" onclick="cerrarSesion()" title="Cerrar sesión"
+                        class="hidden w-8 h-8 items-center justify-center text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-100 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                </button>
+                <!-- Notificaciones -->
+                <button title="Notificaciones"
+                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                </button>
+                <!-- Configuración -->
+                <button title="Configuración"
+                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
 
-        <section id="seccion-en-progreso" class="space-y-3 hidden">
+        <!-- Contenido principal -->
+        <main id="main-content" class="px-8 py-8 space-y-8">
+
+            <!-- Título página -->
             <div>
-                <h3 class="text-sm font-bold text-gray-900 tracking-tight">Procesos en Progreso</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Continúa donde lo dejaste con tus procesos guardados</p>
-            </div>
-            
-            <div id="contenedor-tarjetas-activas" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                </div>
-        </section>
-
-
-        <section class="space-y-4">
-            <div>
-                <h3 class="text-sm font-bold text-gray-900 tracking-tight">Crear Nuevo Proceso</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Selecciona un tipo de proceso para comenzar</p>
+                <h1 class="text-2xl font-bold text-gray-900">Sistema de Contratación Pública</h1>
+                <p class="text-sm text-gray-500 mt-1">Gestione procesos de adquisición institucional con total transparencia y eficiencia legal.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                <div onclick="iniciarNuevoContrato('Contrato Ínfima Cuantía')" class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-300 transition cursor-pointer flex items-start space-x-4">
-                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    </div>
+            <!-- Procesos en Progreso -->
+            <section id="seccion-en-progreso" class="space-y-4 hidden">
+                <div class="flex items-start justify-between">
                     <div>
-                        <h4 class="text-sm font-bold text-gray-800">Ínfima Cuantía</h4>
-                        <p class="text-xs text-gray-400 mt-0.5">Proceso de contratación de menor cuantía</p>
-                        <div class="flex items-center space-x-2 mt-3">
-                            <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">25 pasos principales</span>
-                            <span class="bg-gray-50 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">37 sub-pasos</span>
-                        </div>
+                        <h2 class="text-base font-bold text-indigo-600 flex items-center space-x-2">
+                            <span class="inline-block w-2.5 h-2.5 bg-indigo-500 rounded-sm flex-shrink-0 mt-0.5"></span>
+                            <span>Procesos en Progreso</span>
+                        </h2>
+                        <p class="text-xs text-gray-400 mt-0.5 pl-4">Continúa donde lo dejaste con tus procesos guardados</p>
                     </div>
+                    <a href="#" class="text-xs font-semibold text-gray-500 hover:text-gray-700 transition mt-0.5">Ver todos</a>
                 </div>
 
-                <div onclick="iniciarNuevoContrato('Contrato Catálogo Electrónico')" class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-300 transition cursor-pointer flex items-start space-x-4">
-                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-gray-800">Catálogo Electrónico</h4>
-                        <p class="text-xs text-gray-400 mt-0.5">Compra a través de tienda virtual del Estado</p>
-                        <div class="flex items-center space-x-2 mt-3">
-                            <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">21 pasos principales</span>
-                            <span class="bg-gray-50 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">33 sub-pasos</span>
-                        </div>
-                    </div>
+                <div id="contenedor-tarjetas-activas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                </div>
+            </section>
+
+            <!-- Crear Nuevo Proceso -->
+            <section class="space-y-4">
+                <div>
+                    <h2 class="text-base font-bold text-indigo-600 flex items-center space-x-2">
+                        <span class="inline-flex items-center justify-center w-4 h-4 bg-indigo-500 rounded text-white text-[10px] font-bold flex-shrink-0">+</span>
+                        <span>Crear Nuevo Proceso</span>
+                    </h2>
+                    <p class="text-xs text-gray-400 mt-0.5 pl-6">Selecciona un tipo de proceso para comenzar una nueva adquisición</p>
                 </div>
 
-                <div onclick="iniciarNuevoContrato('Contrato Subasta Inversa')" class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-300 transition cursor-pointer flex items-start space-x-4">
-                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-gray-800">Subasta Inversa</h4>
-                        <p class="text-xs text-gray-400 mt-0.5">Proceso dinámico de puja para bienes y servicios homogéneos</p>
-                        <div class="flex items-center space-x-2 mt-3">
-                            <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">44 pasos principales</span>
-                            <span class="bg-gray-50 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">43 sub-pasos</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <!-- Ínfima Cuantía -->
+                    <div onclick="iniciarNuevoContrato('Contrato Ínfima Cuantía')"
+                         class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-300 transition cursor-pointer flex items-start space-x-4">
+                        <div class="p-3 bg-blue-50 text-blue-600 rounded-xl flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800">Ínfima Cuantía</h4>
+                            <p class="text-xs text-gray-400 mt-0.5">Proceso de contratación de menor cuantía para adquisiciones rápidas.</p>
+                            <div class="flex items-center space-x-2 mt-3">
+                                <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">25 pasos principales</span>
+                                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">37 sub-pasos</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div onclick="iniciarNuevoContrato('Contrato Régimen Especial')" class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-300 transition cursor-pointer flex items-start space-x-4">
-                    <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3m-3-3h.01M9 7h.01M9 14h.01M12 14h.01M15 11h.01M15 7h.01M15 14h.01M12 18h.01M15 18h.01M9 18h.01"/></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-bold text-gray-800">Régimen Especial</h4>
-                        <p class="text-xs text-gray-400 mt-0.5">Contratación bajo normas especiales para entidades exceptuadas</p>
-                        <div class="flex items-center space-x-2 mt-3">
-                            <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">41 pasos principales</span>
-                            <span class="bg-gray-50 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">40 sub-pasos</span>
+                    <!-- Catálogo Electrónico -->
+                    <div onclick="iniciarNuevoContrato('Contrato Catálogo Electrónico')"
+                         class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-teal-300 transition cursor-pointer flex items-start space-x-4">
+                        <div class="p-3 bg-teal-50 text-teal-600 rounded-xl flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800">Catálogo Electrónico</h4>
+                            <p class="text-xs text-gray-400 mt-0.5">Compra a través de tienda virtual del Estado Colombiano.</p>
+                            <div class="flex items-center space-x-2 mt-3">
+                                <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">21 pasos principales</span>
+                                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">33 sub-pasos</span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
+                    <!-- Subasta Inversa -->
+                    <div onclick="iniciarNuevoContrato('Contrato Subasta Inversa')"
+                         class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-300 transition cursor-pointer flex items-start space-x-4">
+                        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800">Subasta Inversa</h4>
+                            <p class="text-xs text-gray-400 mt-0.5">Proceso dinámico de puja para bienes y servicios de características técnicas uniformes.</p>
+                            <div class="flex items-center space-x-2 mt-3">
+                                <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">44 pasos principales</span>
+                                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">43 sub-pasos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Régimen Especial -->
+                    <div onclick="iniciarNuevoContrato('Contrato Régimen Especial')"
+                         class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-orange-300 transition cursor-pointer flex items-start space-x-4">
+                        <div class="p-3 bg-orange-50 text-orange-600 rounded-xl flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3m-3-3h.01M9 7h.01M9 14h.01M12 14h.01M15 11h.01M15 7h.01M15 14h.01M12 18h.01M15 18h.01M9 18h.01"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800">Régimen Especial</h4>
+                            <p class="text-xs text-gray-400 mt-0.5">Contratación bajo normas especiales para entidades exceptuadas de la norma general.</p>
+                            <div class="flex items-center space-x-2 mt-3">
+                                <span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full">41 pasos principales</span>
+                                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">40 sub-pasos</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-gray-200 px-8 py-4 flex-shrink-0 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <span class="text-xs font-bold text-[#1a3a6e]">SENADI</span>
+                <span class="text-xs text-gray-400">© 2026 SENADI – Servicio Nacional de Derechos Intelectuales. All rights reserved.</span>
             </div>
-        </section>
-    </main>
+            <div class="flex items-center space-x-4 text-xs text-gray-400">
+                <a href="#" class="hover:text-gray-600 transition">Privacy Policy</a>
+                <a href="#" class="hover:text-gray-600 transition">Terms of Service</a>
+                <a href="#" class="hover:text-gray-600 transition">Legal Notice</a>
+                <a href="#" class="hover:text-gray-600 transition">Contact Us</a>
+            </div>
+        </footer>
+    </div>
 
     <script>
+        /* ── Colores e íconos por tipo de proceso ── */
+        const TIPO_CONFIG = {
+            'Catálogo Electrónico': {
+                iconBg: 'bg-blue-50', iconText: 'text-blue-600',
+                barColor: 'bg-blue-500', badgeBg: 'bg-blue-50', badgeText: 'text-blue-700',
+                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>`
+            },
+            'Subasta Inversa': {
+                iconBg: 'bg-amber-50', iconText: 'text-amber-600',
+                barColor: 'bg-amber-500', badgeBg: 'bg-amber-50', badgeText: 'text-amber-700',
+                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>`
+            },
+            'Ínfima Cuantía': {
+                iconBg: 'bg-blue-50', iconText: 'text-blue-600',
+                barColor: 'bg-blue-500', badgeBg: 'bg-blue-50', badgeText: 'text-blue-700',
+                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>`
+            },
+            'Régimen Especial': {
+                iconBg: 'bg-purple-50', iconText: 'text-purple-600',
+                barColor: 'bg-purple-500', badgeBg: 'bg-purple-50', badgeText: 'text-purple-700',
+                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3"/>`
+            }
+        };
+
+        function getTipoConfig(tipoContrato) {
+            for (const key of Object.keys(TIPO_CONFIG)) {
+                if (tipoContrato && tipoContrato.includes(key)) return TIPO_CONFIG[key];
+            }
+            return {
+                iconBg: 'bg-gray-100', iconText: 'text-gray-500',
+                barColor: 'bg-gray-400', badgeBg: 'bg-gray-100', badgeText: 'text-gray-600',
+                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>`
+            };
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             verificarProcesosActivos();
+            mostrarUsuario();
         });
 
-        // Obtiene la lista unificada de procesos en progreso
         function obtenerListaProcesos() {
             const raw = localStorage.getItem('instanciaProcesoEnProgreso');
             if (!raw) return [];
             try {
                 const parsed = JSON.parse(raw);
                 return Array.isArray(parsed) ? parsed : [parsed];
-            } catch (e) {
-                return [];
-            }
+            } catch (e) { return []; }
         }
 
-        // Renderiza las tarjetas activas de forma dinámica
         function verificarProcesosActivos() {
             const procesos = obtenerListaProcesos();
             const seccionProgreso = document.getElementById('seccion-en-progreso');
@@ -129,103 +278,144 @@
 
             if (procesos.length > 0) {
                 seccionProgreso.classList.remove('hidden');
-                contenedorTarjetas.innerHTML = ''; 
+                contenedorTarjetas.innerHTML = '';
 
                 procesos.forEach((instancia, index) => {
                     const tituloLimpio = (instancia.tipoContrato || 'Ínfima Cuantía').replace('Contrato ', '');
-                    
+                    const pct = instancia.porcentaje || 0;
+                    const cfg = getTipoConfig(instancia.tipoContrato);
+                    const esAvanzado = pct >= 50;
+
                     const tarjetaHtml = `
-                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 relative transition hover:shadow-md flex flex-col justify-between">
-                            <button onclick="eliminarInstanciaProceso(${index})" class="absolute right-4 top-4 text-gray-400 hover:text-red-500 transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col relative hover:shadow-md transition">
+                            <!-- Eliminar -->
+                            <button onclick="eliminarInstanciaProceso(${index})"
+                                    class="absolute right-4 top-4 text-gray-300 hover:text-red-400 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
                             </button>
 
-                            <div>
-                                <div class="flex justify-between items-center pr-6">
-                                    <h4 class="text-sm font-bold text-gray-900">${tituloLimpio}</h4>
-                                    <span class="text-xs font-bold text-gray-600">${instancia.porcentaje || 0}%</span>
+                            <!-- Ícono + porcentaje -->
+                            <div class="flex items-start justify-between mb-3 pr-6">
+                                <div class="p-2.5 ${cfg.iconBg} ${cfg.iconText} rounded-xl">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        ${cfg.icon}
+                                    </svg>
                                 </div>
-
-                                <div class="mt-3 bg-blue-50/60 border border-blue-100 rounded-xl p-2.5">
-                                    <p class="text-xs font-semibold text-blue-600 truncate">${instancia.actividadNombre || 'Actividad sin nombre'}</p>
+                                <div class="text-right">
+                                    <span class="text-sm font-bold ${cfg.iconText}">${pct}%</span>
+                                    <p class="text-[10px] text-gray-400 leading-none mt-0.5">completado</p>
                                 </div>
                             </div>
 
-                            <div class="mt-4">
-                                <div class="flex items-center space-x-2 text-[10px] text-gray-400 font-medium">
-                                    <span class="flex items-center space-x-1">
-                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                        <span class="ml-1">${instancia.fechaModificacion || 'Sin fecha'}</span>
-                                    </span>
-                                    <span class="bg-gray-100 border border-gray-200 text-gray-600 font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">${instancia.codigoPoa || 'POA 0000'}</span>
-                                </div>
+                            <!-- Barra de progreso -->
+                            <div class="h-1.5 bg-gray-100 rounded-full mb-4">
+                                <div class="${cfg.barColor} h-1.5 rounded-full transition-all" style="width:${pct}%"></div>
+                            </div>
 
-                                <div class="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center">
-                                    <span class="text-[11px] text-gray-500 font-medium">${instancia.pasosCompletados || 0} / ${instancia.pasosTotales || 0} pasos</span>
-                                    <button onclick="continuarProcesoEstructurado(${index})" class="bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-600 font-bold text-[11px] py-1.5 px-3 rounded-lg transition flex items-center space-x-1">
-                                        <span>☉ Continuar</span>
-                                    </button>
-                                </div>
+                            <!-- Título -->
+                            <h4 class="text-sm font-bold text-gray-900 mb-2">${tituloLimpio}</h4>
+
+                            <!-- Tags -->
+                            <div class="flex items-center space-x-2 mb-3">
+                                <span class="${cfg.badgeBg} ${cfg.badgeText} text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+                                    ${instancia.actividadNombre ? instancia.actividadNombre.substring(0, 20) : 'En proceso'}
+                                </span>
+                                <span class="bg-gray-100 text-gray-500 text-[10px] font-semibold px-2 py-0.5 rounded uppercase">
+                                    ${instancia.codigoPoa || 'POA 0000'}
+                                </span>
+                            </div>
+
+                            <!-- Fecha + botón -->
+                            <div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="flex items-center space-x-1 text-[11px] text-gray-400">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <span>${instancia.fechaModificacion || 'Sin fecha'}</span>
+                                </span>
+                                ${esAvanzado
+                                    ? `<button onclick="continuarProcesoEstructurado(${index})"
+                                               class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold text-[11px] py-1.5 px-3 rounded-lg transition">
+                                           Revisar
+                                       </button>`
+                                    : `<button onclick="continuarProcesoEstructurado(${index})"
+                                               class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-[11px] py-1.5 px-3 rounded-lg transition flex items-center space-x-1">
+                                           <span>Continuar</span>
+                                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                           </svg>
+                                       </button>`
+                                }
                             </div>
                         </div>
                     `;
                     contenedorTarjetas.insertAdjacentHTML('beforeend', tarjetaHtml);
                 });
+
+                /* Tarjeta placeholder de borradores */
+                contenedorTarjetas.insertAdjacentHTML('beforeend', `
+                    <div class="rounded-2xl border-2 border-dashed border-gray-200 p-5 flex flex-col items-center justify-center text-center min-h-[200px] bg-white/50">
+                        <div class="w-9 h-9 rounded-full border-2 border-gray-300 flex items-center justify-center mb-3 text-gray-400 text-xl font-light">+</div>
+                        <p class="text-xs text-gray-400 leading-relaxed max-w-[160px]">
+                            Inicie un proceso pendiente desde sus borradores guardados.
+                        </p>
+                    </div>
+                `);
             } else {
                 seccionProgreso.classList.add('hidden');
             }
         }
 
-        // Continuar un proceso existente
         function continuarProcesoEstructurado(index) {
             const procesos = obtenerListaProcesos();
             if (procesos[index]) {
                 const instancia = procesos[index];
-                localStorage.setItem('idProcesoActivo', instancia.id); // Guardamos el ID único para saber cuál editar
+                localStorage.setItem('idProcesoActivo', instancia.id);
                 localStorage.setItem('flujoPersonalizado', JSON.stringify(instancia.pipelineSnapshot));
                 window.location.href = '/ejecutar-proceso.html';
             }
         }
 
-        // Crear un flujo desde cero
         function iniciarNuevoContrato(tipoContrato) {
             localStorage.removeItem('flujoPersonalizado');
             localStorage.removeItem('idProcesoActivo');
-            localStorage.setItem('contratoSeleccionado', JSON.stringify({
-                nombre: tipoContrato,
-                pasos: []
-            }));
+            localStorage.setItem('contratoSeleccionado', JSON.stringify({ nombre: tipoContrato, pasos: [] }));
             window.location.href = '/detalles-proceso.html';
         }
 
-        // Eliminar proceso de la lista
         function eliminarInstanciaProceso(index) {
             if (confirm('¿Estás seguro de que deseas eliminar este proceso en progreso? Se perderán todos sus cambios guardados.')) {
                 let procesos = obtenerListaProcesos();
-                procesos.splice(index, 1); 
+                procesos.splice(index, 1);
                 localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
                 verificarProcesosActivos();
             }
         }
-
 
         function cerrarSesion() {
             localStorage.removeItem('usuario');
             window.location.href = '/index.html';
         }
 
-        // Mostrar usuario logueado en el nav
-        const usuarioGuardado = localStorage.getItem('usuario');
-        if (usuarioGuardado) {
+        function mostrarUsuario() {
+            const raw = localStorage.getItem('usuario');
+            if (!raw) return;
             try {
-                const u = JSON.parse(usuarioGuardado);
+                const u = JSON.parse(raw);
                 const display = document.getElementById('user-display');
                 const logoutBtn = document.getElementById('logout-btn');
                 if (display && u.nombreCompleto) {
                     display.textContent = u.nombreCompleto;
                     display.classList.remove('hidden');
                 }
-                if (logoutBtn) logoutBtn.classList.remove('hidden');
+                if (logoutBtn) {
+                    logoutBtn.classList.remove('hidden');
+                    logoutBtn.classList.add('flex');
+                }
             } catch (e) {}
         }
     </script>
