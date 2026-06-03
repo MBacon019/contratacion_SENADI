@@ -11,55 +11,23 @@
         .tema-oscuro .bg-gray-50,
         .tema-oscuro .bg-gray-100,
         .tema-oscuro .bg-blue-50,
-        .tema-oscuro .bg-amber-50 {
-            background-color: #111827 !important;
-            color: #e2e8f0 !important;
-        }
-        .tema-oscuro .text-gray-900,
-        .tema-oscuro .text-gray-800,
-        .tema-oscuro .text-gray-700,
-        .tema-oscuro .text-gray-600,
-        .tema-oscuro .text-gray-500,
-        .tema-oscuro .text-gray-400 {
-            color: #cbd5e1 !important;
-        }
+        .tema-oscuro .bg-amber-50 { background-color: #111827 !important; color: #e2e8f0 !important; }
+        .tema-oscuro .text-gray-900, .tema-oscuro .text-gray-800, .tema-oscuro .text-gray-700, .tema-oscuro .text-gray-600, .tema-oscuro .text-gray-500, .tema-oscuro .text-gray-400 { color: #cbd5e1 !important; }
         .tema-oscuro .text-blue-600 { color: #7dd3fc !important; }
-        .tema-oscuro .border-gray-200,
-        .tema-oscuro .border-gray-100,
-        .tema-oscuro .border-blue-100,
-        .tema-oscuro .border-blue-200,
-        .tema-oscuro .border-amber-200 {
-            border-color: #334155 !important;
-        }
-        .tema-oscuro input,
-        .tema-oscuro select,
-        .tema-oscuro textarea {
-            background-color: #1e293b !important;
-            color: #e2e8f0 !important;
-            border-color: #475569 !important;
-        }
-        .tema-oscuro input::placeholder,
-        .tema-oscuro textarea::placeholder {
-            color: #94a3b8 !important;
-        }
-        .tema-oscuro .bg-blue-50\/60,
-        .tema-oscuro .bg-white\/20,
-        .tema-oscuro .bg-white\/30,
-        .tema-oscuro .bg-blue-700\/60,
-        .tema-oscuro .bg-blue-700\/50,
-        .tema-oscuro .bg-blue-900\/40,
-        .tema-oscuro .bg-blue-900\/30 {
-            background-color: rgba(30, 41, 59, 0.35) !important;
-        }
-        .tema-oscuro .hover\:bg-gray-50:hover { background-color: #1e293b !important; }
+        .tema-oscuro .border-gray-200, .tema-oscuro .border-gray-100, .tema-oscuro .border-blue-100, .tema-oscuro .border-blue-200, .tema-oscuro .border-amber-200 { border-color: #334155 !important; }
+        .tema-oscuro input, .tema-oscuro select, .tema-oscuro textarea { background-color: #1e293b !important; color: #e2e8f0 !important; border-color: #475569 !important; }
+        .tema-oscuro input:disabled, .tema-oscuro select:disabled, .tema-oscuro textarea:disabled { opacity: 0.5; cursor: not-allowed; }
+        .tema-oscuro .bg-blue-50\/60, .tema-oscuro .bg-white\/20, .tema-oscuro .bg-white\/30, .tema-oscuro .bg-blue-700\/60, .tema-oscuro .bg-blue-700\/50, .tema-oscuro .bg-blue-900\/40, .tema-oscuro .bg-blue-900\/30 { background-color: rgba(30, 41, 59, 0.35) !important; }
+        input:disabled, select:disabled, textarea:disabled { background-color: #f3f4f6; color: #9ca3af; cursor: not-allowed; }
     </style>
 </head>
 <body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
 
     <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
         <div class="flex items-center space-x-3">
-            <button onclick="irAlDashboard()" class="bg-white p-2 rounded-xl border border-gray-200 hover:bg-gray-50 transition text-gray-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            <button onclick="irAlDashboard()" class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 font-semibold text-xs py-2 px-4 rounded-xl shadow-sm transition flex items-center space-x-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Ir al Inicio</span>
             </button>
             <div>
                 <h2 id="txt-proceso-titulo" class="text-lg font-bold text-gray-900">Cargando Proceso...</h2>
@@ -68,11 +36,23 @@
         </div>
         
         <div class="flex items-center space-x-3">
-            <button id="theme-toggle" onclick="toggleTema()" class="bg-white border border-gray-200 px-3 py-1 rounded-xl text-xs font-semibold text-gray-500 flex items-center space-x-1 shadow-sm hover:bg-gray-50 transition">
-                <svg class="w-3.5 h-3.5 text-amber-500 fill-amber-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M6.343 4.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                <span id="theme-label">Claro</span>
-            </button>
-            <button onclick="guardarProgresoActual(false)" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs py-2 px-4 rounded-xl border border-gray-200 shadow-sm transition flex items-center space-x-1.5">
+            <div class="flex items-center space-x-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl">
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">👤 Sesión:</span>
+                    <select id="select-rol" onchange="cambiarRol()" class="bg-transparent text-xs font-bold text-blue-600 outline-none cursor-pointer">
+                        <option value="ROLE_ADMIN">ROLE_ADMIN (ACCESO TOTAL)</option>
+                        
+                        <option value="ROLE_UNIDAD_REQUIRENTE">ROLE_UNIDAD_REQUIRENTE</option>
+                        <option value="ROLE_DGI">ROLE_DGI</option>
+                        <option value="ROLE_DA">ROLE_DA</option>
+                        <option value="ROLE_COMPRAS_PUBLICAS">ROLE_COMPRAS_PUBLICAS</option>
+                        <option value="ROLE_PLANIFICACION">ROLE_PLANIFICACION</option>
+                        <option value="ROLE_FINANCIERO">ROLE_FINANCIERO</option>
+                        <option value="ROLE_JURIDICO">ROLE_JURIDICO</option>
+                        <option value="ROLE_ADMINISTRADOR_CONTRATO">ROLE_ADMINISTRADOR_CONTRATO</option>
+                    </select>
+            </div>
+
+            <button id="btn-guardar-parcial" onclick="guardarProgresoActual(false)" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs py-2 px-4 rounded-xl border border-gray-200 shadow-sm transition flex items-center space-x-1.5">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
                 <span>Guardar Parcial</span>
             </button>
@@ -99,15 +79,15 @@
                 </div>
                 <div>
                     <span class="text-gray-400 block font-medium">ITEM PRESUPUESTARIO:</span>
-                    <span class="font-bold text-gray-800">-</span>
+                    <span id="info-item" class="font-bold text-gray-800">-</span>
                 </div>
                 <div>
                     <span class="text-gray-400 block font-medium">CÓDIGO CPC:</span>
-                    <span class="font-bold text-gray-800">-</span>
+                    <span id="info-cpc" class="font-bold text-gray-800">-</span>
                 </div>
                 <div>
                     <span class="text-gray-400 block font-medium">ASIGNACIÓN:</span>
-                    <span class="font-bold text-blue-600 font-mono">$ 0,00</span>
+                    <span id="info-asignacion" class="font-bold text-blue-600 font-mono">$ 0,00</span>
                 </div>
             </div>
         </div>
@@ -122,10 +102,10 @@
 
                     <div class="flex items-center space-x-2">
                         <span id="badge-contador-paso" class="bg-blue-700/60 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">PASO 1 DE 1</span>
-                        <span class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">CONTRATO ACTIVO</span>
+                        <span id="badge-rol-requerido" class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">RESPONSABLE: -</span>
                     </div>
 
-                    <h3 class="text-xl font-black tracking-tight mt-3 uppercase">FASE PREPARATORIA</h3>
+                    <h3 class="text-xl font-black tracking-tight mt-3 uppercase">DETALLE DE LA TAREA</h3>
                     
                     <div class="mt-4 pt-4 border-t border-white/10 space-y-1">
                         <span class="text-blue-200 text-[10px] font-bold tracking-wider uppercase block">Área Responsable:</span>
@@ -144,7 +124,16 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 relative">
+                    
+                    <div id="alerta-rol" class="hidden bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-xl text-xs mb-5 flex items-start space-x-2 shadow-sm">
+                        <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        <div>
+                            <span class="font-bold block text-[11px] uppercase tracking-wider mb-0.5">Modo Lectura Activado</span>
+                            <span class="text-amber-700/90">Este paso corresponde a <b id="txt-alerta-area"></b>. Su rol actual no tiene permisos para editar o completar este formulario.</span>
+                        </div>
+                    </div>
+
                     <form id="form-paso-dinamico" onsubmit="event.preventDefault();" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Estado del Proceso</label>
@@ -163,7 +152,7 @@
                             <input id="input-fecha" type="date" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl focus:bg-white focus:border-blue-500 transition outline-none">
                         </div>
                         <div>
-                            <label class="block font-bold text-gray-700 mb-1">Medio de Envío / Comunicación</label>
+                            <label class="block font-bold text-gray-700 mb-1">Medio de Envío</label>
                             <select id="input-medio" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl text-gray-700 focus:bg-white focus:border-blue-500 transition outline-none"></select>
                         </div>
                         <div class="md:col-span-2">
@@ -193,14 +182,14 @@
                     </form>
 
                     <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
-                        <button onclick="navegarPaso(-1)" id="btn-anterior" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs py-2 px-4 rounded-xl transition disabled:opacity-40">
+                        <button onclick="ejecutarNavegacion(-1)" id="btn-anterior" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs py-2 px-4 rounded-xl transition disabled:opacity-40">
                             ← Anterior
                         </button>
                         <div class="flex space-x-2">
-                            <button onclick="omitirPasoActual()" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold text-xs py-2 px-4 rounded-xl transition">
+                            <button id="btn-omitir" onclick="omitirPasoActual()" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold text-xs py-2 px-4 rounded-xl transition">
                                 Omitir Paso
                             </button>
-                            <button onclick="completarPasoActual()" id="btn-siguiente" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition">
+                            <button id="btn-siguiente" onclick="ejecutarAccionSiguiente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition">
                                 Guardar y Avanzar ➔
                             </button>
                         </div>
@@ -222,11 +211,52 @@
         let procesoActivo = null;
         let indicePasoActual = 0;
         let pasosFlujo = [];
+        
+        let rolActivoUsuario = localStorage.getItem('rolSimulado') || 'ROLE_ADMIN';
 
         document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('select-rol').value = rolActivoUsuario;
             inicializarPantallaEjecucion();
-            initTema();
         });
+
+        function cambiarRol() {
+            rolActivoUsuario = document.getElementById('select-rol').value;
+            localStorage.setItem('rolSimulado', rolActivoUsuario);
+            cargarPasoActual();
+            renderizarIndiceLateral();
+        }
+
+        // --- MAPEO MEJORADO DE ROLES ---
+        // Esto traduce el rol del selector a las palabras que realmente existen en el Excel
+        function tienePermisoEnPaso(areaPaso) {
+            // El admin tiene acceso a todo siempre
+            if (rolActivoUsuario === 'ROLE_ADMIN' || rolActivoUsuario === 'ROLE_SUPERVISOR') return true;
+            if (!areaPaso) return false;
+            
+            const areaPasoUpper = areaPaso.toUpperCase();
+            
+            // Diccionario de equivalencias
+            const mapeoRoles = {
+                'ROLE_UNIDAD_REQUIRENTE': ['UNIDAD / DIRECCIÓN REQUIRENTE', 'UNIDAD REQUIRENTE', 'UNIDAD/DIRECCIÓN REQUIRENTE', 'UNIDAD/ÁREA REQUIRENTE', 'RESPONSABLE UNIDAD'],
+                'ROLE_DGI': ['DGI'],
+                'ROLE_DA': ['DA', 'RESPONSABLE DA'],
+                'ROLE_COMPRAS_PUBLICAS': ['COMPRAS PÚBLICAS', 'COMPRAS PUBLICAS'],
+                'ROLE_PLANIFICACION': ['PLANIFICACIÓN', 'PLANIFICACION', 'PLANIFICACIÓN-DAF-DAD'],
+                'ROLE_FINANCIERO': ['FINANCIERO', 'DF'],
+                'ROLE_JURIDICO': ['JURÍDICO', 'JURIDICO', 'RESPONSABLE DIRECCIÓN JURÍDICA', 'DAJ'],
+                'ROLE_ADMINISTRADOR_CONTRATO': ['ADMINISTRADOR DE CONTRATO', 'DELEGADO PRECONTRACTUAL', 'ADMINISTRADOR']
+            };
+
+            // Obtenemos el arreglo de palabras clave correspondientes al rol seleccionado
+            const palabrasClave = mapeoRoles[rolActivoUsuario];
+
+            // Si el rol existe en el diccionario, verificamos si ALGUNA de sus palabras clave está en el texto del Excel
+            if (palabrasClave) {
+                return palabrasClave.some(palabra => areaPasoUpper.includes(palabra));
+            }
+
+            return false;
+        }
 
         function inicializarPantallaEjecucion() {
             const idProcesoActivo = localStorage.getItem('idProcesoActivo');
@@ -258,45 +288,32 @@
             if (indicePasoActual >= pasosFlujo.length) indicePasoActual = 0;
 
             document.getElementById('txt-proceso-titulo').innerText = procesoActivo.tipoContrato.replace("Contrato ", "") + ` (${procesoActivo.actividadNombre})`;
-            document.getElementById('info-poa').innerText = procesoActivo.codigoPoa || 'POA 0000';
+            document.getElementById('info-poa').innerText = procesoActivo.codigoPoa || '-';
+            document.getElementById('info-item').innerText = procesoActivo.itemPresupuestario || '-';
+            document.getElementById('info-cpc').innerText = procesoActivo.codigoCpc || '-';
+            const asig = parseFloat(procesoActivo.asignacion) || 0;
+            document.getElementById('info-asignacion').innerText = '$ ' + asig.toLocaleString('es-EC', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
             cargarPasoActual();
             renderizarIndiceLateral();
         }
 
-        function aplicarTema(oscuro) {
-            document.documentElement.classList.toggle('tema-oscuro', oscuro);
-            document.body.classList.toggle('tema-oscuro', oscuro);
-            const label = document.getElementById('theme-label');
-            if (label) label.innerText = oscuro ? 'Oscuro' : 'Claro';
-            localStorage.setItem('temaPreferido', oscuro ? 'oscuro' : 'claro');
-        }
-
-        function toggleTema() {
-            const esOscuro = !document.body.classList.contains('tema-oscuro');
-            aplicarTema(esOscuro);
-        }
-
-        function initTema() {
-            const temaGuardado = localStorage.getItem('temaPreferido');
-            if (temaGuardado === 'oscuro') {
-                aplicarTema(true);
-            }
-        }
-
         function cargarPasoActual() {
             const paso = pasosFlujo[indicePasoActual];
+            const esMiPaso = tienePermisoEnPaso(paso.area);
 
             document.getElementById('txt-proceso-subtitulo').innerText = `Paso ${indicePasoActual + 1} de ${pasosFlujo.length}`;
             document.getElementById('badge-contador-paso').innerText = `PASO ${indicePasoActual + 1} DE ${pasosFlujo.length}`;
             
             document.getElementById('txt-paso-area').innerText = paso.area || 'UNIDAD REQUERIENTE';
+            document.getElementById('badge-rol-requerido').innerText = `REQ: ${paso.area || 'N/A'}`;
             document.getElementById('txt-paso-nombre').innerText = paso.nombrePaso;
+
+            // CONFIGURAR INTERFAZ SEGÚN PERMISOS DE ROL
+            configurarUIporRol(esMiPaso, paso.area);
 
             const contenedorSubpasos = document.getElementById('contenedor-subpasos');
             contenedorSubpasos.innerHTML = '';
-
-            // Lógica para determinar el número principal del paso (ej. 24)
             const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
 
             if (paso.subpasos && paso.subpasos.length > 0) {
@@ -306,12 +323,10 @@
                     const estadoGuardado = subpasosGuardados[i];
                     const esOmitido = estadoGuardado === "omitido";
                     const estaChequeado = estadoGuardado === true || (!esOmitido && sub.completado);
-                    
-                    // Numeración dinámica para cada subfase (ej. 24.1, 24.2)
                     const numeroSubpaso = `${numeroPasoPrincipal}.${i + 1}`;
 
                     const divItem = document.createElement('div');
-                    divItem.className = "flex items-center justify-between bg-blue-700/30 p-2 rounded-xl transition text-xs text-blue-50 group";
+                    divItem.className = `flex items-center justify-between p-2 rounded-xl transition text-xs group ${esMiPaso ? 'bg-blue-700/30 text-blue-50' : 'bg-gray-700/30 text-gray-300'}`;
 
                     if (esOmitido) {
                         divItem.innerHTML = `
@@ -321,20 +336,27 @@
                             </div>
                         `;
                     } else {
+                        // Renderizado de botones SI EL PASO ES MÍO
+                        let botonesHTML = '';
+                        if (esMiPaso) {
+                            botonesHTML = `
+                                <div class="flex space-x-1.5 flex-shrink-0 ml-2">
+                                    <button onclick="saltarSubpaso(${i})" title="Omitir esta subfase" class="text-[10px] font-bold bg-amber-500/20 hover:bg-amber-500 text-amber-200 hover:text-white px-3 py-1.5 rounded-lg transition shadow-sm border border-amber-500/50 hover:border-amber-500">
+                                        Saltar
+                                    </button>
+                                    <button onclick="agregarSubpaso(${i})" title="Agregar nueva subfase debajo" class="text-[10px] font-bold bg-emerald-500/20 hover:bg-emerald-500 text-emerald-200 hover:text-white px-3 py-1.5 rounded-lg transition shadow-sm border border-emerald-500/50 hover:border-emerald-500">
+                                        Agregar
+                                    </button>
+                                </div>
+                            `;
+                        }
+
                         divItem.innerHTML = `
-                            <label class="flex items-start space-x-3 cursor-pointer hover:bg-blue-700/50 p-1.5 rounded-lg flex-grow select-none transition">
-                                <input type="checkbox" data-index="${i}" ${estaChequeado ? 'checked' : ''} class="subpaso-checkbox mt-0.5 w-4 h-4 rounded text-blue-600 bg-blue-900/40 border-blue-400/30 focus:ring-blue-500 focus:ring-offset-blue-700 focus:ring-2">
-                                <span class="leading-tight"><span class="font-bold text-blue-300 mr-1.5">${numeroSubpaso}</span>${sub.nombreSubpaso || sub.descripcion || 'Subpaso sin nombre'}</span>
+                            <label class="flex items-start space-x-3 p-1.5 rounded-lg flex-grow transition ${esMiPaso ? 'cursor-pointer hover:bg-blue-700/50 select-none' : ''}">
+                                <input type="checkbox" data-index="${i}" ${estaChequeado ? 'checked' : ''} ${!esMiPaso ? 'disabled' : ''} class="subpaso-checkbox mt-0.5 w-4 h-4 rounded text-blue-600 bg-blue-900/40 border-blue-400/30 focus:ring-blue-500 focus:ring-offset-blue-700 focus:ring-2">
+                                <span class="leading-tight"><span class="font-bold mr-1.5 ${esMiPaso ? 'text-blue-300' : 'text-gray-400'}">${numeroSubpaso}</span>${sub.nombreSubpaso || sub.descripcion || 'Subpaso sin nombre'}</span>
                             </label>
-                            
-                            <div class="flex space-x-1.5 flex-shrink-0 ml-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                                <button onclick="saltarSubpaso(${i})" title="Omitir esta subfase" class="text-[10px] font-bold bg-amber-500/20 hover:bg-amber-500 text-amber-200 hover:text-white px-3 py-1.5 rounded-lg transition shadow-sm border border-amber-500/50 hover:border-amber-500">
-                                    Saltar
-                                </button>
-                                <button onclick="agregarSubpaso(${i})" title="Agregar nueva subfase debajo de esta" class="text-[10px] font-bold bg-emerald-500/20 hover:bg-emerald-500 text-emerald-200 hover:text-white px-3 py-1.5 rounded-lg transition shadow-sm border border-emerald-500/50 hover:border-emerald-500">
-                                    Agregar
-                                </button>
-                            </div>
+                            ${botonesHTML}
                         `;
                     }
                     contenedorSubpasos.appendChild(divItem);
@@ -343,17 +365,20 @@
                 contenedorSubpasos.innerHTML = `<p class="text-[11px] text-blue-200/70 italic p-2">Este paso no requiere subprocesos adicionales predefinidos.</p>`;
             }
 
-            // BOTÓN GLOBAL: Agrega subfases al final de la lista, o si la lista estaba vacía.
-            const divBotonGlobal = document.createElement('div');
-            divBotonGlobal.className = "mt-3 pt-3 border-t border-white/10";
-            divBotonGlobal.innerHTML = `
-                <button onclick="agregarSubpaso(-1)" class="text-[10px] font-bold bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition border border-white/20 w-full flex items-center justify-center space-x-1 shadow-sm">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                    <span>Agregar Subfase al Final</span>
-                </button>
-            `;
-            contenedorSubpasos.appendChild(divBotonGlobal);
+            // BOTÓN GLOBAL (Solo si es mi paso)
+            if (esMiPaso) {
+                const divBotonGlobal = document.createElement('div');
+                divBotonGlobal.className = "mt-3 pt-3 border-t border-white/10";
+                divBotonGlobal.innerHTML = `
+                    <button onclick="agregarSubpaso(-1)" class="text-[10px] font-bold bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition border border-white/20 w-full flex items-center justify-center space-x-1 shadow-sm">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <span>Agregar Subfase al Final</span>
+                    </button>
+                `;
+                contenedorSubpasos.appendChild(divBotonGlobal);
+            }
 
+            // Llenar formulario
             const selectMedio = document.getElementById('input-medio');
             selectMedio.innerHTML = `<option value="${paso.medio || 'QUIPUX'}">${paso.medio || 'QUIPUX'}</option><option value="ZIMBRA">ZIMBRA</option><option value="QUIPUX">QUIPUX</option><option value="FISICO">DOCUMENTO FÍSICO</option>`;
 
@@ -370,79 +395,89 @@
             document.getElementById('input-observaciones').value = respuestas.observaciones || '';
 
             document.getElementById('btn-anterior').disabled = (indicePasoActual === 0);
-            
-            const btnSiguiente = document.getElementById('btn-siguiente');
-            if (indicePasoActual === pasosFlujo.length - 1) {
-                btnSiguiente.innerHTML = "Finalizar Proceso 🏁";
-                btnSiguiente.className = "bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
-            } else {
-                btnSiguiente.innerHTML = "Guardar y Avanzar ➔";
-                btnSiguiente.className = "bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
-            }
-
             actualizarPorcentajeVisual();
         }
 
-        // LÓGICA BOTÓN "SALTAR"
-        function saltarSubpaso(indexSubpaso) {
+        function configurarUIporRol(esMiPaso, areaPaso) {
+            // Deshabilitar o habilitar inputs del form
+            const inputs = document.querySelectorAll('#form-paso-dinamico input, #form-paso-dinamico select, #form-paso-dinamico textarea');
+            inputs.forEach(input => input.disabled = !esMiPaso);
+
+            const alerta = document.getElementById('alerta-rol');
+            const txtAlerta = document.getElementById('txt-alerta-area');
+            const btnSiguiente = document.getElementById('btn-siguiente');
+            const btnOmitir = document.getElementById('btn-omitir');
+            const btnGuardarParcial = document.getElementById('btn-guardar-parcial');
+
+            if (!esMiPaso) {
+                // Modo Lectura
+                alerta.classList.remove('hidden');
+                txtAlerta.innerText = areaPaso || 'otra área';
+                btnOmitir.classList.add('hidden');
+                btnGuardarParcial.classList.add('hidden');
+                
+                btnSiguiente.innerHTML = "Siguiente ➔";
+                btnSiguiente.className = "bg-gray-600 hover:bg-gray-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
+            } else {
+                // Modo Edición
+                alerta.classList.add('hidden');
+                btnOmitir.classList.remove('hidden');
+                btnGuardarParcial.classList.remove('hidden');
+                
+                if (indicePasoActual === pasosFlujo.length - 1) {
+                    btnSiguiente.innerHTML = "Finalizar Proceso 🏁";
+                    btnSiguiente.className = "bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
+                } else {
+                    btnSiguiente.innerHTML = "Guardar y Avanzar ➔";
+                    btnSiguiente.className = "bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
+                }
+            }
+        }
+
+        function ejecutarAccionSiguiente() {
             const paso = pasosFlujo[indicePasoActual];
-            
+            if (tienePermisoEnPaso(paso.area)) {
+                completarPasoActual(); // Guarda y avanza
+            } else {
+                ejecutarNavegacion(1); // Solo avanza, no guarda
+            }
+        }
+
+        // LÓGICA DE NAVEGACIÓN Y GUARDADO A PRUEBA DE ROLES
+        function saltarSubpaso(indexSubpaso) {
+            if (!tienePermisoEnPaso(pasosFlujo[indicePasoActual].area)) return;
+            const paso = pasosFlujo[indicePasoActual];
             if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
             if (!paso.respuestasUsuario.estadosSubpasos) paso.respuestasUsuario.estadosSubpasos = {};
-            
-            guardarProgresoActual(true);
-            
             paso.respuestasUsuario.estadosSubpasos[indexSubpaso] = "omitido";
-            
             guardarProgresoActual(true);
             cargarPasoActual();
         }
 
-        // LÓGICA BOTÓN "AGREGAR" (Soporta inserción en medio o al final)
         function agregarSubpaso(indexSubpaso = -1) {
+            if (!tienePermisoEnPaso(pasosFlujo[indicePasoActual].area)) return;
             const paso = pasosFlujo[indicePasoActual];
             
-            guardarProgresoActual(true);
-            
-            const nuevoNombre = prompt(
-                "Escribe el nombre de la nueva subfase/tarea a agregar:",
-                "Nueva subfase/tarea"
-            );
-
+            const nuevoNombre = prompt("Escribe el nombre de la nueva subfase/tarea a agregar:", "Nueva subfase/tarea");
             if (nuevoNombre && nuevoNombre.trim() !== "") {
                 if (!paso.subpasos) paso.subpasos = [];
-                
-                const nuevaSubfase = {
-                    nombreSubpaso: nuevoNombre.trim(),
-                    completado: false
-                };
+                const nuevaSubfase = { nombreSubpaso: nuevoNombre.trim(), completado: false };
 
-                // Si pasamos un index, insertamos la subfase JUSTO DEBAJO del elemento actual
                 if (indexSubpaso !== -1) {
                     paso.subpasos.splice(indexSubpaso + 1, 0, nuevaSubfase);
-                    
-                    // Tenemos que reorganizar el estado (los checks y omitidos) para que no se desordenen
-                    // al meter un nuevo elemento en medio de la lista.
                     if (paso.respuestasUsuario && paso.respuestasUsuario.estadosSubpasos) {
                         const viejosEstados = paso.respuestasUsuario.estadosSubpasos;
                         const nuevosEstados = {};
-                        
                         for (let i = 0; i < paso.subpasos.length; i++) {
-                            if (i <= indexSubpaso) {
-                                nuevosEstados[i] = viejosEstados[i];
-                            } else if (i === indexSubpaso + 1) {
-                                nuevosEstados[i] = false; // La nueva tarea que insertamos entra desmarcada
-                            } else {
-                                nuevosEstados[i] = viejosEstados[i - 1]; // Movemos los estados viejos un paso abajo
-                            }
+                            if (i <= indexSubpaso) nuevosEstados[i] = viejosEstados[i];
+                            else if (i === indexSubpaso + 1) nuevosEstados[i] = false;
+                            else nuevosEstados[i] = viejosEstados[i - 1]; 
                         }
                         paso.respuestasUsuario.estadosSubpasos = nuevosEstados;
                     }
                 } else {
-                    // Si el index es -1 (Botón global), lo ponemos al final
                     paso.subpasos.push(nuevaSubfase);
                 }
-
                 guardarProgresoActual(true);
                 cargarPasoActual();
             }
@@ -450,6 +485,12 @@
 
         function guardarProgresoActual(silencioso = true) {
             const pasoActual = pasosFlujo[indicePasoActual];
+            
+            // SI NO ES SU ROL, SE BLOQUEA EL GUARDADO Y SOLO ACTUALIZAMOS EL ÍNDICE
+            if (!tienePermisoEnPaso(pasoActual.area)) {
+                actualizarBaseDeDatos(silencioso);
+                return;
+            }
             
             const respuestasActuales = pasoActual.respuestasUsuario || {};
             const estadosSubpasos = respuestasActuales.estadosSubpasos || {};
@@ -460,7 +501,6 @@
                 if (estadosSubpasos[idx] !== "omitido") {
                     estadosSubpasos[idx] = chk.checked;
                 }
-                
                 if (pasosFlujo[indicePasoActual].subpasos && pasosFlujo[indicePasoActual].subpasos[idx]) {
                     pasosFlujo[indicePasoActual].subpasos[idx].completado = chk.checked;
                 }
@@ -482,7 +522,10 @@
             };
 
             pasosFlujo[indicePasoActual].respuestasUsuario = respuestasForm;
+            actualizarBaseDeDatos(silencioso);
+        }
 
+        function actualizarBaseDeDatos(silencioso) {
             const completados = pasosFlujo.filter(p => p.respuestasUsuario && p.respuestasUsuario.completado).length;
             const nuevoPorcentaje = Math.round((completados / pasosFlujo.length) * 100);
 
@@ -493,13 +536,10 @@
             procesoActivo.fechaModificacion = new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
             const idxBase = procesosGlobales.findIndex(p => p.id === procesoActivo.id);
-            if (idxBase !== -1) {
-                procesosGlobales[idxBase] = procesoActivo;
-            }
-
+            if (idxBase !== -1) procesosGlobales[idxBase] = procesoActivo;
             localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
 
-            if (!silencioso) {
+            if (!silencioso && tienePermisoEnPaso(pasosFlujo[indicePasoActual].area)) {
                 alert("Progreso guardado de manera exitosa.");
             }
         }
@@ -508,35 +548,30 @@
             if (!document.getElementById('input-estado').value) {
                 document.getElementById('input-estado').value = "Completado";
             }
-            
             guardarProgresoActual(true);
-
-            if (indicePasoActual < pasosFlujo.length - 1) {
-                indicePasoActual++;
-                cargarPasoActual();
-                renderizarIndiceLateral();
-            } else {
-                alert("¡Felicidades! Has completado el ciclo completo del flujo de contratación pública.");
-                irAlDashboard();
-            }
+            ejecutarNavegacion(1);
         }
 
         function omitirPasoActual() {
+            if (!tienePermisoEnPaso(pasosFlujo[indicePasoActual].area)) return;
             if (!pasosFlujo[indicePasoActual].respuestasUsuario) {
                 pasosFlujo[indicePasoActual].respuestasUsuario = {};
             }
             pasosFlujo[indicePasoActual].respuestasUsuario.completado = true;
             pasosFlujo[indicePasoActual].respuestasUsuario.estado = "Omitido";
-
             completarPasoActual();
         }
 
-        function navegarPaso(direccion) {
-            guardarProgresoActual(true); 
-            
-            indicePasoActual += direccion;
-            cargarPasoActual();
-            renderizarIndiceLateral();
+        function ejecutarNavegacion(direccion) {
+            guardarProgresoActual(true);
+            if (indicePasoActual + direccion < pasosFlujo.length && indicePasoActual + direccion >= 0) {
+                indicePasoActual += direccion;
+                cargarPasoActual();
+                renderizarIndiceLateral();
+            } else if (indicePasoActual + direccion >= pasosFlujo.length) {
+                alert("¡Has llegado al final del flujo del proceso!");
+                irAlDashboard();
+            }
         }
 
         function saltarAlPaso(index) {
@@ -554,10 +589,13 @@
                 const esActivo = (index === indicePasoActual);
                 const isDone = paso.respuestasUsuario && paso.respuestasUsuario.completado;
                 const esOmitido = paso.respuestasUsuario && paso.respuestasUsuario.estado === "Omitido";
+                const esMiPaso = tienePermisoEnPaso(paso.area);
 
-                let claseEstado = "border-gray-100 bg-white text-gray-700 hover:bg-gray-50";
+                // Si no es mi paso, se pone gris para indicar que no es de mi competencia
+                let claseEstado = esMiPaso ? "border-gray-100 bg-white text-gray-700 hover:bg-gray-50" : "border-gray-100 bg-gray-50 text-gray-400 opacity-75";
+                
                 if (esActivo) {
-                    claseEstado = "border-blue-500 bg-blue-50/50 text-blue-700 font-bold shadow-sm";
+                    claseEstado = esMiPaso ? "border-blue-500 bg-blue-50/50 text-blue-700 font-bold shadow-sm" : "border-amber-400 bg-amber-50/50 text-amber-700 font-bold shadow-sm";
                 } else if (esOmitido) {
                     claseEstado = "border-amber-200 bg-amber-50/40 text-amber-700 line-through";
                 } else if (isDone) {
@@ -568,13 +606,15 @@
                 item.className = `p-2.5 border rounded-xl text-[11px] flex items-center justify-between cursor-pointer transition ${claseEstado}`;
                 item.setAttribute('onclick', `saltarAlPaso(${index})`);
 
+                const iconoDerecho = !esMiPaso && !isDone && !esActivo ? '🔒' : (isDone ? (esOmitido ? '⚠️' : '✅') : (esActivo ? '🔵' : '⚪'));
+
                 item.innerHTML = `
                     <div class="flex items-center space-x-2 truncate">
-                        <span class="font-mono px-1 bg-gray-100 rounded text-gray-500 text-[9px] font-bold">#${paso.orden || (index + 1)}</span>
+                        <span class="font-mono px-1 bg-gray-200/50 rounded text-gray-500 text-[9px] font-bold">#${paso.orden || (index + 1)}</span>
                         <span class="truncate pr-2">${paso.nombrePaso}</span>
                     </div>
-                    <div class="flex-shrink-0">
-                        ${isDone ? (esOmitido ? '⚠️' : '✅') : (esActivo ? '🔵' : '⚪')}
+                    <div class="flex-shrink-0 opacity-80">
+                        ${iconoDerecho}
                     </div>
                 `;
                 contenedor.appendChild(item);
