@@ -74,7 +74,7 @@
                         <span class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">CONTRATO ACTIVO</span>
                     </div>
 
-                    <h3 class="text-xl font-black tracking-tight mt-3 uppercase">FASE PREPARATORIA</h3>
+                    <h3 id="txt-paso-fase" class="text-xl font-black tracking-tight mt-3 uppercase">FASE PREPARATORIA</h3>
                     
                     <div class="mt-4 pt-4 border-t border-white/10 space-y-1">
                         <span class="text-blue-200 text-[10px] font-bold tracking-wider uppercase block">Área Responsable:</span>
@@ -224,6 +224,7 @@
             document.getElementById('txt-proceso-subtitulo').innerText = `Paso ${indicePasoActual + 1} de ${pasosFlujo.length}`;
             document.getElementById('badge-contador-paso').innerText = `PASO ${indicePasoActual + 1} DE ${pasosFlujo.length}`;
             
+            document.getElementById('txt-paso-fase').innerText = paso.fase || 'FASE PREPARATORIA';
             document.getElementById('txt-paso-area').innerText = paso.area || 'UNIDAD REQUERIENTE';
             document.getElementById('txt-paso-nombre').innerText = paso.nombrePaso;
 
