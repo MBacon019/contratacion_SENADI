@@ -52,6 +52,12 @@
             background-color: rgba(30, 41, 59, 0.35) !important;
         }
         .tema-oscuro .hover\:bg-gray-50:hover { background-color: #1e293b !important; }
+        
+        /* Efectos visuales para el Drag & Drop */
+        .card-personalizado { cursor: grab; }
+        .card-personalizado:active { cursor: grabbing; }
+        .dragging { opacity: 0.4; border: 2px dashed #3b82f6 !important; transform: scale(0.98); }
+        .drag-over { border-top: 4px solid #3b82f6 !important; padding-top: 1.5rem !important; transition: all 0.2s ease; }
     </style>
 </head>
 <body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
@@ -125,7 +131,7 @@
             <div class="flex justify-between items-center border-b border-gray-100 pb-3">
                 <div>
                     <h3 class="text-base font-bold text-gray-900">Tu Proceso Personalizado</h3>
-                    <p class="text-xs text-gray-400 mt-0.5">Arrastra para reordenar o haz clic en X para quitar pasos</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Arrastra las tarjetas para reordenar o haz clic en X para quitar pasos</p>
                 </div>
                 <span id="contador-seleccionados" class="bg-gray-50 border border-gray-200 text-gray-500 text-[11px] font-bold px-2.5 py-1 rounded-lg">
                     0 pasos seleccionados
@@ -152,6 +158,7 @@
         let pasosSeleccionados = [];
         let nombreActividadGlobal = "Sin descripción de actividad";
         let codigoPOAGlobal = "POA 00000";
+        let draggedIndex = null; // Variable para gestionar el arrastre
 
         // 1. Evento de inicialización de la página
         document.addEventListener('DOMContentLoaded', () => {
@@ -277,7 +284,7 @@
                         { nombreSubpaso: '24.2 – Pago a proveedor', area: 'FINANCIERO', medio: 'QUIPUX', dirigidoA: 'PROVEEDOR', completado: false }
                     ]}
                 ],
-'Subasta Inversa': [
+                'Subasta Inversa': [
                     // ── FASE PREPARATORIA ──
                     { id: 300, orden: 'A', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de reunión previa para coordinación, análisis preliminar y directrices del proceso a ejecutarse', area: 'UNIDAD / DIRECCIÓN REQUIRENTE', medio: 'Zimbra', dirigidoA: 'UNIDAD REQUIRENTE / DGI / DF / DA', anexos: '', subpasos: []},
                     { id: 301, orden: '1', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitar revisión de Stock de Bodega en el caso de bienes', area: 'RESPONSABLE DE UNIDAD / DIRECCIÓN REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: [
@@ -513,7 +520,7 @@
             renderizarPasosDisponibles();
         }
 
-        // 6. Sincronizador de columna derecha
+        // 6. Sincronizador de columna derecha CON DRAG AND DROP
         function actualizarColumnaPersonalizada() {
             const contenedor = document.getElementById('lista-personalizados');
             const placeholder = document.getElementById('placeholder-vacio');
@@ -535,15 +542,57 @@
 
             pasosSeleccionados.forEach((paso, index) => {
                 const card = document.createElement('div');
-                card.className = "card-personalizado p-4 bg-white border border-gray-200 rounded-xl shadow-sm flex items-start justify-between space-x-3 transition hover:shadow-md";
+                card.className = "card-personalizado p-4 bg-white border border-gray-200 rounded-xl shadow-sm flex items-start justify-between space-x-3 transition hover:shadow-md cursor-move";
                 
+                // EVENTOS DE DRAG AND DROP (Arrastrar y Soltar)
+                card.draggable = true;
+                
+                card.addEventListener('dragstart', (e) => {
+                    draggedIndex = index;
+                    e.dataTransfer.effectAllowed = 'move';
+                    // Pequeño delay para que el navegador capture la imagen original antes de aplicar transparencia
+                    setTimeout(() => card.classList.add('dragging'), 0);
+                });
+
+                card.addEventListener('dragend', () => {
+                    draggedIndex = null;
+                    card.classList.remove('dragging');
+                    document.querySelectorAll('.card-personalizado').forEach(c => c.classList.remove('drag-over'));
+                });
+
+                card.addEventListener('dragover', (e) => {
+                    e.preventDefault(); // Indispensable para permitir el "drop"
+                    if (draggedIndex !== index) {
+                        card.classList.add('drag-over');
+                    }
+                });
+
+                card.addEventListener('dragleave', () => {
+                    card.classList.remove('drag-over');
+                });
+
+                card.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    card.classList.remove('drag-over');
+                    const targetIndex = index;
+
+                    if (draggedIndex !== null && draggedIndex !== targetIndex) {
+                        // Magia de reordenamiento del array
+                        const itemArrastrado = pasosSeleccionados.splice(draggedIndex, 1)[0];
+                        pasosSeleccionados.splice(targetIndex, 0, itemArrastrado);
+                        
+                        // Redibujamos la columna. Esto actualizará los números azules #${index + 1}
+                        actualizarColumnaPersonalizada();
+                    }
+                });
+
                 card.innerHTML = `
                     <div class="flex items-start space-x-3">
                         <div class="flex flex-col items-center space-y-1 flex-shrink-0 mt-0.5">
                             <span class="bg-blue-600 text-white font-bold text-[10px] w-5 h-5 flex items-center justify-center rounded-md shadow-sm">
                                 #${index + 1}
                             </span>
-                            <span class="bg-gray-100 text-gray-500 font-mono text-[9px] px-1 rounded font-bold">
+                            <span class="bg-gray-100 text-gray-500 font-mono text-[9px] px-1 rounded font-bold" title="Orden original del flujo">
                                 ${paso.orden}
                             </span>
                         </div>
@@ -558,9 +607,12 @@
                         </div>
                     </div>
                     
-                    <button onclick="removerPaso('${paso.id}')" class="text-gray-400 hover:text-red-500 p-1 rounded-lg transition flex-shrink-0">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <div class="flex flex-col space-y-1 items-end">
+                        <button onclick="removerPaso('${paso.id}')" class="text-gray-400 hover:text-red-500 p-1 rounded-lg transition flex-shrink-0" title="Quitar paso">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                        <svg class="w-4 h-4 text-gray-300 pointer-events-none mt-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Arrastrar para mover"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+                    </div>
                 `;
                 contenedor.appendChild(card);
             });
@@ -607,7 +659,7 @@
                 pasosTotales: pasosSeleccionados.length,
                 pasosCompletados: 0, 
                 porcentaje: 0, 
-                pipelineSnapshot: pasosSeleccionados // Mapeado directo a lo que lee el Dashboard al continuar
+                pipelineSnapshot: pasosSeleccionados // Mapeado directo a lo que lee el Dashboard al continuar (con el nuevo orden)
             };
 
             // Traer listado actual
