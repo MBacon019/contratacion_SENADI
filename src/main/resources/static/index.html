@@ -74,7 +74,7 @@
                 <label class="block text-gray-700 text-sm font-bold mb-2">Correo Electrónico</label>
                 <input type="email" id="email" required
                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                       placeholder="admin@correo.com">
+                       placeholder="admin@correo.com o user@correo.com">
             </div>
             
             <div>
@@ -118,8 +118,19 @@
                     // 1. Guardamos los datos del usuario en la sesión del navegador para usarlos en el Dashboard
                     localStorage.setItem('usuario', JSON.stringify(data));
                     
-                    // 2. Redireccionamos de inmediato a la pantalla del panel principal
-                    window.location.href = '/dashboard.html';
+                    // 2. Extraemos el rol que devuelve tu backend (puede llamarse 'rol', 'role' o 'idRol')
+                    const rolUsuario = (data.rol || data.role || data.idRol || '').toString().toUpperCase();
+                    
+                    // 3. Verificamos si es un usuario común o admin para redirigir
+                    // (También agregué una validación por correo por si estás probando sin base de datos)
+                    if (rolUsuario.includes('USER') || rolUsuario === 'ROLE_USER' || email.toLowerCase().includes('user')) {
+                        // Redireccionamos al Dashboard de Usuario
+                        window.location.href = '/DashboardUser.html';
+                    } else {
+                        // Redireccionamos al Dashboard Principal (Admin u otros roles)
+                        window.location.href = '/dashboard.html';
+                    }
+
                 } else {
                     // Si el backend responde con un error (401) o credenciales incorrectas
                     errorText.innerText = data.error || 'Error al iniciar sesión';
