@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -38,13 +38,21 @@
                 </svg>
                 <span>My Processes</span>
             </a>
+
+            <div class="pt-2 mt-2 border-t border-gray-100">
+                <a href="/DashboardUser.html"
+                   class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-indigo-600 hover:bg-indigo-50 font-medium text-sm transition">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span>Vista Usuario</span>
+                </a>
+            </div>
         </nav>
     </aside>
 
     <!-- ===== MAIN WRAPPER ===== -->
-    <div id="main-wrap">
-
-        <!-- Header -->
     <div id="main-wrap">
 
         <header class="bg-white border-b border-gray-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
@@ -63,9 +71,6 @@
                     </svg>
                 </button>
                 <!-- Cerrar sesión -->
-            <div class="flex items-center space-x-3">
-                <span id="user-display" class="text-xs font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full hidden"></span>
-                
                 <button id="logout-btn" onclick="cerrarSesion()" title="Cerrar sesión"
                         class="hidden w-8 h-8 items-center justify-center text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-100 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,7 +101,6 @@
         <!-- Contenido principal -->
         <main id="main-content" class="px-8 py-8 space-y-8">
 
-            <!-- Título página -->
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Sistema de seguimiento de Contratación Pública</h1>
                 <p class="text-sm text-gray-500 mt-1">Gestione procesos de adquisición institucional con total transparencia y eficiencia legal.</p>
@@ -175,7 +179,7 @@
                         <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl flex-shrink-0">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                                      d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3m-3-3h.01M9 7h.01M9 14h.01M12 14h.01M15 11h.01M15 7h.01M15 14h.01M12 18h.01M15 18h.01M9 18h.01"/>
                             </svg>
                         </div>
                         <div>
@@ -223,107 +227,10 @@
                 <a href="#" class="hover:text-gray-600 transition">Legal Notice</a>
                 <a href="#" class="hover:text-gray-600 transition">Contact Us</a>
             </div>
-        </header>
-
-        <main id="main-content" class="px-8 py-8 space-y-8">
-
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Sistema de Contratación Pública</h1>
-                <p class="text-sm text-gray-500 mt-1">Gestione procesos de adquisición institucional con total transparencia y eficiencia legal.</p>
-            </div>
-
-            <section id="seccion-en-progreso" class="space-y-4 hidden">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <h2 class="text-base font-bold text-indigo-600 flex items-center space-x-2">
-                            <span class="inline-block w-2.5 h-2.5 bg-indigo-500 rounded-sm flex-shrink-0 mt-0.5"></span>
-                            <span>Todos los Procesos en Curso</span>
-                        </h2>
-                        <p class="text-xs text-gray-400 mt-0.5 pl-4">Listado general de procesos de contratación</p>
-                    </div>
-                </div>
-
-                <div id="contenedor-tarjetas-activas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                </div>
-            </section>
-
-            <section id="seccion-nuevo-proceso" class="space-y-4">
-                <div>
-                    <h2 class="text-base font-bold text-indigo-600 flex items-center space-x-2">
-                        <span class="inline-flex items-center justify-center w-4 h-4 bg-indigo-500 rounded text-white text-[10px] font-bold flex-shrink-0">+</span>
-                        <span>Crear Nuevo Proceso</span>
-                    </h2>
-                    <p class="text-xs text-gray-400 mt-0.5 pl-6">Selecciona un tipo de proceso para comenzar una nueva adquisición</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                    <div onclick="iniciarNuevoContrato('Contrato Ínfima Cuantía')"
-                         class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-300 transition cursor-pointer flex items-start space-x-4">
-                        <div class="p-3 bg-blue-50 text-blue-600 rounded-xl flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-800">Ínfima Cuantía</h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Proceso de contratación de menor cuantía para adquisiciones rápidas.</p>
-                        </div>
-                    </div>
-
-                    <div onclick="iniciarNuevoContrato('Contrato Catálogo Electrónico')"
-                         class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-teal-300 transition cursor-pointer flex items-start space-x-4">
-                        <div class="p-3 bg-teal-50 text-teal-600 rounded-xl flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-800">Catálogo Electrónico</h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Compra a través de tienda virtual del Estado.</p>
-                        </div>
-                    </div>
-
-                    <div onclick="iniciarNuevoContrato('Contrato Subasta Inversa')"
-                         class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-indigo-300 transition cursor-pointer flex items-start space-x-4">
-                        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-800">Subasta Inversa</h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Proceso dinámico de puja para bienes y servicios.</p>
-                        </div>
-                    </div>
-
-                    <div onclick="iniciarNuevoContrato('Contrato Régimen Especial')"
-                         class="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-orange-300 transition cursor-pointer flex items-start space-x-4">
-                        <div class="p-3 bg-orange-50 text-orange-600 rounded-xl flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3m-3-3h.01M9 7h.01M9 14h.01M12 14h.01M15 11h.01M15 7h.01M15 14h.01M12 18h.01M15 18h.01M9 18h.01"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-800">Régimen Especial</h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Contratación bajo normas especiales y exceptuadas.</p>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-        </main>
-
-        <footer class="bg-white border-t border-gray-200 px-8 py-4 flex-shrink-0 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <span class="text-xs font-bold text-[#1a3a6e]">SENADI</span>
-                <span class="text-xs text-gray-400">© 2026 SENADI. All rights reserved.</span>
-            </div>
         </footer>
     </div>
 
     <script>
-        /* ── Colores e íconos por tipo de proceso ── */
         const TIPO_CONFIG = {
             'Catálogo Electrónico': {
                 iconBg: 'bg-blue-50', iconText: 'text-blue-600',
@@ -345,11 +252,6 @@
                 barColor: 'bg-purple-500', badgeBg: 'bg-purple-50', badgeText: 'text-purple-700',
                 icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3"/>`
             }
-        const TIPO_CONFIG = {
-            'Catálogo Electrónico': { iconBg: 'bg-blue-50', iconText: 'text-blue-600', barColor: 'bg-blue-500', badgeBg: 'bg-blue-50', badgeText: 'text-blue-700', icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>` },
-            'Subasta Inversa': { iconBg: 'bg-amber-50', iconText: 'text-amber-600', barColor: 'bg-amber-500', badgeBg: 'bg-amber-50', badgeText: 'text-amber-700', icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>` },
-            'Ínfima Cuantía': { iconBg: 'bg-blue-50', iconText: 'text-blue-600', barColor: 'bg-blue-500', badgeBg: 'bg-blue-50', badgeText: 'text-blue-700', icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>` },
-            'Régimen Especial': { iconBg: 'bg-purple-50', iconText: 'text-purple-600', barColor: 'bg-purple-500', badgeBg: 'bg-purple-50', badgeText: 'text-purple-700', icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3m-3-3h.01M9 7h.01M9 14h.01M12 14h.01M15 11h.01M15 7h.01M15 14h.01M12 18h.01M15 18h.01M9 18h.01"/>` }
         };
 
         function getTipoConfig(tipoContrato) {
@@ -361,7 +263,6 @@
                 barColor: 'bg-gray-400', badgeBg: 'bg-gray-100', badgeText: 'text-gray-600',
                 icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>`
             };
-            return { iconBg: 'bg-gray-100', iconText: 'text-gray-500', barColor: 'bg-gray-400', badgeBg: 'bg-gray-100', badgeText: 'text-gray-600', icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>` };
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -384,11 +285,9 @@
             const contenedorTarjetas = document.getElementById('contenedor-tarjetas-activas');
 
             contenedorTarjetas.innerHTML = '';
-            
-            if (procesos.length > 0) {
-                seccionProgreso.classList.remove('hidden');
-                contenedorTarjetas.innerHTML = '';
+            seccionProgreso.classList.remove('hidden');
 
+            if (procesos.length > 0) {
                 procesos.forEach((instancia, index) => {
                     const tituloLimpio = (instancia.tipoContrato || 'Ínfima Cuantía').replace('Contrato ', '');
                     const pct = instancia.porcentaje || 0;
@@ -397,7 +296,6 @@
 
                     const tarjetaHtml = `
                         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col relative hover:shadow-md transition">
-                            <!-- Eliminar -->
                             <button onclick="eliminarInstanciaProceso(${index})"
                                     class="absolute right-4 top-4 text-gray-300 hover:text-red-400 transition">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -406,31 +304,11 @@
                                 </svg>
                             </button>
 
-                            <!-- Ícono + porcentaje -->
                             <div class="flex items-start justify-between mb-3 pr-6">
                                 <div class="p-2.5 ${cfg.iconBg} ${cfg.iconText} rounded-xl">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         ${cfg.icon}
                                     </svg>
-                procesos.forEach((instancia, originalIndex) => {
-                    const tituloLimpio = (instancia.tipoContrato || 'Ínfima Cuantía').replace('Contrato ', '');
-                    const pct = instancia.porcentaje || 0;
-                    const cfg = getTipoConfig(instancia.tipoContrato);
-
-                    const botonEliminarHtml = `
-                        <button onclick="eliminarInstanciaProceso(${originalIndex})" class="absolute right-4 top-4 text-gray-300 hover:text-red-400 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </button>
-                    `;
-
-                    const tarjetaHtml = `
-                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col relative hover:shadow-md transition">
-                            ${botonEliminarHtml}
-                            <div class="flex items-start justify-between mb-3 pr-6">
-                                <div class="p-2.5 ${cfg.iconBg} ${cfg.iconText} rounded-xl">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${cfg.icon}</svg>
                                 </div>
                                 <div class="text-right">
                                     <span class="text-sm font-bold ${cfg.iconText}">${pct}%</span>
@@ -438,32 +316,21 @@
                                 </div>
                             </div>
 
-                            <!-- Barra de progreso -->
                             <div class="h-1.5 bg-gray-100 rounded-full mb-4">
                                 <div class="${cfg.barColor} h-1.5 rounded-full transition-all" style="width:${pct}%"></div>
                             </div>
 
-                            <!-- Título -->
                             <h4 class="text-sm font-bold text-gray-900 mb-2">${tituloLimpio}</h4>
 
-                            <!-- Tags -->
-                            <div class="flex items-center space-x-2 mb-3">
-                                <span class="${cfg.badgeBg} ${cfg.badgeText} text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
-                                    ${instancia.actividadNombre ? instancia.actividadNombre.substring(0, 20) : 'En proceso'}
-                            <div class="h-1.5 bg-gray-100 rounded-full mb-4">
-                                <div class="${cfg.barColor} h-1.5 rounded-full transition-all" style="width:${pct}%"></div>
-                            </div>
-                            <h4 class="text-sm font-bold text-gray-900 mb-2">${tituloLimpio}</h4>
                             <div class="flex items-center space-x-2 mb-3">
                                 <span class="${cfg.badgeBg} ${cfg.badgeText} text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide truncate max-w-[120px]">
-                                    ${instancia.actividadNombre || 'En proceso'}
+                                    ${instancia.actividadNombre ? instancia.actividadNombre.substring(0, 20) : 'En proceso'}
                                 </span>
                                 <span class="bg-gray-100 text-gray-500 text-[10px] font-semibold px-2 py-0.5 rounded uppercase">
                                     ${instancia.codigoPoa || 'POA 0000'}
                                 </span>
                             </div>
 
-                            <!-- Fecha + botón -->
                             <div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
                                 <span class="flex items-center space-x-1 text-[11px] text-gray-400">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -485,22 +352,12 @@
                                            </svg>
                                        </button>`
                                 }
-                            <div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
-                                <span class="flex items-center space-x-1 text-[11px] text-gray-400">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                    <span>${instancia.fechaModificacion || 'Sin fecha'}</span>
-                                </span>
-                                <button onclick="continuarProcesoEstructurado(${originalIndex})" class="bg-blue-600 hover:bg-blue-700 text-white flex items-center space-x-1 font-semibold text-[11px] py-1.5 px-3 rounded-lg transition">
-                                    <span>Atender Tarea</span>
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </button>
                             </div>
                         </div>
                     `;
                     contenedorTarjetas.insertAdjacentHTML('beforeend', tarjetaHtml);
                 });
 
-                /* Tarjeta placeholder de borradores */
                 contenedorTarjetas.insertAdjacentHTML('beforeend', `
                     <div class="rounded-2xl border-2 border-dashed border-gray-200 p-5 flex flex-col items-center justify-center text-center min-h-[200px] bg-white/50">
                         <div class="w-9 h-9 rounded-full border-2 border-gray-300 flex items-center justify-center mb-3 text-gray-400 text-xl font-light">+</div>
@@ -509,14 +366,13 @@
                         </p>
                     </div>
                 `);
-                
-                seccionProgreso.classList.remove('hidden');
             } else {
-                seccionProgreso.classList.remove('hidden');
                 contenedorTarjetas.innerHTML = `
                     <div class="col-span-full rounded-2xl border-2 border-dashed border-gray-200 p-8 flex flex-col items-center justify-center text-center bg-white/50">
                         <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-gray-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
                         </div>
                         <h3 class="text-sm font-bold text-gray-800">Bandeja Vacía</h3>
                         <p class="text-xs text-gray-400 mt-1 max-w-sm">Aún no hay procesos de contratación registrados en el sistema.</p>
@@ -529,22 +385,14 @@
             const procesos = obtenerListaProcesos();
             if (procesos[index]) {
                 const instancia = procesos[index];
-        function continuarProcesoEstructurado(originalIndex) {
-            const procesos = obtenerListaProcesos();
-            if (procesos[originalIndex]) {
-                const instancia = procesos[originalIndex];
-                
-                // Calculamos cuál es el índice real donde se quedó atascado para mandarlo directo ahí
-                const indiceReal = instancia.pipelineSnapshot.findIndex(paso => 
+                const indiceReal = instancia.pipelineSnapshot.findIndex(paso =>
                     !paso.respuestasUsuario || !paso.respuestasUsuario.completado
                 );
-                
                 if (indiceReal !== -1) {
                     instancia.ultimoIndiceTrabajado = indiceReal;
-                    procesos[originalIndex] = instancia;
+                    procesos[index] = instancia;
                     localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
                 }
-
                 localStorage.setItem('idProcesoActivo', instancia.id);
                 localStorage.setItem('flujoPersonalizado', JSON.stringify(instancia.pipelineSnapshot));
                 window.location.href = '/ejecutar-proceso.html';
@@ -562,10 +410,6 @@
             if (confirm('¿Estás seguro de que deseas eliminar este proceso en progreso? Se perderán todos sus cambios guardados.')) {
                 let procesos = obtenerListaProcesos();
                 procesos.splice(index, 1);
-        function eliminarInstanciaProceso(originalIndex) {
-            if (confirm('¿Estás seguro de que deseas eliminar este proceso? Se perderán todos sus cambios guardados.')) {
-                let procesos = obtenerListaProcesos();
-                procesos.splice(originalIndex, 1);
                 localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
                 verificarProcesosActivos();
             }

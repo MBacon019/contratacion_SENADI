@@ -473,7 +473,7 @@
                     paso.subpasos.forEach((sub, i) => {
                         let chk = (respuestas.estadosSubpasos && respuestas.estadosSubpasos[i] === true) || sub.completado ? '✅' : '❌';
                         if (respuestas.estadosSubpasos && respuestas.estadosSubpasos[i] === 'omitido') chk = '⚠️';
-                        
+
                         subpasosHTML += `
                             <div class="flex items-start space-x-2 text-[10px] text-gray-500">
                                 <span>${chk}</span>
@@ -482,6 +482,26 @@
                         `;
                     });
                     subpasosHTML += '</div>';
+                }
+
+                let responsablesHTML = '';
+                if (respuestas.elaborado || respuestas.revisado || respuestas.aprobado) {
+                    responsablesHTML = `
+                        <div class="mt-3 pt-3 border-t border-gray-100 grid grid-cols-3 gap-2">
+                            <div class="text-center">
+                                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-0.5">Elaborado por</p>
+                                <p class="text-[10px] font-semibold text-gray-700">${respuestas.elaborado || '<span class="text-gray-300">—</span>'}</p>
+                            </div>
+                            <div class="text-center border-x border-gray-100">
+                                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-0.5">Revisado por</p>
+                                <p class="text-[10px] font-semibold text-gray-700">${respuestas.revisado || '<span class="text-gray-300">—</span>'}</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-0.5">Aprobado por</p>
+                                <p class="text-[10px] font-semibold text-gray-700">${respuestas.aprobado || '<span class="text-gray-300">—</span>'}</p>
+                            </div>
+                        </div>
+                    `;
                 }
 
                 const nodoHTML = `
@@ -501,6 +521,7 @@
                                 ${tiempoHTML}
                             </div>
                             ${subpasosHTML}
+                            ${responsablesHTML}
                             ${archivoHTML}
                         </div>
                     </div>
