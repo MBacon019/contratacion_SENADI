@@ -7,50 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
-        .tema-oscuro .bg-white,
-        .tema-oscuro .bg-gray-50,
-        .tema-oscuro .bg-gray-100,
-        .tema-oscuro .bg-blue-50,
-        .tema-oscuro .bg-amber-50 {
-            background-color: #111827 !important;
-            color: #e2e8f0 !important;
-        }
-        .tema-oscuro .text-gray-900,
-        .tema-oscuro .text-gray-800,
-        .tema-oscuro .text-gray-700,
-        .tema-oscuro .text-gray-600,
-        .tema-oscuro .text-gray-500,
-        .tema-oscuro .text-gray-400 {
-            color: #cbd5e1 !important;
-        }
+        .tema-oscuro .bg-white, .tema-oscuro .bg-gray-50, .tema-oscuro .bg-gray-100, .tema-oscuro .bg-blue-50, .tema-oscuro .bg-amber-50 { background-color: #111827 !important; color: #e2e8f0 !important; }
+        .tema-oscuro .text-gray-900, .tema-oscuro .text-gray-800, .tema-oscuro .text-gray-700, .tema-oscuro .text-gray-600, .tema-oscuro .text-gray-500, .tema-oscuro .text-gray-400 { color: #cbd5e1 !important; }
         .tema-oscuro .text-blue-600 { color: #7dd3fc !important; }
-        .tema-oscuro .border-gray-200,
-        .tema-oscuro .border-gray-100,
-        .tema-oscuro .border-blue-100,
-        .tema-oscuro .border-blue-200,
-        .tema-oscuro .border-amber-200 {
-            border-color: #334155 !important;
-        }
-        .tema-oscuro input,
-        .tema-oscuro select,
-        .tema-oscuro textarea {
-            background-color: #1e293b !important;
-            color: #e2e8f0 !important;
-            border-color: #475569 !important;
-        }
-        .tema-oscuro input::placeholder,
-        .tema-oscuro textarea::placeholder {
-            color: #94a3b8 !important;
-        }
-        .tema-oscuro .bg-blue-50\/60,
-        .tema-oscuro .bg-white\/20,
-        .tema-oscuro .bg-white\/30,
-        .tema-oscuro .bg-blue-700\/60,
-        .tema-oscuro .bg-blue-700\/50,
-        .tema-oscuro .bg-blue-900\/40,
-        .tema-oscuro .bg-blue-900\/30 {
-            background-color: rgba(30, 41, 59, 0.35) !important;
-        }
+        .tema-oscuro .border-gray-200, .tema-oscuro .border-gray-100, .tema-oscuro .border-blue-100, .tema-oscuro .border-blue-200, .tema-oscuro .border-amber-200 { border-color: #334155 !important; }
+        .tema-oscuro input, .tema-oscuro select, .tema-oscuro textarea { background-color: #1e293b !important; color: #e2e8f0 !important; border-color: #475569 !important; }
+        .tema-oscuro input::placeholder, .tema-oscuro textarea::placeholder { color: #94a3b8 !important; }
+        .tema-oscuro .bg-blue-50\/60, .tema-oscuro .bg-white\/20, .tema-oscuro .bg-white\/30, .tema-oscuro .bg-blue-700\/60, .tema-oscuro .bg-blue-700\/50, .tema-oscuro .bg-blue-900\/40, .tema-oscuro .bg-blue-900\/30 { background-color: rgba(30, 41, 59, 0.35) !important; }
         .tema-oscuro .hover\:bg-gray-50:hover { background-color: #1e293b !important; }
     </style>
 </head>
@@ -58,9 +21,7 @@
 
     <header class="max-w-4xl mx-auto pt-6 px-4 flex justify-between items-center">
         <button onclick="regresarAlDashboard()" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 font-medium transition text-sm">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             <span>Detalles del Proceso</span>
         </button>
         <button id="theme-toggle" onclick="toggleTema()" class="bg-white border border-gray-200 px-3 py-1 rounded-lg text-xs font-semibold text-gray-500 shadow-sm flex items-center space-x-1 hover:bg-gray-50 transition">
@@ -83,9 +44,7 @@
 
             <div class="p-6 pb-0">
                 <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl flex items-start space-x-3">
-                    <div class="text-blue-500 pt-0.5">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
-                    </div>
+                    <div class="text-blue-500 pt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg></div>
                     <p class="text-xs text-blue-800 leading-relaxed font-medium">
                         <span class="font-bold">Importante:</span> La actividad específica es el nombre descriptivo que identifica este proceso de contratación pública.
                     </p>
@@ -164,8 +123,11 @@
                             <input type="text" placeholder="Nombre completo" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                         </div>
                         <div class="space-y-1.5">
-                            <label class="block text-[11px] font-bold text-gray-600 uppercase">Administrador de Contrato</label>
-                            <input type="text" placeholder="Nombre completo" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase">Admin. de Contrato / Orden</label>
+                            <select id="select-admin-contrato" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                                <option value="Gonzalo Moncayo">Gonzalo Moncayo</option>
+                                <option value="Miguel Cabrera">Miguel Cabrera</option>
+                            </select>
                         </div>
                     </div>
 
@@ -176,9 +138,7 @@
                 </div>
 
                 <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
-                    <button type="button" onclick="regresarAlDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2.5 px-5 rounded-xl transition">
-                        Cancelar
-                    </button>
+                    <button type="button" onclick="regresarAlDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2.5 px-5 rounded-xl transition">Cancelar</button>
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-sm hover:shadow transition flex items-center space-x-2">
                         <span>Continuar a Configuración</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -192,24 +152,17 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             initTema();
-            // 1. Recuperamos los datos que guardamos en la pantalla anterior
             const datosContrato = localStorage.getItem('contratoSeleccionado');
-            
             if (datosContrato) {
                 const contrato = JSON.parse(datosContrato);
-                
-                // 2. Limpiamos e inyectamos el nombre (Ej: "Contrato ÍNFIMA CUANTÍA" -> "Ínfima Cuantía")
                 const nombreLimpio = contrato.nombre.replace("Contrato ", "");
                 document.getElementById('subtitulo-proceso').innerText = nombreLimpio;
             } else {
-                // Si alguien entra directo sin seleccionar nada, lo devolvemos por seguridad
                 regresarAlDashboard();
             }
         });
 
-        function regresarAlDashboard() {
-            window.location.href = '/dashboard.html';
-        }
+        function regresarAlDashboard() { window.location.href = '/dashboard.html'; }
 
         function aplicarTema(oscuro) {
             document.documentElement.classList.toggle('tema-oscuro', oscuro);
@@ -219,47 +172,33 @@
             localStorage.setItem('temaPreferido', oscuro ? 'oscuro' : 'claro');
         }
 
-        function toggleTema() {
-            const esOscuro = !document.body.classList.contains('tema-oscuro');
-            aplicarTema(esOscuro);
-        }
+        function toggleTema() { aplicarTema(!document.body.classList.contains('tema-oscuro')); }
+        function initTema() { if (localStorage.getItem('temaPreferido') === 'oscuro') aplicarTema(true); }
 
-        function initTema() {
-            const temaGuardado = localStorage.getItem('temaPreferido');
-            if (temaGuardado === 'oscuro') {
-                aplicarTema(true);
-            }
-        }
+        document.getElementById('form-actividad').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const detallesActividad = {
+                noPoa: e.target.querySelector('input[placeholder="Ej: 1, 2, 3..."]').value,
+                estado: e.target.querySelector('select').value,
+                actividadEspecifica: e.target.querySelector('textarea').value,
+                item: e.target.querySelectorAll('input')[1].value,
+                cpc: e.target.querySelectorAll('input')[2].value,
+                asignacion: e.target.querySelector('input[type="number"]').value,
+                cuatrimestre: e.target.querySelectorAll('select')[1].value
+            };
 
-        // Manejo del envío del formulario (aquí puedes conectar tu fetch POST al backend después)
-        // Manejo del envío del formulario
-document.getElementById('form-actividad').addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    // Capturamos los datos del formulario por si los necesitas guardar después en base de datos
-    const detallesActividad = {
-        noPoa: e.target.querySelector('input[placeholder="Ej: 1, 2, 3..."]').value,
-        estado: e.target.querySelector('select').value,
-        actividadEspecifica: e.target.querySelector('textarea').value,
-        item: e.target.querySelectorAll('input')[1].value,
-        cpc: e.target.querySelectorAll('input')[2].value,
-        asignacion: e.target.querySelector('input[type="number"]').value,
-        cuatrimestre: e.target.querySelectorAll('select')[1].value
-    };
+            localStorage.setItem('detallesActividad', JSON.stringify(detallesActividad));
 
-    // Guardamos los datos de la actividad en el navegador
-    localStorage.setItem('detallesActividad', JSON.stringify(detallesActividad));
+            // Guardamos al admin seleccionado temporalmente para inyectarlo en el Dashboard
+            const adminSeleccionado = document.getElementById('select-admin-contrato').value;
+            localStorage.setItem('ultimoAdminSeleccionado', adminSeleccionado);
 
-    // Reescribimos el contrato seleccionado para que no se pierda si el navegador realiza algún refresco intermedio
-    const contratoActual = localStorage.getItem('contratoSeleccionado');
-    if (contratoActual) {
-        localStorage.setItem('contratoSeleccionado', contratoActual);
-    }
+            const contratoActual = localStorage.getItem('contratoSeleccionado');
+            if (contratoActual) localStorage.setItem('contratoSeleccionado', contratoActual);
 
-    // Redirigimos a la pantalla de configuración de flujos que crearemos a continuación
-    window.location.href = '/configurar-flujo.html';
-    });
+            window.location.href = '/configurar-flujo.html';
+        });
     </script>
-
 </body>
 </html>

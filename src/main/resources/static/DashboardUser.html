@@ -6,6 +6,11 @@
     <title>SCP - Dashboard Estadístico y Auditoría</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- JSZip: Librería para comprimir múltiples PDFs en un archivo .zip desde el navegador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
     <style>
         .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
         .tema-oscuro .bg-white { background-color: #111827 !important; border-color: #334155 !important; color: #e2e8f0 !important; }
@@ -25,7 +30,7 @@
             </div>
             <span class="text-gray-300">|</span>
             <a href="/dashboard.html" class="flex items-center space-x-1 text-xs font-medium text-gray-500 hover:text-blue-600 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 001 1m-6 0h6"/></svg>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 <span>Volver al Inicio</span>
             </a>
         </div>
@@ -46,6 +51,7 @@
                 </button>
             </div>
 
+            <!-- VISTA: DASHBOARD GLOBAL -->
             <div id="vista-global" class="space-y-6 block">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Estadísticas Generales del SENADI</h1>
@@ -74,7 +80,6 @@
                             <canvas id="chartGlobalTipos"></canvas>
                         </div>
                     </div>
-                    
                     <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex flex-col">
                         <h3 class="text-sm font-bold text-gray-800 mb-4 border-b border-gray-50 pb-2">Estado General de los Procesos</h3>
                         <div class="relative flex-1 h-64 w-full">
@@ -84,18 +89,17 @@
                 </div>
             </div>
 
+            <!-- VISTA: LISTADO DE CONTRATOS -->
             <div id="vista-lista" class="space-y-6 hidden">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Auditoría de Procesos Activos</h1>
-                    <p class="text-sm text-gray-500 mt-1">Selecciona un proceso específico para visualizar estadísticas, tiempos por paso y documentos adjuntos.</p>
+                    <p class="text-sm text-gray-500 mt-1">Selecciona un proceso específico para visualizar estadísticas, tiempos por paso y descargar el expediente.</p>
                 </div>
-
-                <div id="grid-contratos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    </div>
+                <div id="grid-contratos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
             </div>
 
+            <!-- VISTA: DASHBOARD INDIVIDUAL DETALLADO -->
             <div id="vista-estadisticas" class="space-y-6 hidden">
-                
                 <div class="flex items-start space-x-4">
                     <button onclick="cambiarPestaña('lista')" class="bg-white border border-gray-200 text-gray-600 p-2.5 rounded-xl hover:bg-gray-50 transition shadow-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
@@ -124,7 +128,7 @@
                         <p class="text-2xl font-black text-gray-800 mt-1" id="kpi-areas">0 / 0</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm border-l-4 border-l-amber-500">
-                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Documentos Subidos</p>
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Archivos ZIP/PDF</p>
                         <p class="text-2xl font-black text-gray-800 mt-1" id="kpi-documentos">0</p>
                     </div>
                 </div>
@@ -132,11 +136,8 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
                         <h3 class="text-sm font-bold text-gray-800 mb-4 border-b border-gray-50 pb-2">Desempeño de Tiempos por Área</h3>
-                        <div class="relative h-56 w-full">
-                            <canvas id="chartTiempos"></canvas>
-                        </div>
+                        <div class="relative h-56 w-full"><canvas id="chartTiempos"></canvas></div>
                     </div>
-
                     <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm flex flex-col">
                         <h3 class="text-sm font-bold text-gray-800 mb-4 border-b border-gray-50 pb-2">Avance Global</h3>
                         <div class="relative flex-1 flex flex-col items-center justify-center">
@@ -150,14 +151,22 @@
                     </div>
                 </div>
 
+                <!-- LÍNEA DE TIEMPO / AUDITORÍA CON BOTÓN DE DESCARGA GLOBAL -->
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mt-6">
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
-                        <h3 class="text-base font-bold text-gray-800">Trazabilidad y Auditoría de Pasos</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">Historial detallado de ejecución, tiempos específicos y documentos de respaldo adjuntos.</p>
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-base font-bold text-gray-800">Trazabilidad y Auditoría de Pasos</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">Historial detallado de ejecución y documentos de respaldo.</p>
+                        </div>
+                        <!-- BOTÓN DE DESCARGA DE EXPEDIENTE COMPLETO -->
+                        <button id="btn-descargar-expediente" onclick="descargarExpedienteCompleto()" class="hidden flex items-center space-x-2 text-white bg-blue-600 hover:bg-blue-700 text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            <span>Descargar Todo (ZIP)</span>
+                        </button>
                     </div>
                     <div class="p-6">
                         <div id="contenedor-linea-tiempo" class="space-y-6 ml-2 border-l-2 border-blue-100 pl-6 relative">
-                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -166,15 +175,13 @@
     </main>
 
     <script>
-        // Variables globales para Chart.js (Detalles)
         let chartTiemposInstance = null;
         let chartAvanceInstance = null;
-        
-        // Variables globales para Chart.js (Global)
         let chartGlobalTiposInstance = null;
         let chartGlobalEstadosInstance = null;
-
+        
         let procesosReales = [];
+        let procesoActivoAuditoria = null; // Variable para almacenar el proceso que se está viendo en detalles
 
         document.addEventListener('DOMContentLoaded', () => {
             cargarProcesosDesdeLocalStorage();
@@ -183,12 +190,10 @@
         function cambiarPestaña(tab) {
             const tabs = document.getElementById('contenedor-tabs');
             
-            // Ocultar todas las vistas
             document.getElementById('vista-global').classList.add('hidden');
             document.getElementById('vista-lista').classList.add('hidden');
             document.getElementById('vista-estadisticas').classList.add('hidden');
             
-            // Resetear estilos de los botones
             document.getElementById('tab-global').className = "pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800 font-bold text-sm transition";
             document.getElementById('tab-lista').className = "pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800 font-bold text-sm transition";
 
@@ -205,29 +210,24 @@
                 renderizarListaContratos();
             }
             else if(tab === 'estadisticas') {
-                // Al entrar a detalles, escondemos los tabs superiores
                 tabs.classList.add('hidden');
                 document.getElementById('vista-estadisticas').classList.remove('hidden');
             }
         }
 
-        // 1. CARGAMOS LA DATA REAL
         function cargarProcesosDesdeLocalStorage() {
             const raw = localStorage.getItem('instanciaProcesoEnProgreso');
             if (raw) {
                 try {
                     const parsed = JSON.parse(raw);
                     procesosReales = Array.isArray(parsed) ? parsed : [parsed];
-                } catch (e) {
-                    procesosReales = [];
-                }
+                } catch (e) { procesosReales = []; }
             }
-            // Al arrancar, mostramos el global por defecto
             cambiarPestaña('global');
         }
 
         // ========================================================
-        // LÓGICA DEL DASHBOARD GLOBAL
+        // DASHBOARD GLOBAL
         // ========================================================
         function renderizarDashboardGlobal() {
             const totalProcesos = procesosReales.length;
@@ -242,24 +242,20 @@
                 let pct = proc.porcentaje || 0;
                 sumaAvances += pct;
 
-                // Agrupar por Tipo de Contrato
                 let tipo = (proc.tipoContrato || 'Desconocido').replace('Contrato ', '');
                 conteoTipos[tipo] = (conteoTipos[tipo] || 0) + 1;
 
-                // Agrupar por Estado según el porcentaje
                 if (pct === 0) conteoEstados["Por Ejecutar"]++;
                 else if (pct === 100) conteoEstados["Finalizado"]++;
                 else conteoEstados["En Ejecución"]++;
             });
 
-            // Actualizar KPIs Globales
             document.getElementById('kpi-global-total').innerText = totalProcesos;
             document.getElementById('kpi-global-presupuesto').innerText = `$ ${presupuestoTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             
             let avancePromedio = totalProcesos > 0 ? Math.round(sumaAvances / totalProcesos) : 0;
             document.getElementById('kpi-global-avance').innerText = `${avancePromedio}%`;
 
-            // RENDERIZAR GRÁFICOS GLOBALES
             renderizarChartGlobalTipos(conteoTipos);
             renderizarChartGlobalEstados(conteoEstados);
         }
@@ -267,158 +263,123 @@
         function renderizarChartGlobalTipos(conteoTipos) {
             const ctx = document.getElementById('chartGlobalTipos').getContext('2d');
             if (chartGlobalTiposInstance) chartGlobalTiposInstance.destroy();
-
             chartGlobalTiposInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(conteoTipos),
-                    datasets: [{
-                        data: Object.values(conteoTipos),
-                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#f43f5e'],
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
-                    }]
+                    datasets: [{ data: Object.values(conteoTipos), backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#f43f5e'], borderWidth: 2, borderColor: '#ffffff' }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8 } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8 } } } }
             });
         }
 
         function renderizarChartGlobalEstados(conteoEstados) {
             const ctx = document.getElementById('chartGlobalEstados').getContext('2d');
             if (chartGlobalEstadosInstance) chartGlobalEstadosInstance.destroy();
-
             chartGlobalEstadosInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: Object.keys(conteoEstados),
-                    datasets: [{
-                        label: 'Cantidad de Procesos',
-                        data: Object.values(conteoEstados),
-                        backgroundColor: ['#94a3b8', '#3b82f6', '#10b981'],
-                        borderRadius: 6
-                    }]
+                    datasets: [{ label: 'Cantidad de Procesos', data: Object.values(conteoEstados), backgroundColor: ['#94a3b8', '#3b82f6', '#10b981'], borderRadius: 6 }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { borderDash: [4, 4] }, ticks: { stepSize: 1 } },
-                        x: { grid: { display: false } }
-                    }
+                    responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, grid: { borderDash: [4, 4] }, ticks: { stepSize: 1 } }, x: { grid: { display: false } } }
                 }
             });
         }
 
         // ========================================================
-        // LÓGICA DE LISTADO INDIVIDUAL Y LÍNEA DE TIEMPO
+        // LISTADO Y DETALLES
         // ========================================================
         function renderizarListaContratos() {
             const grid = document.getElementById('grid-contratos');
             grid.innerHTML = '';
-
             if (procesosReales.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-full bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm">
-                        <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        <h3 class="text-lg font-bold text-gray-800">No hay procesos activos</h3>
-                        <p class="text-sm text-gray-500 mt-1">Vuelve a la pantalla de Inicio y crea un nuevo proceso para poder auditarlo aquí.</p>
-                    </div>`;
+                grid.innerHTML = `<div class="col-span-full bg-white rounded-2xl border border-gray-200 p-10 text-center shadow-sm"><h3 class="text-lg font-bold text-gray-800">No hay procesos activos</h3></div>`;
                 return;
             }
 
             procesosReales.forEach(proc => {
                 const pct = proc.porcentaje || 0;
                 const tituloLimpio = (proc.tipoContrato || 'Contrato').replace('Contrato ', '');
-                
                 let colorEstado = pct === 100 ? "bg-emerald-100 text-emerald-700" : (pct === 0 ? "bg-gray-100 text-gray-600" : "bg-blue-100 text-blue-700");
                 let textEstado = pct === 100 ? "FINALIZADO" : (pct === 0 ? "POR EJECUTAR" : "EN EJECUCIÓN");
 
                 const cardHTML = `
                     <div onclick="verDetallesProceso('${proc.id}')" class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm hover:shadow-lg hover:border-blue-300 transition cursor-pointer flex flex-col h-full">
                         <div class="flex justify-between items-start mb-3">
-                            <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-2.5 py-1 rounded uppercase tracking-wide">
-                                ${tituloLimpio}
-                            </span>
-                            <span class="${colorEstado} text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
-                                ${textEstado}
-                            </span>
+                            <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-2.5 py-1 rounded uppercase tracking-wide">${tituloLimpio}</span>
+                            <span class="${colorEstado} text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">${textEstado}</span>
                         </div>
-                        <h3 class="text-sm font-bold text-gray-900 leading-snug mb-2 hover:text-blue-600 transition line-clamp-3">
-                            ${proc.actividadNombre || 'Sin Actividad'}
-                        </h3>
+                        <h3 class="text-sm font-bold text-gray-900 leading-snug mb-2 hover:text-blue-600 transition line-clamp-3">${proc.actividadNombre || 'Sin Actividad'}</h3>
                         <p class="text-[10px] text-gray-400 font-mono mb-4">POA: ${proc.codigoPoa || 'N/A'}</p>
-                        
                         <div class="mt-auto pt-4 border-t border-gray-100">
-                            <div class="flex justify-between items-center mb-1.5">
-                                <span class="text-[10px] font-bold text-gray-500 uppercase">Avance del Flujo</span>
-                                <span class="text-[10px] font-bold text-gray-800">${pct}%</span>
-                            </div>
-                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
-                                <div class="h-full bg-blue-500 rounded-full" style="width: ${pct}%"></div>
-                            </div>
+                            <div class="flex justify-between items-center mb-1.5"><span class="text-[10px] font-bold text-gray-500 uppercase">Avance del Flujo</span><span class="text-[10px] font-bold text-gray-800">${pct}%</span></div>
+                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width: ${pct}%"></div></div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 grid.insertAdjacentHTML('beforeend', cardHTML);
             });
         }
 
         function verDetallesProceso(id) {
-            const proceso = procesosReales.find(p => p.id === id);
-            if(!proceso) return;
+            procesoActivoAuditoria = procesosReales.find(p => p.id === id);
+            if(!procesoActivoAuditoria) return;
 
-            cambiarPestaña('estadisticas'); // Oculta tabs y muestra los detalles
+            cambiarPestaña('estadisticas'); 
 
-            const pct = proceso.porcentaje || 0;
+            const pct = procesoActivoAuditoria.porcentaje || 0;
             let textEstado = pct === 100 ? "FINALIZADO" : (pct === 0 ? "POR EJECUTAR" : "EN EJECUCIÓN");
 
-            document.getElementById('stat-tipo').innerText = (proceso.tipoContrato || '').replace('Contrato ', '');
+            document.getElementById('stat-tipo').innerText = (procesoActivoAuditoria.tipoContrato || '').replace('Contrato ', '');
             document.getElementById('stat-estado').innerText = textEstado;
-            document.getElementById('stat-titulo').innerText = proceso.actividadNombre || 'Proceso sin nombre';
+            document.getElementById('stat-titulo').innerText = procesoActivoAuditoria.actividadNombre || 'Proceso sin nombre';
             
             let responsableActual = "Desconocido";
-            if (proceso.pipelineSnapshot && proceso.pipelineSnapshot.length > 0) {
-                const utimoPaso = proceso.pipelineSnapshot[proceso.ultimoIndiceTrabajado || 0];
-                if(utimoPaso && utimoPaso.respuestasUsuario && utimoPaso.respuestasUsuario.responsable) {
-                    responsableActual = utimoPaso.respuestasUsuario.responsable;
-                }
+            if (procesoActivoAuditoria.pipelineSnapshot && procesoActivoAuditoria.pipelineSnapshot.length > 0) {
+                const utimoPaso = procesoActivoAuditoria.pipelineSnapshot[procesoActivoAuditoria.ultimoIndiceTrabajado || 0];
+                if(utimoPaso && utimoPaso.respuestasUsuario && utimoPaso.respuestasUsuario.responsable) responsableActual = utimoPaso.respuestasUsuario.responsable;
             }
             document.getElementById('stat-admin').innerText = responsableActual;
-            document.getElementById('stat-poa').innerText = proceso.codigoPoa || 'N/A';
+            document.getElementById('stat-poa').innerText = procesoActivoAuditoria.codigoPoa || 'N/A';
 
-            // --- PROCESAMIENTO DE DATOS REALES ---
             let totalDocumentos = 0;
             let areasData = {}; 
             let totalDiasAcumulados = 0;
 
-            const pipeline = proceso.pipelineSnapshot || [];
+            const pipeline = procesoActivoAuditoria.pipelineSnapshot || [];
             
             pipeline.forEach((paso, index) => {
                 const area = paso.area || 'UNIDAD';
                 if(!areasData[area]) areasData[area] = { real: 0 }; 
 
-                if (paso.respuestasUsuario && paso.respuestasUsuario.archivoBase64) {
+                // Contar los documentos
+                if (paso.respuestasUsuario && paso.respuestasUsuario.archivos && Array.isArray(paso.respuestasUsuario.archivos)) {
+                    totalDocumentos += paso.respuestasUsuario.archivos.length;
+                } else if (paso.respuestasUsuario && paso.respuestasUsuario.archivoBase64) {
                     totalDocumentos++;
                 }
 
-                let diasTardados = 0;
                 if (paso.respuestasUsuario && paso.respuestasUsuario.completado) {
-                    diasTardados = (Math.abs(Math.sin(index + 1)) * 3) + 0.5; // Simulación de tiempo
+                    let diasTardados = (Math.abs(Math.sin(index + 1)) * 3) + 0.5; // Simulación
                     totalDiasAcumulados += diasTardados;
                     areasData[area].real += diasTardados;
                 }
             });
 
+            // Mostrar u ocultar el botón global de descarga ZIP dependiendo de si hay archivos
+            if (totalDocumentos > 0) {
+                document.getElementById('btn-descargar-expediente').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-descargar-expediente').classList.add('hidden');
+            }
+
             let dTotales = Math.floor(totalDiasAcumulados);
             let hTotales = Math.round((totalDiasAcumulados - dTotales) * 24);
             document.getElementById('kpi-dias').innerHTML = `${dTotales} <span class="text-sm text-gray-500 font-medium">días</span> ${hTotales} <span class="text-sm text-gray-500 font-medium">hrs</span>`;
-            document.getElementById('kpi-presupuesto').innerText = `$ ${parseFloat(proceso.asignacion || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-            document.getElementById('kpi-areas').innerText = `${proceso.pasosCompletados || 0} / ${pipeline.length}`;
+            document.getElementById('kpi-presupuesto').innerText = `$ ${parseFloat(procesoActivoAuditoria.asignacion || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpi-areas').innerText = `${procesoActivoAuditoria.pasosCompletados || 0} / ${pipeline.length}`;
             document.getElementById('kpi-documentos').innerText = totalDocumentos;
             
             document.getElementById('txt-porcentaje-centro').innerText = `${pct}%`;
@@ -431,6 +392,9 @@
             renderizarLineaTiempo(pipeline);
         }
 
+        // ==========================================================
+        // RENDERIZADO DE LÍNEA DE TIEMPO CON DESCARGAS (Individual y Step)
+        // ==========================================================
         function renderizarLineaTiempo(pipeline) {
             const contenedor = document.getElementById('contenedor-linea-tiempo');
             contenedor.innerHTML = '';
@@ -451,20 +415,38 @@
                     tiempoHTML = `<span class="flex items-center space-x-1 text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span>Demoró: ${d}d ${h}h</span></span>`;
                 }
 
+                // Generación Visual de Archivos y Botón de Descarga del PASO
                 let archivoHTML = '';
-                if (respuestas.archivoBase64) {
+                const archivos = respuestas.archivos || (respuestas.archivoBase64 ? [{nombre: respuestas.archivoNombre, base64: respuestas.archivoBase64}] : []);
+                
+                if (archivos.length > 0) {
                     archivoHTML = `
-                        <div class="mt-3 p-2.5 bg-emerald-50/50 border border-emerald-100 rounded-lg flex justify-between items-center">
-                            <div class="flex items-center space-x-2">
-                                <svg class="w-4 h-4 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
-                                <span class="text-[11px] font-bold text-gray-700 truncate w-32 md:w-48">${respuestas.archivoNombre || 'Documento.pdf'}</span>
+                        <div class="mt-3 p-3 bg-emerald-50/50 border border-emerald-100 rounded-xl">
+                            <div class="flex justify-between items-center border-b border-emerald-100/50 pb-2 mb-2">
+                                <span class="text-[10px] font-bold text-emerald-800 uppercase tracking-wide">Documentos Respaldos (${archivos.length})</span>
+                                <!-- DESCARGA EN ZIP SOLO DE ESTE PASO -->
+                                <button onclick='descargarArchivosComoZip(${JSON.stringify(archivos).replace(/'/g, "&apos;")}, "Paso_${paso.orden || index+1}")' class="flex items-center space-x-1 text-white bg-emerald-500 hover:bg-emerald-600 text-[10px] font-bold px-2 py-1 rounded-lg transition shadow-sm">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    <span>ZIP Paso</span>
+                                </button>
                             </div>
-                            <a href="${respuestas.archivoBase64}" download="${respuestas.archivoNombre || 'Documento.pdf'}" class="flex items-center space-x-1 text-emerald-600 hover:text-emerald-800 text-[10px] font-bold bg-white px-2 py-1 rounded border border-emerald-200 transition shadow-sm">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                <span>Descargar PDF</span>
-                            </a>
-                        </div>
+                            <div class="space-y-1.5">
                     `;
+                    
+                    archivos.forEach(doc => {
+                        // DESCARGA INDIVIDUAL DE CADA ARCHIVO (Mantenida)
+                        archivoHTML += `
+                            <div class="flex items-center justify-between text-[11px] text-gray-700 bg-white p-2 rounded-lg border border-emerald-100/50 shadow-sm">
+                                <div class="flex items-center space-x-2 overflow-hidden">
+                                    <svg class="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                                    <span class="truncate w-32 md:w-56 font-medium">${doc.nombre}</span>
+                                </div>
+                                <a href="${doc.base64}" download="${doc.nombre}" class="text-blue-600 hover:text-blue-800 font-bold ml-2 flex-shrink-0">Descargar PDF</a>
+                            </div>
+                        `;
+                    });
+                    
+                    archivoHTML += `</div></div>`;
                 }
 
                 let subpasosHTML = '';
@@ -473,13 +455,11 @@
                     paso.subpasos.forEach((sub, i) => {
                         let chk = (respuestas.estadosSubpasos && respuestas.estadosSubpasos[i] === true) || sub.completado ? '✅' : '❌';
                         if (respuestas.estadosSubpasos && respuestas.estadosSubpasos[i] === 'omitido') chk = '⚠️';
-                        
                         subpasosHTML += `
                             <div class="flex items-start space-x-2 text-[10px] text-gray-500">
                                 <span>${chk}</span>
                                 <span class="leading-tight"><span class="font-bold text-gray-700">${sub.numeroInterno || ''}</span> ${sub.nombreSubpaso}</span>
-                            </div>
-                        `;
+                            </div>`;
                     });
                     subpasosHTML += '</div>';
                 }
@@ -509,70 +489,80 @@
             });
         }
 
+        // ==========================================================
+        // FUNCIONES JSZip PARA DESCARGAS (GLOBAL Y POR PASO)
+        // ==========================================================
+
+        // Descarga de un array específico de archivos (Usado en un solo paso)
+        function descargarArchivosComoZip(archivos, nombreCarpeta) {
+            const zip = new JSZip();
+            
+            archivos.forEach(doc => {
+                const base64Data = doc.base64.split(',')[1];
+                zip.file(doc.nombre, base64Data, {base64: true});
+            });
+
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                saveAs(content, `${nombreCarpeta}.zip`);
+            });
+        }
+
+        // Descarga Global: RECORRE TODO EL PROCESO, CREA CARPETAS INTERNAS POR PASO Y DESCARGA
+        function descargarExpedienteCompleto() {
+            if(!procesoActivoAuditoria) return;
+            
+            const zip = new JSZip();
+            let hasFiles = false;
+
+            // Recorremos todo el pipeline (todos los pasos)
+            procesoActivoAuditoria.pipelineSnapshot.forEach((paso, index) => {
+                const numPaso = paso.orden || (index + 1);
+                const respuestas = paso.respuestasUsuario || {};
+                const archivos = respuestas.archivos || (respuestas.archivoBase64 ? [{nombre: respuestas.archivoNombre, base64: respuestas.archivoBase64}] : []);
+                
+                // Si el paso tiene archivos, creamos una carpeta dentro del ZIP para ese paso
+                if(archivos.length > 0) {
+                    hasFiles = true;
+                    // Limpiamos el nombre del área para usarlo como carpeta
+                    const areaLimpia = (paso.area || 'Area').replace(/[^a-z0-9]/gi, '_').toUpperCase();
+                    const carpetaPaso = zip.folder(`Paso_${numPaso}_${areaLimpia}`);
+                    
+                    archivos.forEach(doc => {
+                        const base64Data = doc.base64.split(',')[1];
+                        carpetaPaso.file(doc.nombre, base64Data, {base64: true});
+                    });
+                }
+            });
+
+            if(hasFiles) {
+                const nombreZip = `Expediente_Completo_${procesoActivoAuditoria.codigoPoa || 'Proceso'}.zip`;
+                zip.generateAsync({type:"blob"}).then(function(content) {
+                    saveAs(content, nombreZip);
+                });
+            } else {
+                alert("No hay documentos guardados en este proceso.");
+            }
+        }
+
         // --- CHART.JS (DETALLES) ---
         function renderizarGraficoTiempos(labels, dataReal) {
             const ctx = document.getElementById('chartTiempos').getContext('2d');
             if (chartTiemposInstance) chartTiemposInstance.destroy();
-
             chartTiemposInstance = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Tiempo Real Invertido',
-                        data: dataReal,
-                        backgroundColor: '#3b82f6',
-                        borderRadius: 6,
-                        barPercentage: 0.5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10 } } },
-                        tooltip: { 
-                            callbacks: {
-                                label: function(context) {
-                                    let valor = context.raw;
-                                    if (valor === 0) return 'Aún no se procesa';
-                                    let d = Math.floor(valor);
-                                    let h = Math.round((valor - d) * 24);
-                                    return `Demoró: ${d} días y ${h} hrs`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { borderDash: [4, 4] }, title: { display: true, text: 'Días', font: {size: 10} } },
-                        x: { grid: { display: false }, ticks: { font: {size: 9} } }
-                    }
-                }
+                data: { labels: labels, datasets: [{ label: 'Tiempo Real Invertido', data: dataReal, backgroundColor: '#3b82f6', borderRadius: 6, barPercentage: 0.5 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8, font: { size: 10 } } }, tooltip: { callbacks: { label: function(context) { let valor = context.raw; if (valor === 0) return 'Aún no se procesa'; let d = Math.floor(valor); let h = Math.round((valor - d) * 24); return `Demoró: ${d} días y ${h} hrs`; } } } }, scales: { y: { beginAtZero: true, grid: { borderDash: [4, 4] }, title: { display: true, text: 'Días', font: {size: 10} } }, x: { grid: { display: false }, ticks: { font: {size: 9} } } } }
             });
         }
 
         function renderizarGraficoAvance(porcentaje) {
             const ctx = document.getElementById('chartAvance').getContext('2d');
             if (chartAvanceInstance) chartAvanceInstance.destroy();
-
             const colorAvance = porcentaje === 100 ? '#10b981' : '#3b82f6'; 
-
             chartAvanceInstance = new Chart(ctx, {
                 type: 'doughnut',
-                data: {
-                    labels: ['Completado', 'Pendiente'],
-                    datasets: [{
-                        data: [porcentaje, 100 - porcentaje],
-                        backgroundColor: [colorAvance, '#f1f5f9'],
-                        borderWidth: 0,
-                        cutout: '75%' 
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { enabled: true } }
-                }
+                data: { labels: ['Completado', 'Pendiente'], datasets: [{ data: [porcentaje, 100 - porcentaje], backgroundColor: [colorAvance, '#f1f5f9'], borderWidth: 0, cutout: '75%' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: true } } }
             });
         }
     </script>
