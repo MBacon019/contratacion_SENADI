@@ -176,7 +176,7 @@
             if (actividadData) {
                 const actividad = JSON.parse(actividadData);
                 nombreActividadGlobal = actividad.actividadEspecifica || "Sin descripción de actividad";
-                codigoPOAGlobal = actividad.poa || "POA 12121"; 
+                codigoPOAGlobal = actividad.noPoa || "POA 00000";
                 document.getElementById('actividad-subtitulo-flujo').innerText = nombreActividadGlobal;
             }
 
@@ -208,9 +208,88 @@
 
             const pasosPorTipo = {
                 'Ínfima Cuantía': [
-                    { id: 101, orden: '1', nombrePaso: 'Solicitar revisión de Stock de Bodega en el caso de bienes', area: 'UNIDAD REQUERIENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Revisión instrumental técnica de inventario.' },
-                    { id: 102, orden: '2', nombrePaso: 'Revisión de la actividad en POA', area: 'UNIDAD REQUERIENTE', medio: 'REGISTROS INTERNOS', dirigidoA: 'DGI' },
-                    { id: 103, orden: '3', nombrePaso: 'Elaboración de informe de necesidad para revisión y aprobación', area: 'UNIDAD/ÁREA REQUERIENTE (TÉCNICO)', medio: 'ZIMBRA', dirigidoA: 'RESPONSABLE DE UNIDAD' }
+                    // ── FASE PREPARATORIA ──
+                    { id: 100, orden: 'A', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de reunión previa para coordinación, análisis preliminar y directrices del proceso a ejecutarse', area: 'UNIDAD REQUIRENTE', medio: 'Zimbra', dirigidoA: 'UNIDAD REQUIRENTE / DGI / DF / DA', anexos: '', subpasos: []},
+                    { id: 101, orden: '1', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitar revisión de Stock de Bodega en el caso de bienes', area: 'RESPONSABLE DE UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: [
+                        { nombreSubpaso: '1.1 – Emisión de Certificación Stock de Bodega', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación Stock', completado: false }
+                    ]},
+                    { id: 102, orden: '2', fase: 'FASE PREPARATORIA', nombrePaso: 'Revisión de la actividad en POA', area: 'UNIDAD REQUIRENTE', medio: 'REGISTROS INTERNOS', dirigidoA: '', anexos: '', subpasos: [
+                        { nombreSubpaso: '2.1 – Solicitud de inclusión o modificación en POA (EN CASO DE REQUERIRSE)', area: 'RESPONSABLE DE UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'DGI', completado: false },
+                        { nombreSubpaso: '2.2 – Autorización y reasignación a Planificación', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'PLANIFICACIÓN', completado: false },
+                        { nombreSubpaso: '2.3 – Solicitud de Verificación Actividad en POA y disponibilidad presupuestaria', area: 'RESPONSABLE DE UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'FINANCIERO / PLANIFICACIÓN', completado: false },
+                        { nombreSubpaso: '2.4 – Respuesta verificación de actividad y disponibilidad presupuestaria (se deben recibir dos respuestas)', area: 'DF / PLANIFICACIÓN', medio: 'QUIPUX', dirigidoA: 'FINANCIERO / PLANIFICACIÓN', completado: false }
+                    ]},
+                    { id: 103, orden: '3', fase: 'FASE PREPARATORIA', nombrePaso: 'Elaboración de informe de necesidad para revisión y aprobación (Previa revisión de Compras Públicas y Control Previo)', area: 'UNIDAD/ÁREA REQUIRENTE (TÉCNICO)', medio: 'ZIMBRA', dirigidoA: 'RESPONSABLE DE UNIDAD / ÁREA REQUIRENTE', anexos: 'Proyecto de Informe de Necesidad', subpasos: [
+                        { nombreSubpaso: '3.1 – Revisa y aprueba Informe de Necesidad, como insumo para iniciar proceso de contratación.', area: 'RESPONSABLE DE UNIDAD / ÁREA REQUIRENTE', medio: 'ZIMBRA', dirigidoA: 'UNIDAD/ÁREA REQUIRENTE (TÉCNICO)', anexos: 'Informe de necesidad aprobado', completado: false }
+                    ]},
+                    { id: 104, orden: '4', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de Certificación (Verificación Catálogo Electrónico)', area: 'RESPONSABLE DE UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: [
+                        { nombreSubpaso: '4.1 – Entrega Certificación CATE (Verificación Catálogo Electrónico)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación CATE', completado: false }
+                    ]},
+                    { id: 105, orden: '5', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de autorización para Inicio de Etapa Preparatoria', area: 'RESPONSABLE DE UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Certificación Stock / Informe de necesidad', subpasos: [
+                        { nombreSubpaso: '5.1 – Sumilla electrónica autorización de Inicio Etapa Preparatoria', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', completado: false }
+                    ]},
+                    { id: 106, orden: '6', fase: 'FASE PREPARATORIA', nombrePaso: 'Elaboración de Proyecto de especificaciones técnicas o términos de referencia para revisión de Compras Públicas y Control Interno.', area: 'UNIDAD/ÁREA REQUIRENTE (TÉCNICO)', medio: 'ZIMBRA', dirigidoA: 'COMPRAS PÚBLICAS - CONTROL INTERNO', anexos: 'Proyecto TDR o ET', subpasos: [
+                        { nombreSubpaso: '6.1 – Aprobación y suscripción de Especificaciones Técnicas o Términos de referencia para publicación en SOCE - No incluye presupuesto referencial', area: 'UNIDAD/RESPONSABLE ÁREA REQUIRENTE (TÉCNICO)', medio: 'ZIMBRA', dirigidoA: 'UNIDAD/ÁREA REQUIRENTE (TÉCNICO)', anexos: 'TDR o ET', completado: false }
+                    ]},
+                    { id: 107, orden: '7', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de autorización para la publicación de necesidad Ínfima Cuantía', area: 'RESPONSABLE DE UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'TDR o ET', subpasos: [
+                        { nombreSubpaso: '7.1 – Sumilla electrónica Autorización de Publicación', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', completado: false },
+                        { nombreSubpaso: '7.2 – Publicación de Ínfima cuantía en cumplimiento del artículo 152 del RLOSNCP', area: 'COMPRAS PÚBLICAS', medio: 'PORTAL', dirigidoA: 'PROVEEDORES', completado: false }
+                    ]},
+                    { id: 108, orden: '8', fase: 'FASE PREPARATORIA', nombrePaso: 'Recepción de Ofertas, verificación de habilitación proveedores.', area: 'COMPRAS PÚBLICAS', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: '', subpasos: [
+                        { nombreSubpaso: '8.1 – Elaboración de Estudio de Mercado para revisión de compras públicas y control interno', area: 'UNIDAD REQUIRENTE', medio: 'ZIMBRA', dirigidoA: 'DGI', anexos: 'Estudio de Mercado', completado: false },
+                        { nombreSubpaso: '8.2 – Aprobación de Estudio de Mercado luego de validaciones y presentación a DGI de documentos preparatorios finales con la recomendación de administrador/a de orden de compra.', area: 'UNIDAD REQUIRENTE', medio: 'ZIMBRA', dirigidoA: 'DGI', anexos: 'Términos de referencia o Especificaciones Técnicas debidamente legalizadas', completado: false }
+                    ]},
+                    { id: 109, orden: '9', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud para análisis de viabilidad para asignación, incremento-disminución presupuestaria. (EN CASO DE REQUERIRSE)', area: 'RESPONSABLE DE UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: '', subpasos: [
+                        { nombreSubpaso: '9.1 – Informe de viabilidad favorable o no favorable de asignación, incremento-disminución presupuestaria. De requerirse, solicita autorización para aplicación de modificación presupuestaria y emisión de resolución.', area: 'FINANCIERO/PLANIFICACIÓN', medio: 'QUIPUX', dirigidoA: 'DGI', completado: false },
+                        { nombreSubpaso: '9.2 – Traslada informe de viabilidad a la Unidad Requirente / Remite autorización de modificación presupuestaria y solicita a Jurídico la Resolución correspondiente', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'FINANCIERO / DAJ / UNIDAD REQUIRENTE', completado: false },
+                        { nombreSubpaso: '9.2.1 – Emisión y entrega de Resolución Modificación Presupuestaria (EN CASO DE REQUERIRSE)', area: 'JURÍDICO', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Resolución', completado: false },
+                        { nombreSubpaso: '9.3 – Revisión del PAC de la Unidad Requirente para verificar si existen modificaciones.', area: 'RESPONSABLE UNIDAD REQUIRENTE', medio: 'PORTAL', dirigidoA: '', completado: false },
+                        { nombreSubpaso: '9.3.1 – Solicitar Certificaciones POA, Presupuestaria y PAC (CASO DE SER UN PROCESO NO PLANIFICADO NO ES NECESARIA SU CONSTANCIA EN EL PAC)', area: 'UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'PLANIFICACIÓN-DF-DA', completado: false },
+                        { nombreSubpaso: '9.4 – Reasigna pedido de Certificación a Control Interno para revisión previa', area: 'UNIDAD REQUIRENTE', medio: 'QUIPUX TEMPORAL', dirigidoA: 'CONTROL INTERNO', anexos: 'Matriz Ejecución', completado: false },
+                        { nombreSubpaso: '9.5.1 – Entrega de Certificación POA', area: 'PLANIFICACIÓN', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación POA', completado: false },
+                        { nombreSubpaso: '9.5.2 – Entrega de Certificación Presupuestaria', area: 'FINANCIERO', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación Presupuestaria', completado: false },
+                        { nombreSubpaso: '9.5.3 – Entrega de Certificación PAC (SI NO HUBO MODIFICACIÓN)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación PAC', completado: false }
+                    ]},
+                    { id: 110, orden: '10', fase: 'FASE PREPARATORIA', nombrePaso: 'Procedimiento de Reforma al PAC para entrega de certificación PAC', area: 'UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'DA-DGI', anexos: '', subpasos: [
+                        { nombreSubpaso: '10.1 – Solicitud de Reforma al PAC (EN CASO DE REQUERIRSE) y Certificación PAC', area: 'RESPONSABLE DE UNIDAD/ÁREA REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', completado: false },
+                        { nombreSubpaso: '10.2 – Revisa Reforma y reasigna solicitud de elaboración de Resolución de Reforma a PAC hacia DGI junto con matriz suscrita conforme delegación de competencias vigente.', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Matriz reforma suscrita y anexos de lo actuado hasta este punto del flujo', completado: false },
+                        { nombreSubpaso: '10.3 – Solicitud de elaboración de Resolución de Reforma a PAC', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DAJ', completado: false },
+                        { nombreSubpaso: '10.4 – Elaboración y envío de Resolución Reforma PAC suscrita por DGI', area: 'RESPONSABLE DAJ', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Resolución reforma PAC', completado: false },
+                        { nombreSubpaso: '10.5 – Emisión y entrega de Resolución Reforma PAC debidamente suscrita', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Resolución reforma PAC', completado: false },
+                        { nombreSubpaso: '10.6 – Reasigna a Compras Públicas para publicación y ejecución de Reforma en el SOCE.', area: 'RESPONSABLE DA', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Resolución reforma PAC', completado: false },
+                        { nombreSubpaso: '10.7 – Registro Reforma PAC en portal y elaboración de certificación PAC', area: 'COMPRAS PÚBLICAS', medio: 'PORTAL', dirigidoA: 'SERCOP', anexos: 'Matriz Reforma suscrita y Resolución Reforma PAC', completado: false },
+                        { nombreSubpaso: '10.8 – Entrega de Certificación PAC, luego de Reforma', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación PAC', completado: false }
+                    ]},
+                    { id: 111, orden: '11', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de autorización, contratación, recomendación de adjudicación y ratificación de recomendación de Administrador de Orden Compra', area: 'UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Documentación habilitante', subpasos: [
+                        { nombreSubpaso: '11.1 – Reasigna Sumilla electrónica con autorización para la contratación y adjudicación; y se acepta la recomendación de Administrador de Orden Compra', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE Y DA', completado: false }
+                    ]},
+                    { id: 112, orden: '12', fase: 'FASE PREPARATORIA', nombrePaso: 'Informa autorización para la contratación; solicitando emisión de cuadro comparativo y orden de compra', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: [
+                        { nombreSubpaso: '12.1 – Resigna autorización y expediente a Compras Públicas solicitando elaboración de Cuadro Comparativo y orden de compra', area: 'RESPONSABLE DE DA', medio: 'QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', completado: false }
+                    ]},
+                    // ── FASE PRECONTRACTUAL ──
+                    { id: 113, orden: '13', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Entrega de expediente fase preparatoria', area: 'UNIDAD REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: []},
+                    { id: 114, orden: '14', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Elabora cuadro comparativo y entrega para la suscripción correspondiente.', area: 'COMPRAS PÚBLICAS', medio: 'EXCEL', dirigidoA: 'UNIDAD REQUIRENTE', anexos: '', subpasos: []},
+                    { id: 115, orden: '15', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Gestión de Orden de Compra y gestión de suscripción', area: 'COMPRAS PÚBLICAS', medio: 'CORREO', dirigidoA: 'DGI', anexos: '', subpasos: [
+                        { nombreSubpaso: '15.1 – Publicación de la orden de compra en el portal "NECESIDADES DE CONTRATACIÓN Y RECEPCIÓN DE PROFORMAS".', area: 'COMPRAS PÚBLICAS', medio: 'SOCE', dirigidoA: 'COMPRAS PÚBLICAS', completado: false }
+                    ]},
+                    { id: 116, orden: '16', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Registro de adjudicación de Orden suscrita por DGI', area: 'COMPRAS PÚBLICAS', medio: 'CORREO', dirigidoA: 'PROVEEDOR ADJUDICADO', anexos: 'Orden de Compra', subpasos: []},
+                    { id: 117, orden: '17', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Notificación designación como Administrador de Orden de Compra.', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'SERVIDOR DESIGNADO', anexos: '', subpasos: [
+                        { nombreSubpaso: '17.1 – Entregar expediente físico-digital fases preparatoria, precontractual y contractual al Administrador de Orden de Compra designado.', area: 'COMPRAS PÚBLICAS', medio: 'QUIPUX', dirigidoA: 'ADMINISTRADOR ORDEN DE COMPRA', anexos: 'Expediente', completado: false }
+                    ]},
+                    // ── FASE CONTRACTUAL ──
+                    { id: 118, orden: '18', fase: 'FASE CONTRACTUAL', nombrePaso: 'Recomendación de Técnico no interviniente', area: 'ADMINISTRADOR ORDEN DE COMPRA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: '', subpasos: [
+                        { nombreSubpaso: '18.1 – Notificación designación como Técnico No Interviniente', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'SERVIDOR DESIGNADO', completado: false }
+                    ]},
+                    { id: 119, orden: '19', fase: 'FASE CONTRACTUAL', nombrePaso: 'Supervisión de cumplimiento de orden de compra', area: 'ADMINISTRADOR DE ORDEN DE COMPRA', medio: 'CANALES DIGITALES O FÍSICOS', dirigidoA: 'PROVEEDOR', anexos: '', subpasos: []},
+                    { id: 120, orden: '20', fase: 'FASE CONTRACTUAL', nombrePaso: 'Elaboración y suscripción de acta entrega recepción conforme el artículo 321 del RLOSNCP', area: 'ADMINISTRADOR DE ORDEN DE COMPRA', medio: 'CANALES DIGITALES', dirigidoA: 'PROVEEDOR', anexos: 'Acta entrega recepción', subpasos: []},
+                    { id: 121, orden: '21', fase: 'FASE CONTRACTUAL', nombrePaso: 'Liquidación de orden de compra en sistema informático de catálogo electrónico cargando el acta entrega recepción suscrita.', area: 'ADMINISTRADOR DE ORDEN DE COMPRA', medio: 'CANALES DIGITALES', dirigidoA: '', anexos: 'Acta entrega recepción', subpasos: []},
+                    // ── FASE DE EVALUACIÓN ──
+                    { id: 122, orden: '22', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Remite Factura/s para registro en el portal institucional SOCE dentro del mes de cancelada la orden de compra.', area: 'FINANCIERO', medio: 'QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', anexos: '', subpasos: []},
+                    { id: 123, orden: '23', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Registro de la factura en el portal institucional SOCE.', area: 'COMPRAS PÚBLICAS', medio: 'SOCE', dirigidoA: 'SERCOP', anexos: '', subpasos: []},
+                    { id: 124, orden: '24', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Solicitud de pago', area: 'ADMINISTRADOR DE ORDEN DE COMPRA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Acta entrega recepción, constancia de liquidación de orden de compra en sistema SERCOP', subpasos: [
+                        { nombreSubpaso: '24.1 – Autorización y disposición de pago', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'FINANCIERO', anexos: 'Acta entrega recepción, constancia de liquidación de orden de compra en sistema SERCOP', completado: false },
+                        { nombreSubpaso: '24.2 – Pago a proveedor', area: 'FINANCIERO', medio: 'QUIPUX', dirigidoA: 'PROVEEDOR', completado: false }
+                    ]}
                 ],
                 'Catálogo Electrónico': [
                     // ── FASE PREPARATORIA ──
@@ -322,7 +401,7 @@
                         { nombreSubpaso: '13.3 – Revisión del PAC de la Unidad Requirente para verificar modificaciones', area: 'RESPONSABLE UNIDAD', medio: 'PORTAL', dirigidoA: '', completado: false },
                         { nombreSubpaso: '13.3.1 – Solicitar Certificaciones POA, Presupuestaria y (PAC SI NO HAY MODIFICACIÓN)', area: 'UNIDAD / DIRECCIÓN REQUIRENTE', medio: 'QUIPUX', dirigidoA: 'PLANIFICACIÓN-DF-DA', completado: false },
                         { nombreSubpaso: '13.4 – Reasigna pedido de Certificación a Control Interno para revisión previa', area: 'UNIDAD / DIRECCIÓN REQUIRENTE', medio: 'QUIPUX TEMPORAL', dirigidoA: 'CONTROL INTERNO', anexos: 'Matriz Ejecución', completado: false },
-                        { nombreSubpaso: '13.5 – Entrega de Certificaciones', area: 'PLANIFICACIÓN-DAF-DAD', medio: 'QUIPUX', dirigidoA: 'UNIIDAD REQUIRENTE', completado: false },
+                        { nombreSubpaso: '13.5 – Entrega de Certificaciones', area: 'PLANIFICACIÓN-DAF-DAD', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', completado: false },
                         { nombreSubpaso: '13.5.1 – Entrega de Certificación POA', area: 'PLANIFICACIÓN', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación POA', completado: false },
                         { nombreSubpaso: '13.5.2 – Entrega de Certificacion Presupuestaria', area: 'FINANCIERO', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación Presupuestaria', completado: false },
                         { nombreSubpaso: '13.5.3 – Entrega de Cetificación PAC (SI NO HUBO MODIFICACIÓN)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRENTE', anexos: 'Certificación PAC', completado: false },
@@ -386,7 +465,7 @@
                     { id: 337, orden: '37', fase: 'FASE CONTRACTUAL', nombrePaso: 'Recomendación de Técnico no inteviniente.', area: 'ADMINISTRADOR DE CONTRATO', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: '', subpasos: []},
                     { id: 338, orden: '38', fase: 'FASE CONTRACTUAL', nombrePaso: 'Notificación designación Técnico no interviniente', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'SERVIDOR DESIGNADO', anexos: '', subpasos: []},
                     { id: 339, orden: '39', fase: 'FASE CONTRACTUAL', nombrePaso: 'Supervisión de cumplimiento de contrato - Coordinar acciones para garantizar la debida ejecución.', area: 'ADMINISTRADOR DE CONTRATO', medio: 'CANALES DIGITALES O FÍSICOS', dirigidoA: 'PROVEEDOR', anexos: '', subpasos: []},
-                    
+
                     // ── FASE DE EVALUACIÓN ──
                     { id: 340, orden: '40', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Elaboración y suscripción de acta entrega recepción conforme el Capítulo V del RLOSNCP', area: 'ADMINISTRADOR DE CONTRATO', medio: 'CANALES DIGITALES', dirigidoA: 'PROVEEDOR', anexos: 'Acta entrega recepción', subpasos: []},
                     { id: 341, orden: '41', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Solicitud de pago', area: 'ADMINISTRADOR DE CONTRATO', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Acta entrega recepción, Informe de satisfacción, ingreso a bodega', subpasos: [
@@ -397,9 +476,106 @@
                     { id: 343, orden: '43', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Finalización del proceso en el SOCE', area: 'COMPRAS PÚBLICAS', medio: 'SOCE', dirigidoA: 'COMPRAS PÚBLICAS', anexos: '', subpasos: []}
                 ],
                 'Régimen Especial': [
-                    { id: 401, orden: '1', nombrePaso: 'Revisión de condiciones especiales del régimen', area: 'UNIDAD REQUERIENTE', medio: 'DOCUMENTO', dirigidoA: 'DGI' },
-                    { id: 402, orden: '2', nombrePaso: 'Aprobación interna del proceso por la jefatura', area: 'UNIDAD REQUERIENTE', medio: 'SISTEMA', dirigidoA: 'JEFE DE UNIDAD' },
-                    { id: 403, orden: '3', nombrePaso: 'Publicación de la orden de contratación especial', area: 'UNIDAD REQUERIENTE', medio: 'PORTAL ELECTRÓNICO', dirigidoA: 'PROVEEDOR' }
+                    // ── FASE PREPARATORIA ──
+                    { id: 400, orden: 'A', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de reunión previa para coordinación, análisis preliminar y directrices del proceso a ejecutarse', area: 'UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'ZIMBRA', dirigidoA: 'UNIDAD REQUIRIENTE / DGI / DF / DA', anexos: '', subpasos: [] },
+                    { id: 401, orden: '1', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitar revisión de stock de bodega en el caso de bienes', area: 'RESPONSABLE UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: [
+                        { nombreSubpaso: '1.1 – Emisión de "Certificación stock de bodega"', area: 'RESPONSABLE UNIDAD / ÁREA REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', anexos: 'Certificación Stock', completado: false }
+                    ]},
+                    { id: 402, orden: '2', fase: 'FASE PREPARATORIA', nombrePaso: 'Revisión de la actividad en POA', area: 'RESPONSABLE UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'REGISTROS INTERNOS', dirigidoA: '', anexos: '', subpasos: [
+                        { nombreSubpaso: '2.1 – Solicitud de inclusión o modificación en POA (EN CASO DE REQUERIRSE)', area: 'RESPONSABLE UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DGI', completado: false },
+                        { nombreSubpaso: '2.1.1 – Autorización y reasignación a Planificación', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'PLANIFICACIÓN', completado: false }
+                    ]},
+                    { id: 403, orden: '3', fase: 'FASE PREPARATORIA', nombrePaso: 'Elaboración de informe de necesidad para revisión y aprobación (Previa revisión de Compras Públicas y Control Previo).', area: 'UNIDAD/DIRECCIÓN REQUIRIENTE (TÉCNICO)', medio: 'ZIMBRA', dirigidoA: 'RESPONSABLE DE UNIDAD / ÁREA REQUIRIENTE', anexos: 'Proyecto de Informe de Necesidad', subpasos: [
+                        { nombreSubpaso: '3.1 – Revisa y aprueba Informe de Necesidad, como insumo para iniciar proceso de contratación.', area: 'RESPONSABLE DE UNIDAD / ÁREA REQUIRIENTE', medio: 'ZIMBRA', dirigidoA: 'UNIDAD/ÁREA REQUIRIENTE (TÉCNICO)', anexos: 'Informe de necesidad aprobado', completado: false }
+                    ]},
+                    { id: 404, orden: '4', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de Certificación (Verificación Catálogo Electrónico)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: [
+                        { nombreSubpaso: '4.1 – Entrega Certificación CATE (Verificación Catálogo Electrónico)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Certificación CATE', completado: false }
+                    ]},
+                    { id: 405, orden: '5', fase: 'FASE PREPARATORIA', nombrePaso: 'Envío de solicitud de informe de pertinencia a Contraloría General del Estado. (De ser el caso).', area: 'RESPONSABLE DA', medio: 'VENTANILLA ELECTRÓNICA DE LA CGE', dirigidoA: 'CGE', anexos: 'Art. 61 y 65 del Reglamento de la LOSNCP', subpasos: [
+                        { nombreSubpaso: '5.1 – RESPUESTA DE CONTRALORÍA GENERAL DEL ESTADO (3 opciones)', area: 'OGE', medio: 'MEDIOS ELECTRÓNICOS Y PÁGINA WEB INSTITUCIONAL', dirigidoA: 'DG o DGI', completado: false },
+                        { nombreSubpaso: '5.1.1 – Con la respuesta de informe de pertinencia favorable se continúa con el punto 5', area: 'OGE', medio: 'MEDIOS ELECTRÓNICOS Y PÁGINA WEB INSTITUCIONAL', dirigidoA: 'DG o DGI', anexos: 'Informe de pertinencia favorable.', completado: false },
+                        { nombreSubpaso: '5.1.2 – Con la respuesta de informe de pertinencia devuelto se realizarán las correcciones solicitadas y remitiremos nuevamente a la CGE', area: 'OGE', medio: 'MEDIOS ELECTRÓNICOS Y PÁGINA WEB INSTITUCIONAL', dirigidoA: 'DG o DGI', anexos: 'Art. 62 Reglamento LOSNCP.', completado: false },
+                        { nombreSubpaso: '5.1.3 – Con la respuesta de informe de pertinencia desfavorable, se finaliza el proceso y no se realiza la contratación.', area: 'OGE', medio: 'MEDIOS ELECTRÓNICOS Y PÁGINA WEB INSTITUCIONAL', dirigidoA: 'DG o DGI', anexos: 'Informe de pertinencia desfavorable.', completado: false }
+                    ]},
+                    { id: 406, orden: '6', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud de autorización para inicio de la etapa preparatoria', area: 'RESPONSABLE UNIDAD/DIRECCIÓN REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Informe de necesidad aprobado', subpasos: [
+                        { nombreSubpaso: '6.1 – Sumilla electrónica autorización de inicio etapa preparatoria.', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', completado: false }
+                    ]},
+                    { id: 407, orden: '7', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitar obtención de proformas y procesos similares.', area: 'RESPONSABLE UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'ZIMBRA', dirigidoA: 'COMPRAS PÚBLICAS', anexos: '', subpasos: [] },
+                    { id: 408, orden: '8', fase: 'FASE PREPARATORIA', nombrePaso: 'Envío de correo solicitando proformas y Publicaciones a la herramienta "Necesidades de Contratación y Recepción de Proformas", del informe de necesidad a.g., eff.', area: 'COMPRAS PÚBLICAS', medio: 'CORREO Y PORTAL', dirigidoA: 'SERCOP', anexos: '', subpasos: [] },
+                    { id: 409, orden: '9', fase: 'FASE PREPARATORIA', nombrePaso: 'Revisión y entrega de proformas (cotizaciones) y Verificación de Inhabilidades del procedimiento a contratos.', area: 'COMPRAS PÚBLICAS', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', anexos: 'Proformas / Verificación de Inhabilidades', subpasos: [] },
+                    { id: 410, orden: '10', fase: 'FASE PREPARATORIA', nombrePaso: 'Consulta de procesos similares en el portal de compras públicas y entrega de los resultados.', area: 'UNIDAD/DIRECCIÓN REQUIRIENTE (TÉCNICO)', medio: 'ZIMBRA', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', anexos: 'Informe de Proceso Similares', subpasos: [] },
+                    { id: 411, orden: '11', fase: 'FASE PREPARATORIA', nombrePaso: 'Elaboración de estudio de mercado (Previa revisión de Compras Públicas y Control Previo).', area: 'UNIDAD/DIRECCIÓN REQUIRIENTE (TÉCNICO)', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', anexos: 'Estudio de mercado debidamente legalizado', subpasos: [] },
+                    { id: 412, orden: '12', fase: 'FASE PREPARATORIA', nombrePaso: 'Elaboración y aprobación de términos de referencia o especificaciones técnicas. (Incluye presupuesto referencial en el estudio de mercado, recomendación del/la delegado/a o comisión técnica para la fase precontractual y administrador del contrato.) (Previa revisión de Compras Públicas y Control Previo.)', area: 'UNIDAD/DIRECCIÓN REQUIRIENTE (TÉCNICO)', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', anexos: 'Términos de referencia o especificaciones técnicas debidamente legalizadas', subpasos: [] },
+                    { id: 413, orden: '13', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitud para análisis de viabilidad para asignación, incremento-disminución presupuestaria. (EN CASO DE REQUERIRSE)', area: 'RESPONSABLE UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: '', subpasos: [
+                        { nombreSubpaso: '13.1 – Informe de viabilidad favorable o no favorable de asignación, incremento-disminución presupuestaria. De requerirse, solicita autorización para aplicación de modificación presupuestaria y emisión de resolución.', area: 'FINANCIERO/PLANIFICACIÓN', medio: 'QUIPUX', dirigidoA: 'DGI', completado: false },
+                        { nombreSubpaso: '13.2 – Traslada informe de viabilidad favorable o no favorable a la Unidad Requiriente para trámite correspondiente.', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'FINANCIERO / DAI / UNIDAD REQUIRIENTE', completado: false },
+                        { nombreSubpaso: '13.3 – Solicitar Certificaciones POA, Presupuestaria y (PAC SI NO HAY MODIFICACIÓN)', area: 'UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', completado: false },
+                        { nombreSubpaso: '13.4 – Reasigna pedido de Certificación a Control Interno para revisión previa.', area: 'UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'PLANIFICACIÓN-DP-DA', completado: false },
+                        { nombreSubpaso: '13.5.1 – Entrega de Certificación POA', area: 'PLANIFICACIÓN', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', anexos: 'Certificación POA', completado: false },
+                        { nombreSubpaso: '13.5.2 – Entrega de Certificación Presupuestaria', area: 'FINANCIERO', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', anexos: 'Certificación Presupuestaria', completado: false },
+                        { nombreSubpaso: '13.5.3 – Entrega de Certificación PAC (SI NO HUBO MODIFICACIÓN)', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE UNIDAD/ÁREA REQUIRIENTE', anexos: 'Certificación PAC', completado: false },
+                        { nombreSubpaso: '13.6 – Procedimiento de Reforma al PAC para entrega de certificación PAC', area: 'UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'DA-DGI', completado: false },
+                        { nombreSubpaso: '13.6.1 – Solicitud de Reforma al PAC (EN CASO DE REQUERIRSE) Certificación PAC', area: 'RESPONSABLE UNIDAD/DIRECCIÓN REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', completado: false },
+                        { nombreSubpaso: '13.6.2 – Revisa Reforma y reasigna solicitud de elaboración de Resolución de Reforma a PAC hacia DGI junto con matriz suscrita conforme delegación de competencias vigente.', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Matriz reforma suscrita y anexos de lo actuado hasta este punto del flujo.', completado: false },
+                        { nombreSubpaso: '13.6.3 – Solicitud de elaboración de Resolución de Reforma a PAC', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DAJ', anexos: 'Documentación habilitante', completado: false },
+                        { nombreSubpaso: '13.6.4 – Elaboración y envío de Resolución Reforma PAC suscrita por DGI', area: 'RESPONSABLE DAJ', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Resolución reforma PAC', completado: false },
+                        { nombreSubpaso: '13.6.5 – Emisión y entrega de Resolución Reforma PAC debidamente suscrita', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Resolución reforma PAC', completado: false },
+                        { nombreSubpaso: '13.6.6 – Reasigna a Compras Públicas para publicación y ejecución de Reforma en el SOCE.', area: 'RESPONSABLE DA', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Resolución reforma PAC', completado: false },
+                        { nombreSubpaso: '13.6.7 – Registro Reforma PAC en portal y elaboración de certificación PAC', area: 'COMPRAS PÚBLICAS', medio: 'PORTAL', dirigidoA: 'SERCOP', anexos: 'Matriz Reforma suscrita y Resolución Reforma PAC', completado: false },
+                        { nombreSubpaso: '13.6.8 – Entrega Certificación PAC, luego de Reforma', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE', anexos: 'Certificación', completado: false }
+                    ]},
+                    { id: 414, orden: '14', fase: 'FASE PREPARATORIA', nombrePaso: 'Solicitar autorización de contratación y su inicio al Portal de Compras Públicas y recomendación de delegado ó miembros de la comisión técnica para llevar a cabo fase precontractual.', area: 'RESPONSABLE UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE/ÁREA REQUIRIENTE', anexos: '', subpasos: [
+                        { nombreSubpaso: '14.1 – Autorización de la contratación mediante sumilla electrónica.', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'UNIDAD REQUIRIENTE/ÁREA REQUIRIENTE', completado: false }
+                    ]},
+                    { id: 415, orden: '15', fase: 'FASE PREPARATORIA', nombrePaso: 'Entregar expediente fase preparatoria.', area: 'RESPONSABLE UNIDAD / DIRECCIÓN REQUIRIENTE', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Documentación habilitante', subpasos: [] },
+                    // ── FASE PRECONTRACTUAL ──
+                    { id: 416, orden: '16', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Reasigna expediente y solicita elaboración de Pliegos - Convocatoria.', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Documentos habilitantes más Pliegos - Convocatoria', subpasos: [] },
+                    { id: 417, orden: '17', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Elaboración SOCE - Cargar Formato SOCE - Pliegos para envío forma y firma DGI', area: 'COMPRAS PÚBLICAS', medio: 'SOCE / ZIMBRA', dirigidoA: 'DGI/RESPONSABLE DA', anexos: '', subpasos: [] },
+                    { id: 418, orden: '18', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Reasigna a la DGI solicitud para elaboración de Resolución de Inicio', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Documentación habilitante', subpasos: [
+                        { nombreSubpaso: '18.1 – Remite solicitud de elaboración de Resolución de Inicio', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DAJ', anexos: 'Documentación habilitante', completado: false },
+                        { nombreSubpaso: '18.2 – Elaboración y envío de Resolución de Inicio', area: 'RESPONSABLE DIRECCIÓN JURÍDICA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Resolución de Inicio', completado: false },
+                        { nombreSubpaso: '18.3 – Emisión y entrega de Resolución de Inicio debidamente suscrita', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Resolución de Inicio', completado: false },
+                        { nombreSubpaso: '18.4 – Reasigna Resolución de Inicio a Compras Públicas', area: 'RESPONSABLE DA', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Resolución de Inicio', completado: false }
+                    ]},
+                    { id: 419, orden: '19', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Publicación del proceso de contratación en el SOCE: Resolución de inicio, pliegos y demás información considerada relevante para el proceso.', area: 'COMPRAS PÚBLICAS', medio: 'PORTAL', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Documentación habilitante', subpasos: [] },
+                    { id: 420, orden: '20', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Notificar publicación y entregar acta de contratación al servidor designado para iniciar y llevar a cabo la fase precontractual del proceso.', area: 'COMPRAS PÚBLICAS', medio: 'QUIPUX', dirigidoA: 'DELEGADO FASE PRECONTRACTUAL', anexos: 'Documentación habilitante', subpasos: [] },
+                    { id: 421, orden: '21', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Audiencia de preguntas, respuestas y aclaraciones', area: 'DELEGADO/COMISIÓN TÉCNICA DE LA FASE PRECONTRACTUAL / COMPRAS PÚBLICAS', medio: 'SOCE', dirigidoA: '', anexos: 'Documentación habilitante', subpasos: [] },
+                    { id: 422, orden: '22', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Elaboración y Publicación del Acta de preguntas y respuestas', area: 'DELEGADO/COMISIÓN TÉCNICA DE LA FASE PRECONTRACTUAL / COMPRAS PÚBLICAS', medio: 'SOCE', dirigidoA: 'SERCOP', anexos: '', subpasos: [] },
+                    { id: 423, orden: '23', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Elaboración y Publicación del Acta de Apertura de Ofertas', area: 'DELEGADO/COMISIÓN TÉCNICA DE LA FASE PRECONTRACTUAL / COMPRAS PÚBLICAS', medio: 'SOCE', dirigidoA: '', anexos: 'Documentación habilitante', subpasos: [] },
+                    { id: 424, orden: '24', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Elaboración y Publicación del Acta de convalidación de Ofertas', area: 'DELEGADO/COMISIÓN TÉCNICA DE LA FASE PRECONTRACTUAL / COMPRAS PÚBLICAS', medio: 'SOCE', dirigidoA: '', anexos: '', subpasos: [] },
+                    { id: 425, orden: '25', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Elaboración y Publicación de Acta de calificación de Ofertas', area: 'DELEGADO', medio: 'SOCE', dirigidoA: '', anexos: '', subpasos: [] },
+                    { id: 426, orden: '26', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Entrega de Informe de Recomendación de Adjudicación (con sello) para aprobación', area: 'DELEGADO PRECONTRACTUAL/COMISIÓN TÉCNICA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Informe de Recomendación de Adjudicación', subpasos: [] },
+                    { id: 427, orden: '27', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Aprueba el Informe de Recomendación de Adjudicación, lo carga en el quipux y lo reasigna nuevamente para continuar con el trámite pertinente.', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: '', subpasos: [] },
+                    { id: 428, orden: '28', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Reasignación del Informe de Recomendación de Adjudicación. Esta solicitud incluye la aceptación de la recomendación del Administrador de Contrato emitida en las Especificaciones Técnicas o TDRs para la designación en la misma Resolución.', area: 'RESPONSABLE DA', medio: 'ZIMBRA', dirigidoA: 'DGI', anexos: 'Documentación habilitante', subpasos: [
+                        { nombreSubpaso: '28.1 – Solicitud de elaboración de Resolución de Adjudicación', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DAJ', anexos: 'Documentación habilitante', completado: false },
+                        { nombreSubpaso: '28.2 – Elaboración y envío de Resolución de Adjudicación', area: 'RESPONSABLE DIRECCIÓN JURÍDICA', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Resolución de Adjudicación', completado: false }
+                    ]},
+                    { id: 429, orden: '29', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Emisión y entrega de Resolución de Adjudicación debidamente suscrita, que incluye en su contenido la designación del Administrador del Contrato.', area: 'DGI', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'RESPONSABLE DA', anexos: 'Resolución de Inicio', subpasos: [
+                        { nombreSubpaso: '29.1 – Reasigna Resolución de Adjudicación a Compras Públicas', area: 'RESPONSABLE DA', medio: 'COMENTARIO ELECTRÓNICO VÍA QUIPUX', dirigidoA: 'COMPRAS PÚBLICAS', anexos: 'Resolución de Inicio', completado: false }
+                    ]},
+                    { id: 430, orden: '30', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Adjudicación en el Portal y publicación de Resolución.', area: 'COMPRAS PÚBLICAS', medio: 'PORTAL', dirigidoA: '', anexos: '', subpasos: [] },
+                    { id: 431, orden: '31', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Notificación de Adjudicación.', area: 'COMPRAS PÚBLICAS', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: '', subpasos: [] },
+                    { id: 432, orden: '32', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Revisión de documentación habilitante: Tabla de precios y pólizas (de ser el caso).', area: 'UNIDAD REQUIRIENTE/DA', medio: 'ZIMBRA', dirigidoA: 'OFERENTE ADJUDICADO', anexos: '', subpasos: [] },
+                    { id: 433, orden: '33', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Solicitar la elaboración de contrato.', area: 'RESPONSABLE DA', medio: 'QUIPUX', dirigidoA: 'RESPONSABLE DAJ', anexos: '', subpasos: [
+                        { nombreSubpaso: '33.1 – Entrega de contrato.', area: 'RESPONSABLE DIRECCIÓN JURÍDICA', medio: 'QUIPUX', dirigidoA: 'DGI - AREA REQUIRIENTE', anexos: 'Contrato', completado: false }
+                    ]},
+                    { id: 434, orden: '34', fase: 'FASE PRECONTRACTUAL', nombrePaso: 'Inscripción de contrato', area: 'DGI', medio: 'ZIMBRA', dirigidoA: 'PROVEEDOR ADJUDICADO', anexos: 'Contrato', subpasos: [
+                        { nombreSubpaso: '34.1 – Publicar: contrato y garantías', area: 'COMPRAS PÚBLICAS', medio: 'PORTAL', dirigidoA: '', completado: false },
+                        { nombreSubpaso: '34.2 – Notificar Publicación de contrato', area: 'COMPRAS PÚBLICAS', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Respaldo de Publicación de Contrato', completado: false }
+                    ]},
+                    // ── FASE CONTRACTUAL ──
+                    { id: 435, orden: '35', fase: 'FASE CONTRACTUAL', nombrePaso: 'Notificación designación de Administrador de Contrato', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'ADMINISTRADOR DE CONTRATO', anexos: 'Contrato suscrito', subpasos: [
+                        { nombreSubpaso: '35.1 – Entregar expediente físico-digital fases preparatoria, precontractual y contractual al Administrador de Contrato designado.', area: 'COMPRAS PÚBLICAS', medio: 'QUIPUX', dirigidoA: 'ADMINISTRADOR DE CONTRATO', anexos: 'Expediente', completado: false }
+                    ]},
+                    { id: 436, orden: '36', fase: 'FASE CONTRACTUAL', nombrePaso: 'Recomendación del Técnico no interviniente.', area: 'ADMINISTRADOR DE CONTRATO', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: '', subpasos: [
+                        { nombreSubpaso: '36.1 – Notificación designación Técnico no interviniente', area: 'DGI', medio: 'QUIPUX', dirigidoA: 'SERVIDOR DESIGNADO COMO TÉCNICO INTERVINIENTE', completado: false }
+                    ]},
+                    { id: 437, orden: '37', fase: 'FASE CONTRACTUAL', nombrePaso: 'Supervisión de cumplimiento de contrato', area: 'ADMINISTRADOR DE CONTRATO', medio: 'CANALES DIGITALES O FÍSICOS', dirigidoA: 'PROVEEDOR', anexos: '', subpasos: [] },
+                    { id: 438, orden: '38', fase: 'FASE CONTRACTUAL', nombrePaso: 'Elaboración y suscripción de acta entrega recepción conforme el Capítulo V del RLOSNCP', area: 'ADMINISTRADOR DE CONTRATO', medio: 'CANALES DIGITALES', dirigidoA: 'PROVEEDOR', anexos: 'Acta entrega recepción', subpasos: [] },
+                    // ── FASE DE EVALUACIÓN ──
+                    { id: 439, orden: '39', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Solicitud de pago.', area: 'ADMINISTRADOR DE CONTRATO', medio: 'QUIPUX', dirigidoA: 'DGI', anexos: 'Acta entrega recepción, Informe de satisfacción, ingreso a bodega (en caso de bienes)', subpasos: [] },
+                    { id: 440, orden: '40', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Verificación de la información considerada relevante para el proceso de contratación: Art. 14 del RLOSNCP y Art. 9 de la - Resolución No. RE-SERCOP-2016-0000072 y su codificación', area: 'COMPRAS PÚBLICAS', medio: 'SOCE', dirigidoA: 'COMPRAS PÚBLICAS', anexos: '', subpasos: [] },
+                    { id: 441, orden: '41', fase: 'FASE DE EVALUACIÓN', nombrePaso: 'Finalización del proceso en el SOCE', area: 'COMPRAS PÚBLICAS', medio: 'SOCE', dirigidoA: 'COMPRAS PÚBLICAS', anexos: '', subpasos: [] }
                 ],
                 'Genérico': [
                     { id: 901, orden: '1', nombrePaso: 'Definir requerimientos básicos del proceso', area: 'UNIDAD REQUERIENTE', medio: 'DOCUMENTO', dirigidoA: 'DGI' },
@@ -650,16 +826,20 @@
             const tipoContrato = contratoOriginal ? contratoOriginal.nombre : "Contrato Ínfima Cuantía";
             
             // Estructura exacta que requiere el dashboard.html
+            const actividadGuardada = JSON.parse(localStorage.getItem('detallesActividad') || '{}');
             const nuevaInstanciaProceso = {
-                id: localStorage.getItem('idProcesoActivo') || Date.now().toString(), // Mantiene el ID si se estaba editando uno existente
+                id: localStorage.getItem('idProcesoActivo') || Date.now().toString(),
                 tipoContrato: tipoContrato,
                 actividadNombre: nombreActividadGlobal,
                 codigoPoa: codigoPOAGlobal,
+                itemPresupuestario: actividadGuardada.item || '-',
+                codigoCpc: actividadGuardada.cpc || '-',
+                asignacion: actividadGuardada.asignacion || '0',
                 fechaModificacion: new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
                 pasosTotales: pasosSeleccionados.length,
-                pasosCompletados: 0, 
-                porcentaje: 0, 
-                pipelineSnapshot: pasosSeleccionados // Mapeado directo a lo que lee el Dashboard al continuar (con el nuevo orden)
+                pasosCompletados: 0,
+                porcentaje: 0,
+                pipelineSnapshot: pasosSeleccionados
             };
 
             // Traer listado actual
