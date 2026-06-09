@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCP - Ejecución de Proceso</title>
+    <title>SCP - Ejecución Integral</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
@@ -32,7 +32,7 @@
         <div class="flex items-center space-x-3">
             <button onclick="irAlDashboard()" class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 font-semibold text-xs py-2 px-4 rounded-xl shadow-sm transition flex items-center space-x-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 001 1m-6 0h6"/></svg>
-                <span>Ir al Inicio</span>
+                <span>Inicio</span>
             </button>
             <div>
                 <h2 id="txt-proceso-titulo" class="text-lg font-bold text-gray-900">Cargando Proceso...</h2>
@@ -42,9 +42,9 @@
         
         <div class="flex items-center space-x-3">
             <div class="flex items-center space-x-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl mr-2">
-                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">👤 Sesión:</span>
+                <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">👤 Rol:</span>
                 <select id="select-rol" onchange="cambiarRol()" class="bg-transparent text-xs font-bold text-blue-600 outline-none cursor-pointer">
-                    <option value="ROLE_SUPER_ADMIN">👑 Super Admin (Acceso Total)</option>
+                    <option value="ROLE_SUPER_ADMIN">👑 Super Admin (Total)</option>
                     <option value="ROLE_UNIDAD_REQUIRENTE">🏢 Unidad Requirente</option>
                     <option value="Gonzalo Moncayo">👤 Admin: Gonzalo Moncayo</option>
                     <option value="Miguel Cabrera">👤 Admin: Miguel Cabrera</option>
@@ -53,10 +53,10 @@
 
             <button id="btn-guardar-parcial" onclick="guardarProgresoActual(false)" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs py-2 px-4 rounded-xl border border-gray-200 shadow-sm transition flex items-center space-x-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
-                <span>Guardar Parcial</span>
+                <span>Guardar</span>
             </button>
             <div class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100">
-                <span id="txt-porcentaje-barra">0%</span> Completado
+                <span id="txt-porcentaje-barra">0%</span>
             </div>
         </div>
     </nav>
@@ -67,7 +67,7 @@
             <div class="bg-gray-50/50 px-5 py-3 border-b border-gray-100 flex justify-between items-center cursor-pointer" onclick="toggleAcordeon()">
                 <span class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center space-x-2">
                     <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                    <span>Información General del Proceso</span>
+                    <span>Información General y Presupuesto</span>
                 </span>
                 <svg id="icono-acordeon" class="w-4 h-4 text-gray-400 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
@@ -83,67 +83,78 @@
             
             <div class="lg:col-span-2 space-y-6">
                 <div id="banner-tarea" class="bg-blue-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500">
-                    <div class="absolute -right-6 -bottom-6 opacity-10 text-white">
-                        <svg class="w-36 h-36" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
-                    </div>
-
                     <div class="flex items-center space-x-2">
-                        <span id="badge-contador-paso" class="bg-blue-700/60 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider transition-colors duration-500">PASO 1 DE 1</span>
+                        <span id="badge-contador-paso" class="bg-blue-700/60 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">PASO 1</span>
                         <span id="badge-rol-requerido" class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">RESPONSABLE: -</span>
-                        <span id="badge-fase-actual" class="bg-white/90 text-gray-800 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ml-auto shadow-sm">FASE PREPARATORIA</span>
+                        <span id="badge-fase-actual" class="bg-white/90 text-gray-800 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ml-auto">FASE PREPARATORIA</span>
                     </div>
 
-                    <h3 class="text-xl font-black tracking-tight mt-3 uppercase">DETALLE DE LA TAREA</h3>
+                    <h3 id="txt-paso-nombre-grande" class="text-xl font-black tracking-tight mt-3 uppercase">NOMBRE DE LA TAREA</h3>
                     
                     <div class="mt-4 pt-4 border-t border-white/20 space-y-1">
-                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Área Responsable General:</span>
-                        <span id="txt-paso-area" class="font-bold text-sm tracking-wide">Cargando...</span>
-                    </div>
-
-                    <div class="mt-4 pt-4 border-t border-white/20 space-y-1">
                         <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Actividad / Paso Operativo:</span>
-                        <p id="txt-paso-nombre" class="text-sm font-medium leading-relaxed">Cargando descripción del paso...</p>
+                        <p id="txt-paso-nombre" class="text-sm font-medium leading-relaxed">Descripción del paso...</p>
                     </div>
 
                     <div class="mt-5 pt-4 border-t border-white/20 space-y-2 relative z-10">
-                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Subpasos / Requisitos Requeridos:</span>
+                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Checklist de Requisitos:</span>
                         <div id="contenedor-subpasos" class="space-y-1.5 mt-2"></div>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 relative">
-                    
                     <div id="alerta-rol" class="hidden bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-xl text-xs mb-5 flex items-start space-x-2 shadow-sm">
                         <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                         <div>
-                            <span class="font-bold block text-[11px] uppercase tracking-wider mb-0.5">Modo Lectura Activado</span>
-                            <span class="text-amber-700/90">Este paso corresponde a <b id="txt-alerta-area">otra área</b>. Tu rol actual no tiene permisos para editar esta fase del proceso.</span>
+                            <span class="font-bold block text-[11px] uppercase tracking-wider">Modo Lectura Activado</span>
+                            <span class="text-amber-700/90">Este paso corresponde a otra área. Tu rol no permite editar esta fase.</span>
                         </div>
                     </div>
 
-                    <form id="form-paso-dinamico" onsubmit="event.preventDefault();" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                        <div><label class="block font-bold text-gray-700 mb-1">Estado del Proceso</label><select id="input-estado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl font-medium text-gray-700 focus:bg-white transition outline-none"><option value="">Seleccionar...</option><option value="Completado">Completado con éxito</option><option value="Observado">En revisión con observaciones</option></select></div>
-                        <div><label class="block font-bold text-gray-700 mb-1">¿Quién tiene el proceso?</label><input id="input-responsable" type="text" placeholder="Nombre del responsable" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none"></div>
-                        <div><label class="block font-bold text-gray-700 mb-1">Fecha de Registro</label><input id="input-fecha" type="date" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none"></div>
-                        <div><label class="block font-bold text-gray-700 mb-1">Medio de Envío</label><select id="input-medio" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl text-gray-700 transition outline-none"></select></div>
-                        <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Número de Memorando / Oficio</label><input id="input-memorando" type="text" placeholder="Ej: SENADI-DTIC-2026-0083-M" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none"></div>
-                        <div><label class="block font-bold text-gray-700 mb-1">Elaborado por</label><input id="input-elaborado" type="text" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none"></div>
-                        <div><label class="block font-bold text-gray-700 mb-1">Revisado por</label><input id="input-revisado" type="text" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none"></div>
-                        <div><label class="block font-bold text-gray-700 mb-1">Aprobado por</label><input id="input-aprobado" type="text" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none"></div>
-                        <div><label class="block font-bold text-gray-700 mb-1">Dirigido a</label><input id="input-dirigido" type="text" placeholder="Nombre o área destinataria" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none"></div>
-                        <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Observaciones adicionales</label><textarea id="input-observaciones" rows="3" placeholder="Notas adicionales o comentarios importantes..." class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none resize-none"></textarea></div>
+                    <form id="form-paso-dinamico" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Estado</label>
+                            <select id="input-estado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none">
+                                <option value="">Seleccionar...</option>
+                                <option value="Completado">Completado</option>
+                                <option value="Observado">Observado</option>
+                                <option value="Omitido">Omitido (No aplica)</option>
+                            </select>
+                        </div>
+                        <div><label class="block font-bold text-gray-700 mb-1">Custodio Actual</label><input id="input-responsable" type="text" placeholder="Nombre" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
+                        <div><label class="block font-bold text-gray-700 mb-1">Fecha</label><input id="input-fecha" type="date" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Medio</label>
+                            <select id="input-medio" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none">
+                                <option value="QUIPUX">QUIPUX</option>
+                                <option value="ZIMBRA">ZIMBRA</option>
+                                <option value="FÍSICO">FÍSICO</option>
+                            </select>
+                        </div>
+                        <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Nro. Memorando / Oficio</label><input id="input-memorando" type="text" placeholder="SENADI-DTIC-2026-..." class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
+                        
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Elaborado por</label>
+                            <select id="select-elaborado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl funcionario-select transition-colors focus:bg-white focus:outline-none"></select>
+                        </div>
+                        <div>
+                            <label class="block font-bold text-gray-700 mb-1">Revisado por</label>
+                            <select id="select-revisado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl funcionario-select transition-colors focus:bg-white focus:outline-none"></select>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block font-bold text-gray-700 mb-1">Aprobado por</label>
+                            <select id="select-aprobado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl funcionario-select transition-colors focus:bg-white focus:outline-none"></select>
+                        </div>
+
+                        <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Observaciones</label><textarea id="input-observaciones" rows="2" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl resize-none transition-colors focus:bg-white focus:outline-none"></textarea></div>
                         
                         <div id="zona-subida-pdf" class="md:col-span-2 mt-2 p-4 bg-gray-50 border border-gray-200 rounded-xl transition-colors">
-                            <label class="block font-bold text-gray-700 mb-1">Documentos de Respaldo</label>
-                            <p class="text-[10px] text-gray-500 mb-3">Formatos permitidos: Solo .PDF | Peso máximo por archivo: 2 MB</p>
-                            
+                            <label class="block font-bold text-gray-700 mb-1">Documentos PDF de Respaldo</label>
                             <div id="lista-archivos-adjuntos" class="space-y-2 mb-3"></div>
-
-                            <button type="button" id="btn-agregar-pdf" onclick="document.getElementById('input-pdf-multiple').click()" class="bg-white border border-dashed border-gray-300 text-gray-500 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50 w-full py-2.5 rounded-xl text-[11px] font-bold transition flex items-center justify-center space-x-2">
+                            <button type="button" id="btn-agregar-pdf" onclick="document.getElementById('input-pdf-multiple').click()" class="bg-white border border-dashed border-gray-300 text-gray-500 hover:text-blue-600 hover:border-blue-400 w-full py-2.5 rounded-xl text-[11px] font-bold transition flex items-center justify-center space-x-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                                <span>Añadir Documento PDF</span>
+                                <span>Añadir PDF</span>
                             </button>
-                            
                             <input type="file" id="input-pdf-multiple" accept="application/pdf" class="hidden">
                         </div>
                     </form>
@@ -151,7 +162,7 @@
                     <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
                         <button onclick="ejecutarNavegacion(-1)" id="btn-anterior" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs py-2 px-4 rounded-xl transition disabled:opacity-40">← Anterior</button>
                         <div class="flex space-x-2">
-                            <button id="btn-omitir" onclick="omitirPasoActual()" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold text-xs py-2 px-4 rounded-xl transition">Omitir Paso</button>
+                            <button id="btn-omitir" onclick="omitirPasoActual()" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold text-xs py-2 px-4 rounded-xl transition">Omitir</button>
                             <button id="btn-siguiente" onclick="ejecutarAccionSiguiente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition">Guardar y Avanzar ➔</button>
                         </div>
                     </div>
@@ -159,7 +170,7 @@
             </div>
 
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 space-y-3">
-                <h4 class="text-xs font-bold text-gray-900 tracking-tight uppercase border-b border-gray-100 pb-2">Índice del Flujo</h4>
+                <h4 class="text-xs font-bold text-gray-900 tracking-tight uppercase border-b border-gray-100 pb-2">Flujo del Proceso</h4>
                 <div id="lista-navegacion-pasos" class="space-y-1.5 max-h-[60vh] overflow-y-auto pr-1"></div>
             </div>
         </div>
@@ -170,34 +181,27 @@
         let procesoActivo = null;
         let indicePasoActual = 0;
         let pasosFlujo = [];
-        
-        // Ahora usamos un Array para múltiples archivos en vez de dos variables sueltas
         let archivosAdjuntosTemporales = [];
-        
         let rolActivoUsuario = localStorage.getItem('rolSimulado') || 'ROLE_SUPER_ADMIN';
 
+        const LISTA_FUNCIONARIOS = [
+            "— Seleccionar —", "Gonzalo Moncayo", "Marco Molina", "Juan Pablo Ponce", 
+            "Emerson Ceracapa", "María Fernanda Pilco", "Michael Yanangómez", 
+            "Miguel Cabrera", "Paul Orozco"
+        ];
+
         document.addEventListener('DOMContentLoaded', () => {
+            llenarSelectsFuncionarios();
             document.getElementById('select-rol').value = rolActivoUsuario;
             inicializarPantallaEjecucion();
             configurarValidacionPDF();
         });
 
-        // ----------------------------------------------------
-        // LÓGICA DE PERMISOS
-        // ----------------------------------------------------
-        function tienePermisoEnPaso(paso) {
-            if (rolActivoUsuario === 'ROLE_SUPER_ADMIN') return true;
-            
-            const faseUpper = (paso.fase || '').toUpperCase();
-            const esFase1o2 = faseUpper.includes('PREPARATORIA') || faseUpper.includes('PRECONTRACTUAL');
-            const esFase3o4 = (faseUpper.includes('CONTRACTUAL') && !faseUpper.includes('PRECONTRACTUAL')) || faseUpper.includes('EVALUACIÓN') || faseUpper.includes('EVALUACION');
-
-            if (rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') return esFase1o2;
-            if (rolActivoUsuario === 'Gonzalo Moncayo' || rolActivoUsuario === 'Miguel Cabrera') {
-                if (procesoActivo.admin !== rolActivoUsuario) return false;
-                return esFase3o4;
-            }
-            return false;
+        function llenarSelectsFuncionarios() {
+            const selects = document.querySelectorAll('.funcionario-select');
+            selects.forEach(sel => {
+                sel.innerHTML = LISTA_FUNCIONARIOS.map(f => `<option value="${f === "— Seleccionar —" ? "" : f}">${f}</option>`).join('');
+            });
         }
 
         function cambiarRol() {
@@ -207,84 +211,18 @@
             renderizarIndiceLateral();
         }
 
-        // ----------------------------------------------------
-        // LÓGICA DE MULTI-ARCHIVOS PDF
-        // ----------------------------------------------------
-        function configurarValidacionPDF() {
-            document.getElementById('input-pdf-multiple').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (file) {
-                    if (file.type !== "application/pdf") {
-                        alert("Solo se permiten archivos en formato PDF.");
-                    } else if (file.size > 2 * 1024 * 1024) { 
-                        alert("El archivo supera el peso máximo permitido de 2 MB.");
-                    } else {
-                        const reader = new FileReader();
-                        reader.onload = function(event) {
-                            // Añadimos el nuevo archivo al Array temporal
-                            archivosAdjuntosTemporales.push({
-                                nombre: file.name,
-                                base64: event.target.result
-                            });
-                            // Refrescamos visualmente y guardamos el proceso
-                            renderizarListaArchivos();
-                            guardarProgresoActual(true);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-                }
-                // Limpiamos el input para que permita subir el mismo archivo si es necesario
-                this.value = "";
-            });
-        }
-
-        function eliminarArchivoPDF(indexArray) {
-            if (confirm("¿Estás seguro de quitar este documento?")) {
-                archivosAdjuntosTemporales.splice(indexArray, 1);
-                renderizarListaArchivos();
-                guardarProgresoActual(true);
-            }
-        }
-
-        function renderizarListaArchivos() {
-            const contenedor = document.getElementById('lista-archivos-adjuntos');
-            contenedor.innerHTML = '';
+        function tienePermisoEnPaso(paso) {
+            if (rolActivoUsuario === 'ROLE_SUPER_ADMIN') return true;
+            const fase = (paso.fase || '').toUpperCase();
+            const esPreparatoria = fase.includes('PREPARATORIA') || fase.includes('PRECONTRACTUAL');
             
-            const paso = pasosFlujo[indicePasoActual];
-            const esMiPaso = tienePermisoEnPaso(paso);
-
-            if (archivosAdjuntosTemporales.length === 0) {
-                contenedor.innerHTML = '<p class="text-[11px] text-gray-400 italic text-center py-2">No hay documentos adjuntos en este paso.</p>';
-            } else {
-                archivosAdjuntosTemporales.forEach((archivo, idx) => {
-                    const item = document.createElement('div');
-                    item.className = "p-2.5 bg-white border border-emerald-200 rounded-lg flex justify-between items-center shadow-sm";
-                    
-                    const btnEliminarHTML = esMiPaso ? `<button type="button" onclick="eliminarArchivoPDF(${idx})" class="text-red-500 hover:text-red-700 text-[11px] font-bold tracking-wide transition ml-2 border-l border-red-100 pl-2">Quitar</button>` : '';
-
-                    item.innerHTML = `
-                        <div class="flex items-center space-x-2 overflow-hidden pr-2">
-                            <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
-                            <span class="text-xs font-bold text-gray-700 truncate w-32 md:w-56">${archivo.nombre}</span>
-                        </div>
-                        <div class="flex items-center flex-shrink-0">
-                            <a href="${archivo.base64}" download="${archivo.nombre}" class="text-blue-600 hover:text-blue-800 text-[11px] font-bold tracking-wide transition">Ver / Descargar</a>
-                            ${btnEliminarHTML}
-                        </div>
-                    `;
-                    contenedor.appendChild(item);
-                });
+            if (rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') return esPreparatoria;
+            if (rolActivoUsuario === 'Gonzalo Moncayo' || rolActivoUsuario === 'Miguel Cabrera') {
+                return !esPreparatoria; 
             }
-
-            // Ocultar el botón de "+" si no es el rol correcto
-            const btnAgregar = document.getElementById('btn-agregar-pdf');
-            if (esMiPaso) btnAgregar.classList.remove('hidden');
-            else btnAgregar.classList.add('hidden');
+            return false;
         }
 
-        // ----------------------------------------------------
-        // INICIALIZACIÓN
-        // ----------------------------------------------------
         function inicializarPantallaEjecucion() {
             const idProcesoActivo = localStorage.getItem('idProcesoActivo');
             const rawProcesos = localStorage.getItem('instanciaProcesoEnProgreso');
@@ -292,325 +230,268 @@
 
             procesosGlobales = JSON.parse(rawProcesos);
             procesoActivo = procesosGlobales.find(p => p.id === idProcesoActivo);
-
-            if (!procesoActivo || !procesoActivo.pipelineSnapshot) { irAlDashboard(); return; }
-
             pasosFlujo = procesoActivo.pipelineSnapshot;
             indicePasoActual = procesoActivo.ultimoIndiceTrabajado || 0;
-            if (indicePasoActual >= pasosFlujo.length) indicePasoActual = 0;
 
-            document.getElementById('txt-proceso-titulo').innerText = procesoActivo.tipoContrato.replace("Contrato ", "") + ` (${procesoActivo.actividadNombre})`;
-            document.getElementById('info-poa').innerText = procesoActivo.codigoPoa || '-';
-            document.getElementById('info-item').innerText = procesoActivo.itemPresupuestario || '-';
-            document.getElementById('info-cpc').innerText = procesoActivo.codigoCpc || '-';
-            document.getElementById('info-asignacion').innerText = '$ ' + parseFloat(procesoActivo.asignacion || 0).toLocaleString('es-EC');
+            const detallesStr = localStorage.getItem('detallesActividad');
+            const detallesGlobales = detallesStr ? JSON.parse(detallesStr) : {};
+
+            document.getElementById('txt-proceso-titulo').innerText = procesoActivo.actividadNombre || 'Proceso de Contratación';
+            
+            document.getElementById('info-poa').innerText = procesoActivo.codigoPoa || detallesGlobales.noPoa || '-';
+            document.getElementById('info-item').innerText = procesoActivo.itemPresupuestario || detallesGlobales.item || '-';
+            document.getElementById('info-cpc').innerText = procesoActivo.codigoCpc || detallesGlobales.cpc || '-';
+            
+            const asig = parseFloat(procesoActivo.asignacion || detallesGlobales.asignacion || 0);
+            document.getElementById('info-asignacion').innerText = '$ ' + asig.toLocaleString('es-EC', { minimumFractionDigits: 2 });
 
             cargarPasoActual();
             renderizarIndiceLateral();
-        }
-
-        function aplicarColorPorFase(faseStr) {
-            const banner = document.getElementById('banner-tarea');
-            const badge = document.getElementById('badge-contador-paso');
-            const labelFase = document.getElementById('badge-fase-actual');
-            const faseUpper = (faseStr || 'FASE PREPARATORIA').toUpperCase();
-            labelFase.innerText = faseUpper;
-
-            let bgClass = "bg-blue-600"; let badgeClass = "bg-blue-700/60";
-            if (faseUpper.includes('PRECONTRACTUAL')) { bgClass = "bg-purple-600"; badgeClass = "bg-purple-700/60"; } 
-            else if (faseUpper.includes('CONTRACTUAL')) { bgClass = "bg-emerald-600"; badgeClass = "bg-emerald-700/60"; } 
-            else if (faseUpper.includes('EVALUACIÓN') || faseUpper.includes('EVALUACION')) { bgClass = "bg-amber-500"; badgeClass = "bg-amber-600/60"; }
-
-            banner.className = `text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500 ${bgClass}`;
-            badge.className = `text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider transition-colors duration-500 ${badgeClass}`;
-        }
-
-        function manejarCambioCheckbox() {
-            guardarProgresoActual(true); 
-            cargarPasoActual();
         }
 
         function cargarPasoActual() {
             const paso = pasosFlujo[indicePasoActual];
             const esMiPaso = tienePermisoEnPaso(paso);
-            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
+
+            const detallesStr = localStorage.getItem('detallesActividad');
+            const detallesGlobales = detallesStr ? JSON.parse(detallesStr) : {};
 
             document.getElementById('txt-proceso-subtitulo').innerText = `Paso ${indicePasoActual + 1} de ${pasosFlujo.length}`;
-            document.getElementById('badge-contador-paso').innerText = `PASO ${indicePasoActual + 1} DE ${pasosFlujo.length}`;
-            document.getElementById('txt-paso-area').innerText = paso.area || 'UNIDAD REQUERIENTE';
-            document.getElementById('badge-rol-requerido').innerText = `REQ: ${paso.area || 'N/A'}`;
+            document.getElementById('txt-paso-nombre-grande').innerText = paso.nombrePaso;
             document.getElementById('txt-paso-nombre').innerText = paso.nombrePaso;
+            document.getElementById('badge-rol-requerido').innerText = `REQ: ${paso.area || 'N/A'}`;
+            document.getElementById('badge-fase-actual').innerText = paso.fase || 'FASE';
 
             aplicarColorPorFase(paso.fase);
-            configurarUIporRol(esMiPaso, paso.fase);
+            configurarUIporRol(esMiPaso);
 
+            // Cargar Subpasos (Checklists) y asignarles la función de guardado
             const contenedorSubpasos = document.getElementById('contenedor-subpasos');
             contenedorSubpasos.innerHTML = '';
-
-            if (paso.subpasos && paso.subpasos.length > 0) {
-                paso.subpasos.forEach((sub, i) => {
-                    if (!sub.numeroInterno) { sub.numeroInterno = `${numeroPasoPrincipal}.${i + 1}`; sub.parentId = `${numeroPasoPrincipal}`; }
-                });
-
-                const subpasosGuardados = paso.respuestasUsuario?.estadosSubpasos || {};
-
-                paso.subpasos.forEach((sub, i) => {
-                    const estadoGuardado = subpasosGuardados[i];
-                    const esOmitido = estadoGuardado === "omitido";
-                    const estaChequeado = estadoGuardado === true || (!esOmitido && sub.completado);
-                    const numeroSubpaso = sub.numeroInterno;
-                    
-                    const dotsCount = numeroSubpaso.split('.').length;
-                    let mlClass = "";
-                    if (dotsCount === 3) mlClass = "ml-6 border-l border-white/20";
-                    if (dotsCount >= 4) mlClass = "ml-12 border-l border-white/20";
-
-                    const divItem = document.createElement('div');
-                    divItem.className = `flex items-center justify-between p-2 rounded-xl transition text-xs group ${esMiPaso ? 'bg-black/20 text-white' : 'bg-black/10 text-white/70'} mt-1.5 ${mlClass}`;
-
-                    if (esOmitido) {
-                        divItem.innerHTML = `<div class="flex items-start space-x-3 opacity-50 line-through pl-1 w-full"><input type="checkbox" disabled class="mt-0.5 w-4 h-4 rounded text-gray-400 bg-gray-900/40 border-gray-400/30"><span class="leading-tight"><span class="font-bold mr-1">${numeroSubpaso}</span> ${sub.nombreSubpaso} (Omitido)</span></div>`;
-                    } else {
-                        let botonesHTML = '';
-                        if (esMiPaso) {
-                            botonesHTML = `
-                                <div class="flex space-x-1.5 flex-shrink-0 ml-2">
-                                    <button onclick="saltarSubpaso(${i})" class="text-[10px] font-bold bg-amber-500/80 hover:bg-amber-500 text-white px-2.5 py-1 rounded-md transition shadow-sm">Saltar</button>
-                                    <button onclick="agregarSubpaso(${i})" class="text-[10px] font-bold bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-md transition shadow-sm ${estaChequeado ? '' : 'hidden'}">Agregar</button>
-                                </div>`;
-                        }
-                        divItem.innerHTML = `
-                            <label class="flex items-start space-x-3 p-1 rounded-lg flex-grow transition ${esMiPaso ? 'cursor-pointer select-none' : ''}">
-                                <input type="checkbox" data-index="${i}" ${estaChequeado ? 'checked' : ''} ${!esMiPaso ? 'disabled' : ''} onchange="manejarCambioCheckbox()" class="subpaso-checkbox mt-0.5 w-4 h-4 rounded text-blue-600">
-                                <span class="leading-tight"><span class="font-bold mr-1.5 ${esMiPaso ? 'text-white' : 'text-white/70'}">${numeroSubpaso}</span>${sub.nombreSubpaso}</span>
-                            </label>
-                            ${botonesHTML}`;
-                    }
-                    contenedorSubpasos.appendChild(divItem);
-                });
-            } else {
-                contenedorSubpasos.innerHTML = `<p class="text-[11px] text-white/60 italic p-2">Este paso no requiere subprocesos adicionales.</p>`;
-            }
-
-            if (esMiPaso) {
-                const divBotonGlobal = document.createElement('div');
-                divBotonGlobal.className = "mt-3 pt-3 border-t border-white/20";
-                divBotonGlobal.innerHTML = `
-                    <button onclick="agregarSubpaso(-1)" class="text-[10px] font-bold bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition border border-white/20 w-full flex items-center justify-center space-x-1 shadow-sm">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                        <span>Agregar Subfase al Final</span>
-                    </button>`;
-                contenedorSubpasos.appendChild(divBotonGlobal);
-            }
-
-            const selectMedio = document.getElementById('input-medio');
-            selectMedio.innerHTML = `<option value="${paso.medio || 'QUIPUX'}">${paso.medio || 'QUIPUX'}</option><option value="ZIMBRA">ZIMBRA</option><option value="QUIPUX">QUIPUX</option><option value="FISICO">DOCUMENTO FÍSICO</option>`;
-
             const respuestas = paso.respuestasUsuario || {};
+            const estadosSubpasos = respuestas.estadosSubpasos || {};
+
+            (paso.subpasos || []).forEach((sub, i) => {
+                const isChecked = estadosSubpasos[i] === true ? 'checked' : '';
+                const item = document.createElement('div');
+                item.className = "flex items-center space-x-3 p-2 bg-black/10 rounded-lg text-white";
+                item.innerHTML = `
+                    <input type="checkbox" ${isChecked} ${!esMiPaso ? 'disabled' : ''} onchange="guardarProgresoActual(true)" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 bg-white border-gray-300">
+                    <span class="text-[11px] leading-tight">${sub.nombreSubpaso || sub.descripcion}</span>
+                `;
+                contenedorSubpasos.appendChild(item);
+            });
+
+            // Llenar Formulario con datos guardados
             document.getElementById('input-estado').value = respuestas.estado || '';
             document.getElementById('input-responsable').value = respuestas.responsable || '';
             document.getElementById('input-fecha').value = respuestas.fecha || obtenerFechaHoy();
-            document.getElementById('input-medio').value = respuestas.medio || paso.medio || 'QUIPUX';
+            document.getElementById('input-medio').value = respuestas.medio || 'QUIPUX';
             document.getElementById('input-memorando').value = respuestas.memorando || '';
-            document.getElementById('input-elaborado').value = respuestas.elaborado || '';
-            document.getElementById('input-revisado').value = respuestas.revisado || '';
-            document.getElementById('input-aprobado').value = respuestas.aprobado || '';
-            document.getElementById('input-dirigido').value = respuestas.dirigido || paso.dirigidoA || '';
+            
+            document.getElementById('select-elaborado').value = respuestas.elaborado || detallesGlobales.elaborado || '';
+            document.getElementById('select-revisado').value = respuestas.revisado || detallesGlobales.revisado || '';
+            document.getElementById('select-aprobado').value = respuestas.aprobado || detallesGlobales.aprobado || '';
             document.getElementById('input-observaciones').value = respuestas.observaciones || '';
             
-            // --- CARGA DE ARCHIVOS MULTIPLES ---
-            archivosAdjuntosTemporales = [];
-            // Compatibilidad hacia atrás: Si existía un solo archivo viejo, lo pasamos al array
-            if (respuestas.archivos && Array.isArray(respuestas.archivos)) {
-                archivosAdjuntosTemporales = [...respuestas.archivos];
-            } else if (respuestas.archivoBase64) {
-                archivosAdjuntosTemporales.push({
-                    nombre: respuestas.archivoNombre,
-                    base64: respuestas.archivoBase64
-                });
-            }
+            archivosAdjuntosTemporales = respuestas.archivos || [];
             renderizarListaArchivos();
-
+            
             document.getElementById('btn-anterior').disabled = (indicePasoActual === 0);
+            
             actualizarPorcentajeVisual();
         }
 
-        function configurarUIporRol(esMiPaso, fasePaso) {
+        function configurarUIporRol(esMiPaso) {
             const inputs = document.querySelectorAll('#form-paso-dinamico input, #form-paso-dinamico select, #form-paso-dinamico textarea');
             inputs.forEach(input => input.disabled = !esMiPaso);
-
-            const zonaPdf = document.getElementById('zona-subida-pdf');
-            if(!esMiPaso) zonaPdf.classList.add('disabled-zone');
-            else zonaPdf.classList.remove('disabled-zone');
-
+            
             const alerta = document.getElementById('alerta-rol');
-            const txtAlerta = document.getElementById('txt-alerta-area');
             const btnSiguiente = document.getElementById('btn-siguiente');
             const btnOmitir = document.getElementById('btn-omitir');
-            const btnGuardarParcial = document.getElementById('btn-guardar-parcial');
-
+            
             if (!esMiPaso) {
                 alerta.classList.remove('hidden');
-                const faseUpper = (fasePaso || '').toUpperCase();
-                const esFase1o2 = faseUpper.includes('PREPARATORIA') || faseUpper.includes('PRECONTRACTUAL');
-                txtAlerta.innerText = esFase1o2 ? 'la Unidad Requirente' : 'el Administrador del Contrato';
-
                 btnOmitir.classList.add('hidden');
-                btnGuardarParcial.classList.add('hidden');
-                
-                btnSiguiente.innerHTML = "Siguiente (Solo Lectura) ➔";
-                btnSiguiente.className = "bg-gray-800 hover:bg-gray-900 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
+                btnSiguiente.innerHTML = "Siguiente (Lectura) ➔";
+                btnSiguiente.className = "bg-gray-800 text-white font-bold text-xs py-2 px-5 rounded-xl transition";
             } else {
                 alerta.classList.add('hidden');
                 btnOmitir.classList.remove('hidden');
-                btnGuardarParcial.classList.remove('hidden');
-                
-                if (indicePasoActual === pasosFlujo.length - 1) {
-                    btnSiguiente.innerHTML = "Finalizar Proceso 🏁";
-                    btnSiguiente.className = "bg-green-600 hover:bg-green-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
-                } else {
-                    btnSiguiente.innerHTML = "Guardar y Avanzar ➔";
-                    btnSiguiente.className = "bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
-                }
+                btnSiguiente.innerHTML = "Guardar y Avanzar ➔";
+                btnSiguiente.className = "bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
             }
         }
 
-        function ejecutarAccionSiguiente() {
-            const paso = pasosFlujo[indicePasoActual];
-            if (tienePermisoEnPaso(paso)) completarPasoActual(); 
-            else ejecutarNavegacion(1); 
+        function configurarValidacionPDF() {
+            document.getElementById('input-pdf-multiple').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                if (file.size > 2 * 1024 * 1024) { alert("Máximo 2MB por archivo."); return; }
+                
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    archivosAdjuntosTemporales.push({ nombre: file.name, base64: ev.target.result });
+                    renderizarListaArchivos();
+                    guardarProgresoActual(true);
+                };
+                reader.readAsDataURL(file);
+                this.value = "";
+            });
         }
 
-        function guardarProgresoActual(silencioso = true) {
-            const pasoActual = pasosFlujo[indicePasoActual];
-            if (!tienePermisoEnPaso(pasoActual)) {
-                actualizarBaseDeDatos(silencioso);
+        function renderizarListaArchivos() {
+            const contenedor = document.getElementById('lista-archivos-adjuntos');
+            contenedor.innerHTML = '';
+            const esMiPaso = tienePermisoEnPaso(pasosFlujo[indicePasoActual]);
+
+            if (archivosAdjuntosTemporales.length === 0) {
+                contenedor.innerHTML = '<p class="text-[10px] italic text-gray-400">Ningún documento adjunto.</p>';
                 return;
             }
 
-            const respuestasActuales = pasoActual.respuestasUsuario || {};
-            const estadosSubpasos = respuestasActuales.estadosSubpasos || {};
+            archivosAdjuntosTemporales.forEach((file, idx) => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-2 border border-emerald-100 rounded-lg text-[11px] shadow-sm";
+                item.innerHTML = `
+                    <span class="truncate w-40 font-bold text-gray-700">📄 ${file.nombre}</span>
+                    <div class="flex space-x-2">
+                        <a href="${file.base64}" download="${file.nombre}" class="text-blue-600 font-bold hover:text-blue-800">Ver</a>
+                        ${esMiPaso ? `<button type="button" onclick="archivosAdjuntosTemporales.splice(${idx},1); guardarProgresoActual(true); renderizarListaArchivos();" class="text-red-500 font-bold hover:text-red-700">X</button>` : ''}
+                    </div>
+                `;
+                contenedor.appendChild(item);
+            });
+        }
 
-            const checkboxes = document.querySelectorAll('.subpaso-checkbox');
-            checkboxes.forEach(chk => {
-                const idx = chk.getAttribute('data-index');
-                if (estadosSubpasos[idx] !== "omitido") estadosSubpasos[idx] = chk.checked;
-                if (pasosFlujo[indicePasoActual].subpasos && pasosFlujo[indicePasoActual].subpasos[idx]) {
-                    pasosFlujo[indicePasoActual].subpasos[idx].completado = chk.checked;
+        // ==========================================
+        // LA LÓGICA CORE DE GUARDADO 
+        // ==========================================
+        function guardarProgresoActual(silencioso = true) {
+            const paso = pasosFlujo[indicePasoActual];
+            if (!tienePermisoEnPaso(paso)) return;
+
+            // Extraer estado de Checklists (Subpasos)
+            const estadosSubpasos = {};
+            const checkboxes = document.querySelectorAll('#contenedor-subpasos input[type="checkbox"]');
+            checkboxes.forEach((chk, idx) => {
+                estadosSubpasos[idx] = chk.checked;
+                if (paso.subpasos && paso.subpasos[idx]) {
+                    paso.subpasos[idx].completado = chk.checked;
                 }
             });
 
-            pasosFlujo[indicePasoActual].respuestasUsuario = {
-                estado: document.getElementById('input-estado').value,
+            const estadoSeleccionado = document.getElementById('input-estado').value;
+
+            // Guardar toda la data en el paso correspondiente
+            paso.respuestasUsuario = {
+                estado: estadoSeleccionado,
                 responsable: document.getElementById('input-responsable').value,
                 fecha: document.getElementById('input-fecha').value,
                 medio: document.getElementById('input-medio').value,
                 memorando: document.getElementById('input-memorando').value,
-                elaborado: document.getElementById('input-elaborado').value,
-                revisado: document.getElementById('input-revisado').value,
-                aprobado: document.getElementById('input-aprobado').value,
-                dirigido: document.getElementById('input-dirigido').value,
+                elaborado: document.getElementById('select-elaborado').value,
+                revisado: document.getElementById('select-revisado').value,
+                aprobado: document.getElementById('select-aprobado').value,
                 observaciones: document.getElementById('input-observaciones').value,
-                archivos: archivosAdjuntosTemporales, // GUARDAMOS TODO EL ARRAY DE PDFS AQUÍ
-                estadosSubpasos: estadosSubpasos, 
-                completado: document.getElementById('input-estado').value === "Completado" || (pasosFlujo[indicePasoActual].respuestasUsuario?.completado)
+                archivos: archivosAdjuntosTemporales,
+                estadosSubpasos: estadosSubpasos,
+                completado: estadoSeleccionado === "Completado" || estadoSeleccionado === "Omitido"
             };
-            actualizarBaseDeDatos(silencioso);
-        }
 
-        function actualizarBaseDeDatos(silencioso) {
-            const completados = pasosFlujo.filter(p => p.respuestasUsuario && p.respuestasUsuario.completado).length;
-            procesoActivo.pasosCompletados = completados;
-            procesoActivo.porcentaje = Math.round((completados / pasosFlujo.length) * 100);
+            procesoActivo.pipelineSnapshot = pasosFlujo;
             procesoActivo.ultimoIndiceTrabajado = indicePasoActual;
-            procesoActivo.pipelineSnapshot = pasosFlujo; 
-            procesoActivo.fechaModificacion = new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
+            // RE-CALCULAR PORCENTAJE GLOBAL
+            const completados = pasosFlujo.filter(p => p.respuestasUsuario && p.respuestasUsuario.completado).length;
+            procesoActivo.porcentaje = Math.round((completados / pasosFlujo.length) * 100) || 0;
+            procesoActivo.pasosCompletados = completados;
+
+            // Reemplazar el proceso modificado en la lista Global
             const idxBase = procesosGlobales.findIndex(p => p.id === procesoActivo.id);
             if (idxBase !== -1) procesosGlobales[idxBase] = procesoActivo;
 
             try {
                 localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
-                if (!silencioso && tienePermisoEnPaso(pasosFlujo[indicePasoActual])) { alert("Progreso y archivos guardados exitosamente."); }
+                actualizarPorcentajeVisual();
+                if (!silencioso) alert("¡Progreso y archivos guardados correctamente!");
             } catch (e) {
-                if (e.name === 'QuotaExceededError') {
-                    alert("⚠️ Error de Capacidad: Los archivos PDF son muy pesados para el almacenamiento del navegador. Intenta con un archivo menos pesado.");
-                    // Si falla el guardado por peso, borramos el último insertado
-                    archivosAdjuntosTemporales.pop();
-                    pasosFlujo[indicePasoActual].respuestasUsuario.archivos = archivosAdjuntosTemporales;
-                    localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
-                    renderizarListaArchivos();
-                }
+                alert("⚠️ Error al guardar: El tamaño de los archivos adjuntos supera el límite del navegador. Elimina alguno e intenta de nuevo.");
             }
         }
 
-        function completarPasoActual() {
-            if (!document.getElementById('input-estado').value) document.getElementById('input-estado').value = "Completado";
+        function actualizarPorcentajeVisual() {
+            if (procesoActivo) {
+                document.getElementById('txt-porcentaje-barra').innerText = `${procesoActivo.porcentaje || 0}% Completado`;
+            }
+        }
+
+        function ejecutarAccionSiguiente() {
+            // Si le da a avanzar y no ha puesto estado, lo forzamos a Completado
+            if (!document.getElementById('input-estado').value) {
+                document.getElementById('input-estado').value = "Completado";
+            }
             guardarProgresoActual(true);
             ejecutarNavegacion(1);
         }
 
         function omitirPasoActual() {
-            if (!tienePermisoEnPaso(pasosFlujo[indicePasoActual])) return;
-            if (!pasosFlujo[indicePasoActual].respuestasUsuario) pasosFlujo[indicePasoActual].respuestasUsuario = {};
-            pasosFlujo[indicePasoActual].respuestasUsuario.completado = true;
-            pasosFlujo[indicePasoActual].respuestasUsuario.estado = "Omitido";
-            completarPasoActual();
+            const paso = pasosFlujo[indicePasoActual];
+            if (!tienePermisoEnPaso(paso)) return;
+            
+            document.getElementById('input-estado').value = "Omitido";
+            guardarProgresoActual(true);
+            ejecutarNavegacion(1);
         }
 
-        function ejecutarNavegacion(direccion) {
-            guardarProgresoActual(true);
-            if (indicePasoActual + direccion < pasosFlujo.length && indicePasoActual + direccion >= 0) {
-                indicePasoActual += direccion;
+        function ejecutarNavegacion(dir) {
+            if (indicePasoActual + dir >= 0 && indicePasoActual + dir < pasosFlujo.length) {
+                indicePasoActual += dir;
                 cargarPasoActual();
                 renderizarIndiceLateral();
-            } else if (indicePasoActual + direccion >= pasosFlujo.length) {
-                alert("¡Has llegado al final del flujo del proceso!");
+            } else if (indicePasoActual + dir >= pasosFlujo.length) {
+                alert("Has finalizado el flujo del proceso.");
                 irAlDashboard();
             }
-        }
-
-        function saltarAlPaso(index) {
-            guardarProgresoActual(true);
-            indicePasoActual = index;
-            cargarPasoActual();
-            renderizarIndiceLateral();
         }
 
         function renderizarIndiceLateral() {
             const contenedor = document.getElementById('lista-navegacion-pasos');
             contenedor.innerHTML = '';
-            pasosFlujo.forEach((paso, index) => {
-                const esActivo = (index === indicePasoActual);
-                const isDone = paso.respuestasUsuario && paso.respuestasUsuario.completado;
-                const esOmitido = paso.respuestasUsuario && paso.respuestasUsuario.estado === "Omitido";
-                const esMiPaso = tienePermisoEnPaso(paso);
+            pasosFlujo.forEach((p, i) => {
+                const esActivo = i === indicePasoActual;
+                const esMiPaso = tienePermisoEnPaso(p);
+                const isDone = p.respuestasUsuario?.completado;
+                const isOmitido = p.respuestasUsuario?.estado === "Omitido";
                 
-                let claseEstado = esMiPaso ? "border-gray-100 bg-white text-gray-700 hover:bg-gray-50" : "border-gray-100 bg-gray-50 text-gray-400 opacity-75";
-                if (esActivo) claseEstado = esMiPaso ? "border-blue-500 bg-blue-50/50 text-blue-700 font-bold shadow-sm" : "border-amber-400 bg-amber-50/50 text-amber-700 font-bold shadow-sm";
-                else if (esOmitido) claseEstado = "border-amber-200 bg-amber-50/40 text-amber-700 line-through";
-                else if (isDone) claseEstado = "border-green-200 bg-green-50/30 text-green-700";
-
-                const iconoDerecho = !esMiPaso && !isDone && !esActivo ? '🔒' : (isDone ? (esOmitido ? '⚠️' : '✅') : (esActivo ? '🔵' : '⚪'));
                 const item = document.createElement('div');
-                item.className = `p-2.5 border rounded-xl text-[11px] flex items-center justify-between cursor-pointer transition ${claseEstado}`;
-                item.setAttribute('onclick', `saltarAlPaso(${index})`);
-                item.innerHTML = `<div class="flex items-center space-x-2 truncate"><span class="font-mono px-1 bg-gray-200/50 rounded text-gray-500 text-[9px] font-bold">#${paso.orden || (index + 1)}</span><span class="truncate pr-2">${paso.nombrePaso}</span></div><div class="flex-shrink-0 opacity-80">${iconoDerecho}</div>`;
+                item.className = `p-2 border rounded-xl text-[10px] flex justify-between items-center cursor-pointer transition-colors ${esActivo ? 'border-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'}`;
+                item.onclick = () => { indicePasoActual = i; cargarPasoActual(); renderizarIndiceLateral(); };
+                
+                let icon = esMiPaso ? '⚪' : '🔒';
+                if (isDone) icon = isOmitido ? '⚠️' : '✅';
+                if (esActivo) icon = esMiPaso ? '🔵' : '🔒';
+
+                item.innerHTML = `
+                    <div class="flex items-center space-x-2 truncate">
+                        <span class="font-bold text-gray-400">#${i + 1}</span>
+                        <span class="truncate ${isOmitido ? 'line-through text-gray-400' : 'text-gray-700'}">${p.nombrePaso}</span>
+                    </div>
+                    <span class="flex-shrink-0">${icon}</span>`;
                 contenedor.appendChild(item);
             });
         }
 
-        function actualizarPorcentajeVisual() {
-            const completados = pasosFlujo.filter(p => p.respuestasUsuario && p.respuestasUsuario.completado).length;
-            document.getElementById('txt-porcentaje-barra').innerText = `${Math.round((completados / pasosFlujo.length) * 100) || 0}%`;
+        function aplicarColorPorFase(f) {
+            const b = document.getElementById('banner-tarea');
+            const fase = (f || '').toUpperCase();
+            if (fase.includes('CONTRACTUAL')) b.className = "bg-emerald-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500";
+            else if (fase.includes('PREPARATORIA')) b.className = "bg-blue-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500";
+            else b.className = "bg-purple-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500";
         }
 
-        function toggleAcordeon() {
-            document.getElementById('cuerpo-acordeon').classList.toggle('hidden');
-            document.getElementById('icono-acordeon').classList.toggle('rotate-180');
-        }
-
-        function obtenerFechaHoy() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+        function obtenerFechaHoy() { return new Date().toISOString().split('T')[0]; }
+        function toggleAcordeon() { document.getElementById('cuerpo-acordeon').classList.toggle('hidden'); document.getElementById('icono-acordeon').classList.toggle('rotate-180');}
         function irAlDashboard() { window.location.href = '/dashboard.html'; }
     </script>
 </body>
