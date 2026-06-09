@@ -5,8 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCP - Ejecución de Proceso</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
+        .tema-oscuro .bg-white, .tema-oscuro .bg-gray-50, .tema-oscuro .bg-gray-100 { background-color: #111827 !important; color: #e2e8f0 !important; }
+        .tema-oscuro .text-gray-900, .tema-oscuro .text-gray-800, .tema-oscuro .text-gray-700 { color: #cbd5e1 !important; }
+        .tema-oscuro .border-gray-200, .tema-oscuro .border-gray-100 { border-color: #334155 !important; }
+        .tema-oscuro input, .tema-oscuro select, .tema-oscuro textarea { background-color: #1e293b !important; color: #e2e8f0 !important; border-color: #475569 !important; }
+        
+        input:disabled, select:disabled, textarea:disabled, .disabled-zone { 
+            background-color: #f3f4f6 !important; 
+            color: #9ca3af !important; 
+            cursor: not-allowed !important; 
+            border-color: #e5e7eb !important;
+            opacity: 0.8;
+        }
+        .tema-oscuro input:disabled, .tema-oscuro select:disabled, .tema-oscuro textarea:disabled {
+            background-color: #1e293b !important;
+            color: #64748b !important;
+            border-color: #334155 !important;
+        }
+    </style>
 </head>
-<body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
+<body class="bg-[#f4f7fc] font-sans antialiased text-gray-800 transition-colors duration-300">
 
     <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
         <div class="flex items-center space-x-3">
@@ -23,6 +43,8 @@
         <div class="flex items-center space-x-3">
             <button onclick="guardarProgresoActual(false)" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs py-2 px-4 rounded-xl border border-gray-200 shadow-sm transition flex items-center space-x-1.5">
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+            <button id="btn-guardar-parcial" onclick="guardarProgresoActual(false)" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs py-2 px-4 rounded-xl border border-gray-200 shadow-sm transition flex items-center space-x-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
                 <span>Guardar Parcial</span>
             </button>
             <div class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100">
@@ -64,40 +86,41 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
             
             <div class="lg:col-span-2 space-y-6">
-                <div class="bg-blue-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden">
+                <div id="banner-tarea" class="bg-blue-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500">
                     <div class="absolute -right-6 -bottom-6 opacity-10 text-white">
                         <svg class="w-36 h-36" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
                     </div>
 
                     <div class="flex items-center space-x-2">
-                        <span id="badge-contador-paso" class="bg-blue-700/60 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">PASO 1 DE 1</span>
-                        <span class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">CONTRATO ACTIVO</span>
+                        <span id="badge-contador-paso" class="bg-blue-700/60 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider transition-colors duration-500">PASO 1 DE 1</span>
+                        <span id="badge-rol-requerido" class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">RESPONSABLE: -</span>
+                        <span id="badge-fase-actual" class="bg-white/90 text-gray-800 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ml-auto shadow-sm">FASE PREPARATORIA</span>
                     </div>
 
                     <h3 id="txt-paso-fase" class="text-xl font-black tracking-tight mt-3 uppercase">FASE PREPARATORIA</h3>
+                    <h3 class="text-xl font-black tracking-tight mt-3 uppercase">DETALLE DE LA TAREA</h3>
                     
-                    <div class="mt-4 pt-4 border-t border-white/10 space-y-1">
-                        <span class="text-blue-200 text-[10px] font-bold tracking-wider uppercase block">Área Responsable:</span>
+                    <div class="mt-4 pt-4 border-t border-white/20 space-y-1">
+                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Área Responsable:</span>
                         <span id="txt-paso-area" class="font-bold text-sm tracking-wide">Cargando...</span>
                     </div>
 
-                    <div class="mt-4 pt-4 border-t border-white/10 space-y-1">
-                        <span class="text-blue-200 text-[10px] font-bold tracking-wider uppercase block">Actividad / Paso Operativo:</span>
+                    <div class="mt-4 pt-4 border-t border-white/20 space-y-1">
+                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Actividad / Paso Operativo:</span>
                         <p id="txt-paso-nombre" class="text-sm font-medium leading-relaxed">Cargando descripción del paso...</p>
                     </div>
 
-                    <div class="mt-5 pt-4 border-t border-white/10 space-y-2 relative z-10">
-                        <span class="text-blue-200 text-[10px] font-bold tracking-wider uppercase block">Subpasos / Requisitos Requeridos:</span>
-                        <div id="contenedor-subpasos" class="space-y-1.5 mt-2">
-                            </div>
+                    <div class="mt-5 pt-4 border-t border-white/20 space-y-2 relative z-10">
+                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Subpasos / Requisitos Requeridos:</span>
+                        <div id="contenedor-subpasos" class="space-y-1.5 mt-2"></div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 relative">
                     <form id="form-paso-dinamico" onsubmit="event.preventDefault();" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Estado del Proceso</label>
-                            <select id="input-estado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl font-medium text-gray-700 focus:bg-white focus:border-blue-500 transition outline-none">
+                            <select id="input-estado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl font-medium text-gray-700 focus:bg-white transition outline-none">
                                 <option value="">Seleccionar...</option>
                                 <option value="Completado">Completado con éxito</option>
                                 <option value="Observado">En revisión con observaciones</option>
@@ -105,51 +128,72 @@
                         </div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">¿Quién tiene el proceso?</label>
-                            <input id="input-responsable" type="text" placeholder="Nombre del responsable" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl focus:bg-white focus:border-blue-500 transition outline-none">
+                            <input id="input-responsable" type="text" placeholder="Nombre del responsable" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none">
                         </div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Fecha de Registro</label>
-                            <input id="input-fecha" type="date" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl focus:bg-white focus:border-blue-500 transition outline-none">
+                            <input id="input-fecha" type="date" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none">
                         </div>
                         <div>
-                            <label class="block font-bold text-gray-700 mb-1">Medio de Envío / Comunicación</label>
-                            <select id="input-medio" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl text-gray-700 focus:bg-white focus:border-blue-500 transition outline-none"></select>
+                            <label class="block font-bold text-gray-700 mb-1">Medio de Envío</label>
+                            <select id="input-medio" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl text-gray-700 transition outline-none"></select>
                         </div>
                         <div class="md:col-span-2">
                             <label class="block font-bold text-gray-700 mb-1">Número de Memorando / Oficio</label>
-                            <input id="input-memorando" type="text" placeholder="Ej: SENADI-DTIC-2026-0083-M" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl focus:bg-white focus:border-blue-500 transition outline-none">
+                            <input id="input-memorando" type="text" placeholder="Ej: SENADI-DTIC-2026-0083-M" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none">
                         </div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Elaborado por</label>
-                            <input id="input-elaborado" type="text" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl focus:bg-white focus:border-blue-500 transition outline-none">
+                            <input id="input-elaborado" type="text" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none">
                         </div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Revisado por</label>
-                            <input id="input-revisado" type="text" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl focus:bg-white focus:border-blue-500 transition outline-none">
+                            <input id="input-revisado" type="text" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none">
                         </div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Aprobado por</label>
-                            <input id="input-aprobado" type="text" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl focus:bg-white focus:border-blue-500 transition outline-none">
+                            <input id="input-aprobado" type="text" placeholder="Nombre completo" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none">
                         </div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Dirigido a</label>
-                            <input id="input-dirigido" type="text" placeholder="Nombre o área destinataria" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl focus:bg-white focus:border-blue-500 transition outline-none">
+                            <input id="input-dirigido" type="text" placeholder="Nombre o área destinataria" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block font-bold text-gray-700 mb-1">Observaciones adicionales</label>
-                            <textarea id="input-observaciones" rows="3" placeholder="Notas adicionales o comentarios importantes..." class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl focus:bg-white focus:border-blue-500 transition outline-none resize-none"></textarea>
+                            <textarea id="input-observaciones" rows="3" placeholder="Notas adicionales o comentarios importantes..." class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition outline-none resize-none"></textarea>
+                        </div>
+                        
+                        <div id="zona-subida-pdf" class="md:col-span-2 mt-2 p-3 bg-gray-50 border border-gray-200 rounded-xl transition-colors">
+                            <label class="block font-bold text-gray-700 mb-1">Adjuntar Documento de Respaldo</label>
+                            
+                            <div id="contenedor-input-pdf">
+                                <p class="text-[10px] text-gray-500 mb-2">Formatos permitidos: Solo .PDF | Peso máximo: 2 MB</p>
+                                <input id="input-pdf" type="file" accept="application/pdf" class="w-full bg-white border border-gray-200 p-2 rounded-xl focus:outline-none text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-800 file:text-white hover:file:bg-gray-900 cursor-pointer">
+                                <p id="error-pdf" class="hidden text-red-500 text-[10px] font-bold mt-1.5 flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg> <span>El archivo no es válido.</span></p>
+                            </div>
+
+                            <div id="contenedor-archivo-guardado" class="hidden mt-2 p-2.5 bg-white border border-emerald-200 rounded-lg flex justify-between items-center shadow-sm">
+                                <div class="flex items-center space-x-2 overflow-hidden pr-2">
+                                    <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                                    <span id="nombre-archivo-guardado" class="text-xs font-bold text-gray-700 truncate">documento.pdf</span>
+                                </div>
+                                <div class="flex space-x-3 flex-shrink-0">
+                                    <a id="link-descargar-pdf" href="#" download class="text-blue-600 hover:text-blue-800 text-[11px] font-bold tracking-wide">Ver / Descargar</a>
+                                    <button type="button" id="btn-eliminar-pdf" onclick="eliminarArchivoPDF()" class="text-red-500 hover:text-red-700 text-[11px] font-bold tracking-wide">Quitar</button>
+                                </div>
+                            </div>
                         </div>
                     </form>
 
                     <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
-                        <button onclick="navegarPaso(-1)" id="btn-anterior" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs py-2 px-4 rounded-xl transition disabled:opacity-40">
+                        <button onclick="ejecutarNavegacion(-1)" id="btn-anterior" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs py-2 px-4 rounded-xl transition disabled:opacity-40">
                             ← Anterior
                         </button>
                         <div class="flex space-x-2">
-                            <button onclick="omitirPasoActual()" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold text-xs py-2 px-4 rounded-xl transition">
+                            <button id="btn-omitir" onclick="omitirPasoActual()" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold text-xs py-2 px-4 rounded-xl transition">
                                 Omitir Paso
                             </button>
-                            <button onclick="completarPasoActual()" id="btn-siguiente" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition">
+                            <button id="btn-siguiente" onclick="ejecutarAccionSiguiente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition">
                                 Guardar y Avanzar ➔
                             </button>
                         </div>
@@ -171,10 +215,90 @@
         let procesoActivo = null;
         let indicePasoActual = 0;
         let pasosFlujo = [];
+        
+        let archivoPDFTemporalBase64 = null;
+        let archivoPDFTemporalNombre = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             inicializarPantallaEjecucion();
+            configurarValidacionPDF();
         });
+
+        // ----------------------------------------------------
+        // LÓGICA DE MANEJO Y GUARDADO DE ARCHIVOS PDF
+        // ----------------------------------------------------
+        function configurarValidacionPDF() {
+            document.getElementById('input-pdf').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                const errorMsg = document.getElementById('error-pdf');
+                
+                if (file) {
+                    if (file.type !== "application/pdf") {
+                        mostrarErrorPDF("Solo se permiten subir archivos PDF.");
+                    } else if (file.size > 2 * 1024 * 1024) { 
+                        mostrarErrorPDF("El archivo supera el peso máximo permitido (2 MB).");
+                    } else {
+                        errorMsg.classList.add('hidden');
+                        
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            archivoPDFTemporalBase64 = event.target.result;
+                            archivoPDFTemporalNombre = file.name;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+        }
+
+        function mostrarErrorPDF(mensaje) {
+            const errorMsg = document.getElementById('error-pdf');
+            errorMsg.querySelector('span').innerText = mensaje;
+            errorMsg.classList.remove('hidden');
+            document.getElementById('input-pdf').value = "";
+            archivoPDFTemporalBase64 = null;
+            archivoPDFTemporalNombre = null;
+        }
+
+        function eliminarArchivoPDF() {
+            archivoPDFTemporalBase64 = null;
+            archivoPDFTemporalNombre = null;
+            
+            if(pasosFlujo[indicePasoActual].respuestasUsuario) {
+                pasosFlujo[indicePasoActual].respuestasUsuario.archivoBase64 = null;
+                pasosFlujo[indicePasoActual].respuestasUsuario.archivoNombre = null;
+            }
+            
+            document.getElementById('input-pdf').value = "";
+            document.getElementById('contenedor-archivo-guardado').classList.add('hidden');
+            document.getElementById('contenedor-input-pdf').classList.remove('hidden');
+            
+            guardarProgresoActual(true);
+        }
+
+        function gestionarVistaArchivo(respuestas) {
+            const contenedorInput = document.getElementById('contenedor-input-pdf');
+            const contenedorGuardado = document.getElementById('contenedor-archivo-guardado');
+            const linkDescarga = document.getElementById('link-descargar-pdf');
+            const nombreMostrado = document.getElementById('nombre-archivo-guardado');
+            
+            document.getElementById('input-pdf').value = "";
+            document.getElementById('error-pdf').classList.add('hidden');
+            archivoPDFTemporalBase64 = null;
+            archivoPDFTemporalNombre = null;
+
+            if (respuestas && respuestas.archivoBase64) {
+                contenedorInput.classList.add('hidden');
+                contenedorGuardado.classList.remove('hidden');
+                nombreMostrado.innerText = respuestas.archivoNombre || 'Documento.pdf';
+                linkDescarga.href = respuestas.archivoBase64;
+                linkDescarga.download = respuestas.archivoNombre || 'Documento.pdf';
+            } else {
+                contenedorGuardado.classList.add('hidden');
+                contenedorInput.classList.remove('hidden');
+            }
+        }
+        // ----------------------------------------------------
 
         function inicializarPantallaEjecucion() {
             const idProcesoActivo = localStorage.getItem('idProcesoActivo');
@@ -189,19 +313,13 @@
             procesosGlobales = JSON.parse(rawProcesos);
             procesoActivo = procesosGlobales.find(p => p.id === idProcesoActivo);
 
-            if (!procesoActivo) {
-                alert("El proceso seleccionado ya no existe.");
+            if (!procesoActivo || !procesoActivo.pipelineSnapshot || procesoActivo.pipelineSnapshot.length === 0) {
+                alert("El proceso seleccionado ya no existe o no tiene pasos.");
                 irAlDashboard();
                 return;
             }
 
-            pasosFlujo = procesoActivo.pipelineSnapshot || [];
-            if (pasosFlujo.length === 0) {
-                alert("Este flujo no contiene pasos configurados.");
-                irAlDashboard();
-                return;
-            }
-
+            pasosFlujo = procesoActivo.pipelineSnapshot;
             indicePasoActual = procesoActivo.ultimoIndiceTrabajado || 0;
             if (indicePasoActual >= pasosFlujo.length) indicePasoActual = 0;
 
@@ -217,42 +335,88 @@
         }
 
 
+        // --- SISTEMA DE COLORES DINÁMICOS POR FASE ---
+        function aplicarColorPorFase(faseStr) {
+            const banner = document.getElementById('banner-tarea');
+            const badge = document.getElementById('badge-contador-paso');
+            const labelFase = document.getElementById('badge-fase-actual');
+            
+            const faseUpper = (faseStr || 'FASE PREPARATORIA').toUpperCase();
+            labelFase.innerText = faseUpper;
+
+            let bgClass = "bg-blue-600";
+            let badgeClass = "bg-blue-700/60";
+
+            if (faseUpper.includes('PRECONTRACTUAL')) {
+                bgClass = "bg-purple-600";
+                badgeClass = "bg-purple-700/60";
+            } else if (faseUpper.includes('CONTRACTUAL')) {
+                bgClass = "bg-emerald-600";
+                badgeClass = "bg-emerald-700/60";
+            } else if (faseUpper.includes('EVALUACIÓN') || faseUpper.includes('EVALUACION')) {
+                bgClass = "bg-amber-500";
+                badgeClass = "bg-amber-600/60";
+            }
+
+            banner.className = `text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500 ${bgClass}`;
+            badge.className = `text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider transition-colors duration-500 ${badgeClass}`;
+        }
+
+        // Se ejecuta cada vez que el usuario marca o desmarca un checkbox
+        function manejarCambioCheckbox() {
+            guardarProgresoActual(true); 
+            cargarPasoActual(); // Redibuja para ocultar o mostrar los botones de agregar
+        }
 
         function cargarPasoActual() {
             const paso = pasosFlujo[indicePasoActual];
+            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
 
             document.getElementById('txt-proceso-subtitulo').innerText = `Paso ${indicePasoActual + 1} de ${pasosFlujo.length}`;
             document.getElementById('badge-contador-paso').innerText = `PASO ${indicePasoActual + 1} DE ${pasosFlujo.length}`;
             
             document.getElementById('txt-paso-fase').innerText = paso.fase || 'FASE PREPARATORIA';
             document.getElementById('txt-paso-area').innerText = paso.area || 'UNIDAD REQUERIENTE';
+            document.getElementById('badge-rol-requerido').innerText = `REQ: ${paso.area || 'N/A'}`;
             document.getElementById('txt-paso-nombre').innerText = paso.nombrePaso;
+
+            aplicarColorPorFase(paso.fase);
 
             const contenedorSubpasos = document.getElementById('contenedor-subpasos');
             contenedorSubpasos.innerHTML = '';
 
-            // Lógica para determinar el número principal del paso (ej. 24)
-            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
-
             if (paso.subpasos && paso.subpasos.length > 0) {
+                // Asignar numeración interna estructurada (jerarquía) si aún no la tienen
+                paso.subpasos.forEach((sub, i) => {
+                    if (!sub.numeroInterno) {
+                        sub.numeroInterno = `${numeroPasoPrincipal}.${i + 1}`;
+                        sub.parentId = `${numeroPasoPrincipal}`;
+                    }
+                });
+
                 const subpasosGuardados = paso.respuestasUsuario?.estadosSubpasos || {};
 
                 paso.subpasos.forEach((sub, i) => {
                     const estadoGuardado = subpasosGuardados[i];
                     const esOmitido = estadoGuardado === "omitido";
                     const estaChequeado = estadoGuardado === true || (!esOmitido && sub.completado);
-                    
-                    // Numeración dinámica para cada subfase (ej. 24.1, 24.2)
-                    const numeroSubpaso = `${numeroPasoPrincipal}.${i + 1}`;
+                    const numeroSubpaso = sub.numeroInterno;
+
+                    // Cálculo matemático para la indentación basada en los puntos (ej: 1.2 = 0px, 1.2.1 = margen, etc)
+                    const dotsCount = numeroSubpaso.split('.').length;
+                    let mlClass = "";
+                    if (dotsCount === 3) mlClass = "ml-6 border-l border-white/20";
+                    if (dotsCount === 4) mlClass = "ml-12 border-l border-white/20";
+                    if (dotsCount >= 5) mlClass = "ml-16 border-l border-white/20";
 
                     const divItem = document.createElement('div');
-                    divItem.className = "flex items-center justify-between bg-blue-700/30 p-2 rounded-xl transition text-xs text-blue-50 group";
+                    divItem.className = `flex items-center justify-between p-2 rounded-xl transition text-xs group bg-black/20 text-white mt-1.5 ${mlClass}`;
 
                     if (esOmitido) {
                         divItem.innerHTML = `
                             <div class="flex items-start space-x-3 opacity-50 line-through pl-1 w-full">
                                 <input type="checkbox" disabled class="mt-0.5 w-4 h-4 rounded text-gray-400 bg-gray-900/40 border-gray-400/30">
-                                <span class="leading-tight"><span class="font-bold mr-1 text-gray-400">${numeroSubpaso}</span> ${sub.nombreSubpaso || sub.descripcion || 'Subpaso sin nombre'} (Omitido)</span>
+                                <span class="leading-tight"><span class="font-bold mr-1">${numeroSubpaso}</span> ${sub.nombreSubpaso || sub.descripcion || 'Subpaso sin nombre'} (Omitido)</span>
                             </div>
                         `;
                     } else {
@@ -269,18 +433,30 @@
                                 <button onclick="agregarSubpaso(${i})" title="Agregar nueva subfase debajo de esta" class="text-[10px] font-bold bg-emerald-500/20 hover:bg-emerald-500 text-emerald-200 hover:text-white px-3 py-1.5 rounded-lg transition shadow-sm border border-emerald-500/50 hover:border-emerald-500">
                                     Agregar
                                 </button>
+                        // El botón 'Agregar' se oculta dinámicamente si no está checkeado
+                        let botonesHTML = `
+                            <div class="flex space-x-1.5 flex-shrink-0 ml-2">
+                                <button onclick="saltarSubpaso(${i})" class="text-[10px] font-bold bg-amber-500/80 hover:bg-amber-500 text-white px-2.5 py-1 rounded-md transition shadow-sm">Saltar</button>
+                                <button onclick="agregarSubpaso(${i})" class="text-[10px] font-bold bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-md transition shadow-sm ${estaChequeado ? '' : 'hidden'}">Agregar</button>
                             </div>
+                        `;
+                        divItem.innerHTML = `
+                            <label class="flex items-start space-x-3 p-1 rounded-lg flex-grow transition cursor-pointer select-none">
+                                <input type="checkbox" data-index="${i}" ${estaChequeado ? 'checked' : ''} onchange="manejarCambioCheckbox()" class="subpaso-checkbox mt-0.5 w-4 h-4 rounded text-blue-600">
+                                <span class="leading-tight"><span class="font-bold mr-1.5 text-white">${numeroSubpaso}</span>${sub.nombreSubpaso || sub.descripcion || 'Subpaso sin nombre'}</span>
+                            </label>
+                            ${botonesHTML}
                         `;
                     }
                     contenedorSubpasos.appendChild(divItem);
                 });
             } else {
-                contenedorSubpasos.innerHTML = `<p class="text-[11px] text-blue-200/70 italic p-2">Este paso no requiere subprocesos adicionales predefinidos.</p>`;
+                contenedorSubpasos.innerHTML = `<p class="text-[11px] text-white/60 italic p-2">Este paso no requiere subprocesos adicionales.</p>`;
             }
 
-            // BOTÓN GLOBAL: Agrega subfases al final de la lista, o si la lista estaba vacía.
+            // Botón global siempre disponible al final
             const divBotonGlobal = document.createElement('div');
-            divBotonGlobal.className = "mt-3 pt-3 border-t border-white/10";
+            divBotonGlobal.className = "mt-3 pt-3 border-t border-white/20";
             divBotonGlobal.innerHTML = `
                 <button onclick="agregarSubpaso(-1)" class="text-[10px] font-bold bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition border border-white/20 w-full flex items-center justify-center space-x-1 shadow-sm">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
@@ -289,6 +465,7 @@
             `;
             contenedorSubpasos.appendChild(divBotonGlobal);
 
+            // 4. LLENAR FORMULARIO
             const selectMedio = document.getElementById('input-medio');
             selectMedio.innerHTML = `<option value="${paso.medio || 'QUIPUX'}">${paso.medio || 'QUIPUX'}</option><option value="ZIMBRA">ZIMBRA</option><option value="QUIPUX">QUIPUX</option><option value="FISICO">DOCUMENTO FÍSICO</option>`;
 
@@ -303,9 +480,13 @@
             document.getElementById('input-aprobado').value = respuestas.aprobado || '';
             document.getElementById('input-dirigido').value = respuestas.dirigido || paso.dirigidoA || '';
             document.getElementById('input-observaciones').value = respuestas.observaciones || '';
+            
+            // 5. LLENAR VISTA DE ARCHIVO
+            gestionarVistaArchivo(respuestas);
 
             document.getElementById('btn-anterior').disabled = (indicePasoActual === 0);
             
+            // Configurar botones de avanzar
             const btnSiguiente = document.getElementById('btn-siguiente');
             if (indicePasoActual === pasosFlujo.length - 1) {
                 btnSiguiente.innerHTML = "Finalizar Proceso 🏁";
@@ -314,70 +495,77 @@
                 btnSiguiente.innerHTML = "Guardar y Avanzar ➔";
                 btnSiguiente.className = "bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
             }
-
+            
             actualizarPorcentajeVisual();
         }
 
-        // LÓGICA BOTÓN "SALTAR"
+        function ejecutarAccionSiguiente() {
+            completarPasoActual(); 
+        }
+
         function saltarSubpaso(indexSubpaso) {
             const paso = pasosFlujo[indicePasoActual];
-            
             if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
             if (!paso.respuestasUsuario.estadosSubpasos) paso.respuestasUsuario.estadosSubpasos = {};
-            
-            guardarProgresoActual(true);
-            
             paso.respuestasUsuario.estadosSubpasos[indexSubpaso] = "omitido";
-            
             guardarProgresoActual(true);
             cargarPasoActual();
         }
 
-        // LÓGICA BOTÓN "AGREGAR" (Soporta inserción en medio o al final)
         function agregarSubpaso(indexSubpaso = -1) {
             const paso = pasosFlujo[indicePasoActual];
+            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
             
-            guardarProgresoActual(true);
-            
-            const nuevoNombre = prompt(
-                "Escribe el nombre de la nueva subfase/tarea a agregar:",
-                "Nueva subfase/tarea"
-            );
-
+            const nuevoNombre = prompt("Escribe el nombre de la nueva subfase/tarea a agregar:", "Nueva subfase/tarea");
             if (nuevoNombre && nuevoNombre.trim() !== "") {
                 if (!paso.subpasos) paso.subpasos = [];
                 
-                const nuevaSubfase = {
-                    nombreSubpaso: nuevoNombre.trim(),
-                    completado: false
-                };
-
-                // Si pasamos un index, insertamos la subfase JUSTO DEBAJO del elemento actual
-                if (indexSubpaso !== -1) {
-                    paso.subpasos.splice(indexSubpaso + 1, 0, nuevaSubfase);
-                    
-                    // Tenemos que reorganizar el estado (los checks y omitidos) para que no se desordenen
-                    // al meter un nuevo elemento en medio de la lista.
-                    if (paso.respuestasUsuario && paso.respuestasUsuario.estadosSubpasos) {
-                        const viejosEstados = paso.respuestasUsuario.estadosSubpasos;
-                        const nuevosEstados = {};
-                        
-                        for (let i = 0; i < paso.subpasos.length; i++) {
-                            if (i <= indexSubpaso) {
-                                nuevosEstados[i] = viejosEstados[i];
-                            } else if (i === indexSubpaso + 1) {
-                                nuevosEstados[i] = false; // La nueva tarea que insertamos entra desmarcada
-                            } else {
-                                nuevosEstados[i] = viejosEstados[i - 1]; // Movemos los estados viejos un paso abajo
-                            }
-                        }
-                        paso.respuestasUsuario.estadosSubpasos = nuevosEstados;
+                // Forzar números para evitar inconsistencias
+                paso.subpasos.forEach((sub, i) => {
+                    if (!sub.numeroInterno) {
+                        sub.numeroInterno = `${numeroPasoPrincipal}.${i + 1}`;
+                        sub.parentId = `${numeroPasoPrincipal}`;
                     }
-                } else {
-                    // Si el index es -1 (Botón global), lo ponemos al final
-                    paso.subpasos.push(nuevaSubfase);
+                });
+
+                let parentNum = `${numeroPasoPrincipal}`;
+                let insertIndex = paso.subpasos.length;
+
+                // Lógica mágica de reordenamiento jerárquico
+                if (indexSubpaso !== -1) {
+                    parentNum = paso.subpasos[indexSubpaso].numeroInterno;
+                    insertIndex = indexSubpaso + 1;
+                    
+                    // Empujar la inserción hasta después de todos los "hijos" que ya existan de este padre
+                    while(insertIndex < paso.subpasos.length && paso.subpasos[insertIndex].numeroInterno.startsWith(parentNum + '.')) {
+                        insertIndex++;
+                    }
                 }
 
+                const hermanos = paso.subpasos.filter(s => s.parentId === parentNum);
+                const nuevoNumero = `${parentNum}.${hermanos.length + 1}`;
+
+                const nuevaSubfase = { 
+                    nombreSubpaso: nuevoNombre.trim(), 
+                    completado: false,
+                    numeroInterno: nuevoNumero,
+                    parentId: parentNum
+                };
+
+                paso.subpasos.splice(insertIndex, 0, nuevaSubfase);
+
+                // Mover los estados de los checkboxes guardados hacia abajo en el array para que no se crucen
+                if (paso.respuestasUsuario && paso.respuestasUsuario.estadosSubpasos) {
+                    const viejosEstados = paso.respuestasUsuario.estadosSubpasos;
+                    const nuevosEstados = {};
+                    for (let i = 0; i < paso.subpasos.length; i++) {
+                        if (i < insertIndex) nuevosEstados[i] = viejosEstados[i];
+                        else if (i === insertIndex) nuevosEstados[i] = false;
+                        else nuevosEstados[i] = viejosEstados[i - 1]; 
+                    }
+                    paso.respuestasUsuario.estadosSubpasos = nuevosEstados;
+                }
+                
                 guardarProgresoActual(true);
                 cargarPasoActual();
             }
@@ -385,7 +573,6 @@
 
         function guardarProgresoActual(silencioso = true) {
             const pasoActual = pasosFlujo[indicePasoActual];
-            
             const respuestasActuales = pasoActual.respuestasUsuario || {};
             const estadosSubpasos = respuestasActuales.estadosSubpasos || {};
 
@@ -395,11 +582,13 @@
                 if (estadosSubpasos[idx] !== "omitido") {
                     estadosSubpasos[idx] = chk.checked;
                 }
-                
                 if (pasosFlujo[indicePasoActual].subpasos && pasosFlujo[indicePasoActual].subpasos[idx]) {
                     pasosFlujo[indicePasoActual].subpasos[idx].completado = chk.checked;
                 }
             });
+
+            const pdfBase64Final = archivoPDFTemporalBase64 || respuestasActuales.archivoBase64 || null;
+            const pdfNombreFinal = archivoPDFTemporalNombre || respuestasActuales.archivoNombre || null;
 
             const respuestasForm = {
                 estado: document.getElementById('input-estado').value,
@@ -412,12 +601,17 @@
                 aprobado: document.getElementById('input-aprobado').value,
                 dirigido: document.getElementById('input-dirigido').value,
                 observaciones: document.getElementById('input-observaciones').value,
+                archivoBase64: pdfBase64Final,
+                archivoNombre: pdfNombreFinal,
                 estadosSubpasos: estadosSubpasos, 
                 completado: document.getElementById('input-estado').value === "Completado" || (pasosFlujo[indicePasoActual].respuestasUsuario?.completado)
             };
 
             pasosFlujo[indicePasoActual].respuestasUsuario = respuestasForm;
+            actualizarBaseDeDatos(silencioso);
+        }
 
+        function actualizarBaseDeDatos(silencioso) {
             const completados = pasosFlujo.filter(p => p.respuestasUsuario && p.respuestasUsuario.completado).length;
             const nuevoPorcentaje = Math.round((completados / pasosFlujo.length) * 100);
 
@@ -428,14 +622,20 @@
             procesoActivo.fechaModificacion = new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
             const idxBase = procesosGlobales.findIndex(p => p.id === procesoActivo.id);
-            if (idxBase !== -1) {
-                procesosGlobales[idxBase] = procesoActivo;
-            }
+            if (idxBase !== -1) procesosGlobales[idxBase] = procesoActivo;
 
-            localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
-
-            if (!silencioso) {
-                alert("Progreso guardado de manera exitosa.");
+            try {
+                localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
+                if (!silencioso) {
+                    alert("Progreso y archivos guardados exitosamente.");
+                }
+            } catch (e) {
+                if (e.name === 'QuotaExceededError') {
+                    alert("⚠️ Error: El archivo PDF es muy pesado para el almacenamiento local temporal del navegador. Se guardarán los datos del formulario, pero no el archivo.");
+                    pasosFlujo[indicePasoActual].respuestasUsuario.archivoBase64 = null;
+                    pasosFlujo[indicePasoActual].respuestasUsuario.archivoNombre = null;
+                    localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
+                }
             }
         }
 
@@ -443,17 +643,8 @@
             if (!document.getElementById('input-estado').value) {
                 document.getElementById('input-estado').value = "Completado";
             }
-            
             guardarProgresoActual(true);
-
-            if (indicePasoActual < pasosFlujo.length - 1) {
-                indicePasoActual++;
-                cargarPasoActual();
-                renderizarIndiceLateral();
-            } else {
-                alert("¡Felicidades! Has completado el ciclo completo del flujo de contratación pública.");
-                irAlDashboard();
-            }
+            ejecutarNavegacion(1);
         }
 
         function omitirPasoActual() {
@@ -462,16 +653,19 @@
             }
             pasosFlujo[indicePasoActual].respuestasUsuario.completado = true;
             pasosFlujo[indicePasoActual].respuestasUsuario.estado = "Omitido";
-
             completarPasoActual();
         }
 
-        function navegarPaso(direccion) {
-            guardarProgresoActual(true); 
-            
-            indicePasoActual += direccion;
-            cargarPasoActual();
-            renderizarIndiceLateral();
+        function ejecutarNavegacion(direccion) {
+            guardarProgresoActual(true);
+            if (indicePasoActual + direccion < pasosFlujo.length && indicePasoActual + direccion >= 0) {
+                indicePasoActual += direccion;
+                cargarPasoActual();
+                renderizarIndiceLateral();
+            } else if (indicePasoActual + direccion >= pasosFlujo.length) {
+                alert("¡Has llegado al final del flujo del proceso!");
+                irAlDashboard();
+            }
         }
 
         function saltarAlPaso(index) {
@@ -489,8 +683,9 @@
                 const esActivo = (index === indicePasoActual);
                 const isDone = paso.respuestasUsuario && paso.respuestasUsuario.completado;
                 const esOmitido = paso.respuestasUsuario && paso.respuestasUsuario.estado === "Omitido";
-
+                
                 let claseEstado = "border-gray-100 bg-white text-gray-700 hover:bg-gray-50";
+                
                 if (esActivo) {
                     claseEstado = "border-blue-500 bg-blue-50/50 text-blue-700 font-bold shadow-sm";
                 } else if (esOmitido) {
@@ -503,13 +698,15 @@
                 item.className = `p-2.5 border rounded-xl text-[11px] flex items-center justify-between cursor-pointer transition ${claseEstado}`;
                 item.setAttribute('onclick', `saltarAlPaso(${index})`);
 
+                const iconoDerecho = isDone ? (esOmitido ? '⚠️' : '✅') : (esActivo ? '🔵' : '⚪');
+
                 item.innerHTML = `
                     <div class="flex items-center space-x-2 truncate">
-                        <span class="font-mono px-1 bg-gray-100 rounded text-gray-500 text-[9px] font-bold">#${paso.orden || (index + 1)}</span>
+                        <span class="font-mono px-1 bg-gray-200/50 rounded text-gray-500 text-[9px] font-bold">#${paso.orden || (index + 1)}</span>
                         <span class="truncate pr-2">${paso.nombrePaso}</span>
                     </div>
-                    <div class="flex-shrink-0">
-                        ${isDone ? (esOmitido ? '⚠️' : '✅') : (esActivo ? '🔵' : '⚪')}
+                    <div class="flex-shrink-0 opacity-80">
+                        ${iconoDerecho}
                     </div>
                 `;
                 contenedor.appendChild(item);
