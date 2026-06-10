@@ -191,24 +191,13 @@
                         </div>
                         
                         <div id="zona-subida-pdf" class="md:col-span-2 mt-2 p-3 bg-gray-50 border border-gray-200 rounded-xl transition-colors">
-                            <label class="block font-bold text-gray-700 mb-1">Adjuntar Documento de Respaldo</label>
-                            
-                            <div id="contenedor-input-pdf">
-                                <p class="text-[10px] text-gray-500 mb-2">Formatos permitidos: Solo .PDF | Peso máximo: 2 MB</p>
-                                <input id="input-pdf" type="file" accept="application/pdf" class="w-full bg-white border border-gray-200 p-2 rounded-xl focus:outline-none text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-gray-800 file:text-white hover:file:bg-gray-900 cursor-pointer">
-                                <p id="error-pdf" class="hidden text-red-500 text-[10px] font-bold mt-1.5 flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg> <span>El archivo no es válido.</span></p>
-                            </div>
-
-                            <div id="contenedor-archivo-guardado" class="hidden mt-2 p-2.5 bg-white border border-emerald-200 rounded-lg flex justify-between items-center shadow-sm">
-                                <div class="flex items-center space-x-2 overflow-hidden pr-2">
-                                    <svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
-                                    <span id="nombre-archivo-guardado" class="text-xs font-bold text-gray-700 truncate">documento.pdf</span>
-                                </div>
-                                <div class="flex space-x-3 flex-shrink-0">
-                                    <a id="link-descargar-pdf" href="#" download class="text-blue-600 hover:text-blue-800 text-[11px] font-bold tracking-wide">Ver / Descargar</a>
-                                    <button type="button" id="btn-eliminar-pdf" onclick="eliminarArchivoPDF()" class="text-red-500 hover:text-red-700 text-[11px] font-bold tracking-wide">Quitar</button>
-                                </div>
-                            </div>
+                            <label class="block font-bold text-gray-700 mb-2">Documentos PDF de Respaldo</label>
+                            <div id="lista-archivos-adjuntos" class="space-y-1.5 mb-2"></div>
+                            <button type="button" onclick="document.getElementById('input-pdf-multiple').click()" class="bg-white border border-dashed border-gray-300 text-gray-500 hover:text-blue-600 hover:border-blue-400 w-full py-2.5 rounded-xl text-[11px] font-bold transition flex items-center justify-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                <span>Añadir PDF (máx. 2 MB c/u)</span>
+                            </button>
+                            <input type="file" id="input-pdf-multiple" accept="application/pdf" class="hidden">
                         </div>
                     </form>
 
@@ -243,8 +232,7 @@
         let indicePasoActual = 0;
         let pasosFlujo = [];
         
-        let archivoPDFTemporalBase64 = null;
-        let archivoPDFTemporalNombre = null;
+        let archivosAdjuntosTemporales = [];
 
         document.addEventListener('DOMContentLoaded', () => {
             inicializarPantallaEjecucion();
@@ -252,78 +240,59 @@
         });
 
         // ----------------------------------------------------
-        // LÓGICA DE MANEJO Y GUARDADO DE ARCHIVOS PDF
+        // LÓGICA DE MANEJO Y GUARDADO DE ARCHIVOS PDF (múltiples)
         // ----------------------------------------------------
         function configurarValidacionPDF() {
-            document.getElementById('input-pdf').addEventListener('change', function(e) {
+            document.getElementById('input-pdf-multiple').addEventListener('change', function(e) {
                 const file = e.target.files[0];
-                const errorMsg = document.getElementById('error-pdf');
-                
-                if (file) {
-                    if (file.type !== "application/pdf") {
-                        mostrarErrorPDF("Solo se permiten subir archivos PDF.");
-                    } else if (file.size > 2 * 1024 * 1024) { 
-                        mostrarErrorPDF("El archivo supera el peso máximo permitido (2 MB).");
-                    } else {
-                        errorMsg.classList.add('hidden');
-                        
-                        const reader = new FileReader();
-                        reader.onload = function(event) {
-                            archivoPDFTemporalBase64 = event.target.result;
-                            archivoPDFTemporalNombre = file.name;
-                        };
-                        reader.readAsDataURL(file);
-                    }
+                if (!file) return;
+                if (file.type !== "application/pdf") {
+                    alert("Solo se permiten archivos PDF.");
+                    this.value = ""; return;
                 }
+                if (file.size > 2 * 1024 * 1024) {
+                    alert("El archivo supera el límite de 2 MB.");
+                    this.value = ""; return;
+                }
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    archivosAdjuntosTemporales.push({ nombre: file.name, base64: ev.target.result });
+                    renderizarListaArchivos();
+                    guardarProgresoActual(true);
+                };
+                reader.readAsDataURL(file);
+                this.value = "";
             });
         }
 
-        function mostrarErrorPDF(mensaje) {
-            const errorMsg = document.getElementById('error-pdf');
-            errorMsg.querySelector('span').innerText = mensaje;
-            errorMsg.classList.remove('hidden');
-            document.getElementById('input-pdf').value = "";
-            archivoPDFTemporalBase64 = null;
-            archivoPDFTemporalNombre = null;
+        function renderizarListaArchivos() {
+            const contenedor = document.getElementById('lista-archivos-adjuntos');
+            contenedor.innerHTML = '';
+            if (archivosAdjuntosTemporales.length === 0) {
+                contenedor.innerHTML = '<p class="text-[10px] italic text-gray-400">Sin documentos adjuntos.</p>';
+                return;
+            }
+            archivosAdjuntosTemporales.forEach((file, idx) => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-2 border border-emerald-100 rounded-lg text-[11px] shadow-sm";
+                item.innerHTML = `
+                    <div class="flex items-center space-x-2 overflow-hidden">
+                        <svg class="w-4 h-4 text-red-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                        <span class="truncate font-medium text-gray-700 max-w-[180px]">${file.nombre}</span>
+                    </div>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <a href="${file.base64}" download="${file.nombre}" class="text-blue-600 hover:text-blue-800 font-bold">Ver</a>
+                        <button type="button" onclick="eliminarArchivoAdjunto(${idx})" class="text-red-500 hover:text-red-700 font-bold">✕</button>
+                    </div>
+                `;
+                contenedor.appendChild(item);
+            });
         }
 
-        function eliminarArchivoPDF() {
-            archivoPDFTemporalBase64 = null;
-            archivoPDFTemporalNombre = null;
-            
-            if(pasosFlujo[indicePasoActual].respuestasUsuario) {
-                pasosFlujo[indicePasoActual].respuestasUsuario.archivoBase64 = null;
-                pasosFlujo[indicePasoActual].respuestasUsuario.archivoNombre = null;
-            }
-            
-            document.getElementById('input-pdf').value = "";
-            document.getElementById('contenedor-archivo-guardado').classList.add('hidden');
-            document.getElementById('contenedor-input-pdf').classList.remove('hidden');
-            
+        function eliminarArchivoAdjunto(idx) {
+            archivosAdjuntosTemporales.splice(idx, 1);
+            renderizarListaArchivos();
             guardarProgresoActual(true);
-        }
-
-        function gestionarVistaArchivo(respuestas) {
-            const contenedorInput = document.getElementById('contenedor-input-pdf');
-            const contenedorGuardado = document.getElementById('contenedor-archivo-guardado');
-            const linkDescarga = document.getElementById('link-descargar-pdf');
-            const nombreMostrado = document.getElementById('nombre-archivo-guardado');
-            
-            document.getElementById('input-pdf').value = "";
-            document.getElementById('error-pdf').classList.add('hidden');
-            archivoPDFTemporalBase64 = null;
-            archivoPDFTemporalNombre = null;
-
-            if (respuestas && respuestas.archivoBase64) {
-                contenedorInput.classList.add('hidden');
-                contenedorGuardado.classList.remove('hidden');
-                nombreMostrado.innerText = respuestas.archivoNombre || 'Documento.pdf';
-                linkDescarga.href = respuestas.archivoBase64;
-                linkDescarga.download = respuestas.archivoNombre || 'Documento.pdf';
-            } else {
-                contenedorGuardado.classList.add('hidden');
-                contenedorInput.classList.remove('hidden');
-            }
         }
         // ----------------------------------------------------
 
@@ -524,8 +493,15 @@
             document.getElementById('input-dirigido').value = respuestas.dirigido || paso.dirigidoA || '';
             document.getElementById('input-observaciones').value = respuestas.observaciones || '';
             
-            // 5. LLENAR VISTA DE ARCHIVO
-            gestionarVistaArchivo(respuestas);
+            // 5. LLENAR LISTA DE ARCHIVOS (soporta formato nuevo array y viejo campo único)
+            if (respuestas.archivos && respuestas.archivos.length > 0) {
+                archivosAdjuntosTemporales = respuestas.archivos;
+            } else if (respuestas.archivoBase64) {
+                archivosAdjuntosTemporales = [{ nombre: respuestas.archivoNombre || 'documento.pdf', base64: respuestas.archivoBase64 }];
+            } else {
+                archivosAdjuntosTemporales = [];
+            }
+            renderizarListaArchivos();
 
             document.getElementById('btn-anterior').disabled = (indicePasoActual === 0);
             
@@ -650,9 +626,6 @@
                 }
             });
 
-            const pdfBase64Final = archivoPDFTemporalBase64 || respuestasActuales.archivoBase64 || null;
-            const pdfNombreFinal = archivoPDFTemporalNombre || respuestasActuales.archivoNombre || null;
-
             const respuestasForm = {
                 estado: document.getElementById('input-estado').value,
                 responsable: document.getElementById('input-responsable').value,
@@ -664,9 +637,8 @@
                 aprobado: document.getElementById('input-aprobado').value,
                 dirigido: document.getElementById('input-dirigido').value,
                 observaciones: document.getElementById('input-observaciones').value,
-                archivoBase64: pdfBase64Final,
-                archivoNombre: pdfNombreFinal,
-                estadosSubpasos: estadosSubpasos, 
+                archivos: archivosAdjuntosTemporales,
+                estadosSubpasos: estadosSubpasos,
                 completado: document.getElementById('input-estado').value === "Completado" || (pasosFlujo[indicePasoActual].respuestasUsuario?.completado)
             };
 
@@ -694,9 +666,10 @@
                 }
             } catch (e) {
                 if (e.name === 'QuotaExceededError') {
-                    alert("⚠️ Error: El archivo PDF es muy pesado para el almacenamiento local temporal del navegador. Se guardarán los datos del formulario, pero no el archivo.");
-                    pasosFlujo[indicePasoActual].respuestasUsuario.archivoBase64 = null;
-                    pasosFlujo[indicePasoActual].respuestasUsuario.archivoNombre = null;
+                    alert("⚠️ Error: Los archivos adjuntos superan el límite del almacenamiento del navegador. Se guardarán los datos del formulario, pero no los archivos.");
+                    pasosFlujo[indicePasoActual].respuestasUsuario.archivos = [];
+                    archivosAdjuntosTemporales = [];
+                    renderizarListaArchivos();
                     localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
                 }
             }

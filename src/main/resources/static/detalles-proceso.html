@@ -5,14 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SCP - Detalles del Proceso</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
+        .tema-oscuro .bg-white, .tema-oscuro .bg-gray-50, .tema-oscuro .bg-gray-100, .tema-oscuro .bg-blue-50, .tema-oscuro .bg-amber-50 { background-color: #111827 !important; color: #e2e8f0 !important; }
+        .tema-oscuro .text-gray-900, .tema-oscuro .text-gray-800, .tema-oscuro .text-gray-700, .tema-oscuro .text-gray-600, .tema-oscuro .text-gray-500, .tema-oscuro .text-gray-400 { color: #cbd5e1 !important; }
+        .tema-oscuro .text-blue-600 { color: #7dd3fc !important; }
+        .tema-oscuro .border-gray-200, .tema-oscuro .border-gray-100, .tema-oscuro .border-blue-100, .tema-oscuro .border-blue-200, .tema-oscuro .border-amber-200 { border-color: #334155 !important; }
+        .tema-oscuro input, .tema-oscuro select, .tema-oscuro textarea { background-color: #1e293b !important; color: #e2e8f0 !important; border-color: #475569 !important; }
+        .tema-oscuro input::placeholder, .tema-oscuro textarea::placeholder { color: #94a3b8 !important; }
+        .tema-oscuro .hover\:bg-gray-50:hover { background-color: #1e293b !important; }
+    </style>
 </head>
 <body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
 
     <header class="max-w-4xl mx-auto pt-6 px-4 flex justify-between items-center">
         <button onclick="regresarAlDashboard()" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 font-medium transition text-sm">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-            </svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
             <span>Detalles del Proceso</span>
         </button>
     </header>
@@ -23,33 +31,22 @@
 
     <main class="max-w-4xl mx-auto px-4 pb-12">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-            
+
             <div class="bg-blue-600 text-white text-center py-6 px-4 space-y-1">
                 <h3 class="text-lg font-bold uppercase tracking-wide">Actividad Específica</h3>
                 <p class="text-xs text-blue-100">Define el nombre y detalles principales de este proceso</p>
             </div>
 
-            <div class="p-6 pb-0">
-                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-xl flex items-start space-x-3">
-                    <div class="text-blue-500 pt-0.5">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
-                    </div>
-                    <p class="text-xs text-blue-800 leading-relaxed font-medium">
-                        <span class="font-bold">Importante:</span> La actividad específica es el nombre descriptivo que identifica este proceso de contratación pública.
-                    </p>
-                </div>
-            </div>
-
             <form id="form-actividad" class="p-6 space-y-6">
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">No. de actividad en POA *</label>
-                        <input id="input-nopoa" type="text" placeholder="Ej: 1, 2, 3..." class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        <input id="input-poa" type="text" placeholder="Ej: 1, 2, 3..." class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                     </div>
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Estado</label>
-                        <select id="input-estado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        <select id="select-estado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="nueva">Nueva</option>
                             <option value="en_proceso">En Proceso</option>
                             <option value="aprobada">Aprobada</option>
@@ -81,7 +78,7 @@
                     </div>
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Cuatrimestre</label>
-                        <select id="input-cuatrimestre" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        <select id="select-cuatrimestre" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
                             <option value="C1">C1</option>
                             <option value="C2">C2</option>
                             <option value="C3">C3</option>
@@ -98,7 +95,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
                             <label class="block text-[11px] font-bold text-gray-600 uppercase">Elaborado por</label>
-                            <select class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
+                            <select id="select-elaborado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
                                 <option value="">— Seleccionar —</option>
                                 <option>Gonzalo Moncayo</option>
                                 <option>Marco Molina</option>
@@ -112,7 +109,7 @@
                         </div>
                         <div class="space-y-1.5">
                             <label class="block text-[11px] font-bold text-gray-600 uppercase">Revisado por</label>
-                            <select class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
+                            <select id="select-revisado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
                                 <option value="">— Seleccionar —</option>
                                 <option>Gonzalo Moncayo</option>
                                 <option>Marco Molina</option>
@@ -129,7 +126,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div class="space-y-1.5">
                             <label class="block text-[11px] font-bold text-gray-600 uppercase">Aprobado por</label>
-                            <select class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
+                            <select id="select-aprobado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
                                 <option value="">— Seleccionar —</option>
                                 <option>Gonzalo Moncayo</option>
                                 <option>Marco Molina</option>
@@ -142,21 +139,29 @@
                             </select>
                         </div>
                         <div class="space-y-1.5">
-                            <label class="block text-[11px] font-bold text-gray-600 uppercase">Administrador de Contrato</label>
-                            <input type="text" placeholder="Nombre completo" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase">Admin. de Contrato / Orden</label>
+                            <select id="select-admin-contrato" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500/20">
+                                <option value="">— Seleccionar —</option>
+                                <option>Gonzalo Moncayo</option>
+                                <option>Marco Molina</option>
+                                <option>Juan Pablo Ponce</option>
+                                <option>Emerson Ceracapa</option>
+                                <option>María Fernanda Pilco</option>
+                                <option>Michael Yanangómez</option>
+                                <option>Miguel Cabrera</option>
+                                <option>Paul Orozco</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="space-y-1.5">
                         <label class="block text-[11px] font-bold text-gray-600 uppercase">Técnico Afín</label>
-                        <input type="text" placeholder="Nombre completo" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        <input id="input-tecnico" type="text" placeholder="Nombre completo" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20">
                     </div>
                 </div>
 
                 <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
-                    <button type="button" onclick="regresarAlDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2.5 px-5 rounded-xl transition">
-                        Cancelar
-                    </button>
+                    <button type="button" onclick="regresarAlDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2.5 px-5 rounded-xl transition">Cancelar</button>
                     <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-sm hover:shadow transition flex items-center space-x-2">
                         <span>Continuar a Configuración</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
@@ -169,43 +174,52 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // 1. Recuperamos los datos que guardamos en la pantalla anterior
+            initTema();
             const datosContrato = localStorage.getItem('contratoSeleccionado');
-            
             if (datosContrato) {
                 const contrato = JSON.parse(datosContrato);
-                
-                // 2. Limpiamos e inyectamos el nombre (Ej: "Contrato ÍNFIMA CUANTÍA" -> "Ínfima Cuantía")
                 const nombreLimpio = contrato.nombre.replace("Contrato ", "");
                 document.getElementById('subtitulo-proceso').innerText = nombreLimpio;
             } else {
-                // Si alguien entra directo sin seleccionar nada, lo devolvemos por seguridad
                 regresarAlDashboard();
             }
         });
 
-        function regresarAlDashboard() {
-            window.location.href = '/dashboard.html';
-        }
+        function regresarAlDashboard() { window.location.href = '/dashboard.html'; }
 
+        function aplicarTema(oscuro) {
+            document.body.classList.toggle('tema-oscuro', oscuro);
+            localStorage.setItem('temaPreferido', oscuro ? 'oscuro' : 'claro');
+        }
+        function toggleTema() { aplicarTema(!document.body.classList.contains('tema-oscuro')); }
+        function initTema() { if (localStorage.getItem('temaPreferido') === 'oscuro') aplicarTema(true); }
 
         document.getElementById('form-actividad').addEventListener('submit', (e) => {
             e.preventDefault();
 
             const detallesActividad = {
-                noPoa: document.getElementById('input-nopoa').value.trim(),
-                estado: document.getElementById('input-estado').value,
-                actividadEspecifica: document.getElementById('input-actividad').value.trim(),
-                item: document.getElementById('input-item').value.trim(),
-                cpc: document.getElementById('input-cpc').value.trim(),
-                asignacion: document.getElementById('input-asignacion').value.trim(),
-                cuatrimestre: document.getElementById('input-cuatrimestre').value
+                noPoa: document.getElementById('input-poa').value,
+                estado: document.getElementById('select-estado').value,
+                actividadEspecifica: document.getElementById('input-actividad').value,
+                item: document.getElementById('input-item').value,
+                cpc: document.getElementById('input-cpc').value,
+                asignacion: document.getElementById('input-asignacion').value,
+                cuatrimestre: document.getElementById('select-cuatrimestre').value,
+                elaborado: document.getElementById('select-elaborado').value,
+                revisado: document.getElementById('select-revisado').value,
+                aprobado: document.getElementById('select-aprobado').value,
+                adminContrato: document.getElementById('select-admin-contrato').value,
+                tecnico: document.getElementById('input-tecnico').value
             };
 
             localStorage.setItem('detallesActividad', JSON.stringify(detallesActividad));
+            localStorage.setItem('ultimoAdminSeleccionado', detallesActividad.adminContrato);
+
+            const contratoActual = localStorage.getItem('contratoSeleccionado');
+            if (contratoActual) localStorage.setItem('contratoSeleccionado', contratoActual);
+
             window.location.href = '/configurar-flujo.html';
         });
     </script>
-
 </body>
 </html>
