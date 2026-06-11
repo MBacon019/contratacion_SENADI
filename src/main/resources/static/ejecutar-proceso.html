@@ -11,11 +11,11 @@
         .tema-oscuro .text-gray-900, .tema-oscuro .text-gray-800, .tema-oscuro .text-gray-700 { color: #cbd5e1 !important; }
         .tema-oscuro .border-gray-200, .tema-oscuro .border-gray-100 { border-color: #334155 !important; }
         .tema-oscuro input, .tema-oscuro select, .tema-oscuro textarea { background-color: #1e293b !important; color: #e2e8f0 !important; border-color: #475569 !important; }
-        
-        input:disabled, select:disabled, textarea:disabled, .disabled-zone { 
-            background-color: #f3f4f6 !important; 
-            color: #9ca3af !important; 
-            cursor: not-allowed !important; 
+
+        input:disabled, select:disabled, textarea:disabled, .disabled-zone {
+            background-color: #f3f4f6 !important;
+            color: #9ca3af !important;
+            cursor: not-allowed !important;
             border-color: #e5e7eb !important;
             opacity: 0.8;
         }
@@ -39,7 +39,7 @@
                 <p id="txt-proceso-subtitulo" class="text-xs text-gray-400">Paso 0 de 0</p>
             </div>
         </div>
-        
+
         <div class="flex items-center space-x-3">
             <div class="flex items-center space-x-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl mr-2">
                 <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">👤 Rol:</span>
@@ -62,7 +62,7 @@
     </nav>
 
     <main class="max-w-6xl mx-auto p-6 space-y-6">
-        
+
         <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
             <div class="bg-gray-50/50 px-5 py-3 border-b border-gray-100 flex justify-between items-center cursor-pointer" onclick="toggleAcordeon()">
                 <span class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center space-x-2">
@@ -80,7 +80,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            
+
             <div class="lg:col-span-2 space-y-6">
                 <div id="banner-tarea" class="bg-blue-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500">
                     <div class="flex items-center space-x-2">
@@ -90,7 +90,7 @@
                     </div>
 
                     <h3 id="txt-paso-nombre-grande" class="text-xl font-black tracking-tight mt-3 uppercase">NOMBRE DE LA TAREA</h3>
-                    
+
                     <div class="mt-4 pt-4 border-t border-white/20 space-y-1">
                         <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Actividad / Paso Operativo:</span>
                         <p id="txt-paso-nombre" class="text-sm font-medium leading-relaxed">Descripción del paso...</p>
@@ -132,7 +132,7 @@
                             </select>
                         </div>
                         <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Nro. Memorando / Oficio</label><input id="input-memorando" type="text" placeholder="SENADI-DTIC-2026-..." class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
-                        
+
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Elaborado por</label>
                             <select id="select-elaborado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl funcionario-select transition-colors focus:bg-white focus:outline-none"></select>
@@ -147,7 +147,7 @@
                         </div>
 
                         <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Observaciones</label><textarea id="input-observaciones" rows="2" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl resize-none transition-colors focus:bg-white focus:outline-none"></textarea></div>
-                        
+
                         <div id="zona-subida-pdf" class="md:col-span-2 mt-2 p-4 bg-gray-50 border border-gray-200 rounded-xl transition-colors">
                             <label class="block font-bold text-gray-700 mb-1">Documentos PDF de Respaldo</label>
                             <div id="lista-archivos-adjuntos" class="space-y-2 mb-3"></div>
@@ -185,8 +185,8 @@
         let rolActivoUsuario = localStorage.getItem('rolSimulado') || 'ROLE_SUPER_ADMIN';
 
         const LISTA_FUNCIONARIOS = [
-            "— Seleccionar —", "Gonzalo Moncayo", "Marco Molina", "Juan Pablo Ponce", 
-            "Emerson Ceracapa", "María Fernanda Pilco", "Michael Yanangómez", 
+            "— Seleccionar —", "Gonzalo Moncayo", "Marco Molina", "Juan Pablo Ponce",
+            "Emerson Ceracapa", "María Fernanda Pilco", "Michael Yanangómez",
             "Miguel Cabrera", "Paul Orozco"
         ];
 
@@ -215,10 +215,10 @@
             if (rolActivoUsuario === 'ROLE_SUPER_ADMIN') return true;
             const fase = (paso.fase || '').toUpperCase();
             const esPreparatoria = fase.includes('PREPARATORIA') || fase.includes('PRECONTRACTUAL');
-            
+
             if (rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') return esPreparatoria;
             if (rolActivoUsuario === 'Gonzalo Moncayo' || rolActivoUsuario === 'Miguel Cabrera') {
-                return !esPreparatoria; 
+                return !esPreparatoria;
             }
             return false;
         }
@@ -237,11 +237,11 @@
             const detallesGlobales = detallesStr ? JSON.parse(detallesStr) : {};
 
             document.getElementById('txt-proceso-titulo').innerText = procesoActivo.actividadNombre || 'Proceso de Contratación';
-            
+
             document.getElementById('info-poa').innerText = procesoActivo.codigoPoa || detallesGlobales.noPoa || '-';
             document.getElementById('info-item').innerText = procesoActivo.itemPresupuestario || detallesGlobales.item || '-';
             document.getElementById('info-cpc').innerText = procesoActivo.codigoCpc || detallesGlobales.cpc || '-';
-            
+
             const asig = parseFloat(procesoActivo.asignacion || detallesGlobales.asignacion || 0);
             document.getElementById('info-asignacion').innerText = '$ ' + asig.toLocaleString('es-EC', { minimumFractionDigits: 2 });
 
@@ -249,14 +249,110 @@
             renderizarIndiceLateral();
         }
 
+        // =============================================
+        // HELPERS DE SUBPASOS (lógica compleja)
+        // =============================================
+        function limpiarNombreSubpaso(texto) {
+            if (!texto) return '';
+            const match = texto.match(/^[\d.]+(?:\s+[\d.]+)?\s*[–\-]\s*(.+)$/);
+            if (match) return match[1].trim();
+            return texto.replace(/^[\d.]+\s+/, '').trim();
+        }
+
+        function extraerPrefijoSubpaso(texto) {
+            if (!texto) return null;
+            const match = texto.match(/^([\d]+(?:\.[\d]+)*)(?:\s|$)/);
+            return match ? match[1] : null;
+        }
+
+        function manejarCambioCheckbox() {
+            guardarProgresoActual(true);
+            cargarPasoActual();
+        }
+
+        function saltarSubpaso(indexSubpaso) {
+            const paso = pasosFlujo[indicePasoActual];
+            if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
+            if (!paso.respuestasUsuario.estadosSubpasos) paso.respuestasUsuario.estadosSubpasos = {};
+            paso.respuestasUsuario.estadosSubpasos[indexSubpaso] = "omitido";
+            guardarProgresoActual(true);
+            cargarPasoActual();
+        }
+
+        function agregarSubpaso(indexSubpaso = -1) {
+            const paso = pasosFlujo[indicePasoActual];
+            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
+            const nuevoNombre = prompt("Escribe el nombre de la nueva subfase/tarea:", "Nueva subfase/tarea");
+            if (!nuevoNombre || nuevoNombre.trim() === "") return;
+
+            if (!paso.subpasos) paso.subpasos = [];
+
+            paso.subpasos.forEach((sub, i) => {
+                if (!sub.numeroInterno) sub.numeroInterno = `${numeroPasoPrincipal}.${i + 1}`;
+                if (!sub.parentId) {
+                    const partes = sub.numeroInterno.split('.');
+                    partes.pop();
+                    sub.parentId = partes.join('.');
+                }
+            });
+
+            const getDisplayNum = s => extraerPrefijoSubpaso(s.nombreSubpaso || s.descripcion || '') || s.numeroInterno || '';
+            let parentNum = `${numeroPasoPrincipal}`;
+            let insertIndex = paso.subpasos.length;
+
+            if (indexSubpaso !== -1) {
+                parentNum = getDisplayNum(paso.subpasos[indexSubpaso]);
+                insertIndex = indexSubpaso + 1;
+                while (insertIndex < paso.subpasos.length && getDisplayNum(paso.subpasos[insertIndex]).startsWith(parentNum + '.')) {
+                    insertIndex++;
+                }
+            }
+
+            const hermanos = paso.subpasos.filter(s => {
+                const num = getDisplayNum(s);
+                if (!num.startsWith(parentNum + '.')) return false;
+                return !num.slice(parentNum.length + 1).includes('.');
+            });
+            let siguienteHijo = 1;
+            if (hermanos.length > 0) {
+                const maxHijo = Math.max(...hermanos.map(h => parseInt(getDisplayNum(h).split('.').pop()) || 0));
+                siguienteHijo = maxHijo + 1;
+            }
+            const nuevoNumero = `${parentNum}.${siguienteHijo}`;
+
+            paso.subpasos.splice(insertIndex, 0, {
+                nombreSubpaso: `${nuevoNumero} – ${nuevoNombre.trim()}`,
+                completado: false,
+                numeroInterno: nuevoNumero,
+                parentId: parentNum
+            });
+
+            if (paso.respuestasUsuario && paso.respuestasUsuario.estadosSubpasos) {
+                const viejosEstados = paso.respuestasUsuario.estadosSubpasos;
+                const nuevosEstados = {};
+                for (let i = 0; i < paso.subpasos.length; i++) {
+                    if (i < insertIndex) nuevosEstados[i] = viejosEstados[i];
+                    else if (i === insertIndex) nuevosEstados[i] = false;
+                    else nuevosEstados[i] = viejosEstados[i - 1];
+                }
+                paso.respuestasUsuario.estadosSubpasos = nuevosEstados;
+            }
+
+            guardarProgresoActual(true);
+            cargarPasoActual();
+        }
+        // =============================================
+
         function cargarPasoActual() {
             const paso = pasosFlujo[indicePasoActual];
             const esMiPaso = tienePermisoEnPaso(paso);
+            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
 
             const detallesStr = localStorage.getItem('detallesActividad');
             const detallesGlobales = detallesStr ? JSON.parse(detallesStr) : {};
 
             document.getElementById('txt-proceso-subtitulo').innerText = `Paso ${indicePasoActual + 1} de ${pasosFlujo.length}`;
+            document.getElementById('badge-contador-paso').innerText = `PASO ${paso.orden || (indicePasoActual + 1)}`;
             document.getElementById('txt-paso-nombre-grande').innerText = paso.nombrePaso;
             document.getElementById('txt-paso-nombre').innerText = paso.nombrePaso;
             document.getElementById('badge-rol-requerido').innerText = `REQ: ${paso.area || 'N/A'}`;
@@ -265,22 +361,83 @@
             aplicarColorPorFase(paso.fase);
             configurarUIporRol(esMiPaso);
 
-            // Cargar Subpasos (Checklists) y asignarles la función de guardado
+            // --- RENDER SUBPASOS (lógica compleja con numeración jerárquica) ---
             const contenedorSubpasos = document.getElementById('contenedor-subpasos');
             contenedorSubpasos.innerHTML = '';
             const respuestas = paso.respuestasUsuario || {};
-            const estadosSubpasos = respuestas.estadosSubpasos || {};
+            const subpasosGuardados = respuestas.estadosSubpasos || {};
 
-            (paso.subpasos || []).forEach((sub, i) => {
-                const isChecked = estadosSubpasos[i] === true ? 'checked' : '';
-                const item = document.createElement('div');
-                item.className = "flex items-center space-x-3 p-2 bg-black/10 rounded-lg text-white";
-                item.innerHTML = `
-                    <input type="checkbox" ${isChecked} ${!esMiPaso ? 'disabled' : ''} onchange="guardarProgresoActual(true)" class="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 bg-white border-gray-300">
-                    <span class="text-[11px] leading-tight">${sub.nombreSubpaso || sub.descripcion}</span>
-                `;
-                contenedorSubpasos.appendChild(item);
-            });
+            if (paso.subpasos && paso.subpasos.length > 0) {
+                paso.subpasos.forEach((sub, i) => {
+                    if (!sub.numeroInterno) sub.numeroInterno = `${numeroPasoPrincipal}.${i + 1}`;
+                    if (!sub.parentId) {
+                        const partes = sub.numeroInterno.split('.');
+                        partes.pop();
+                        sub.parentId = partes.join('.');
+                    }
+                });
+
+                const numerosDisplay = paso.subpasos.map((sub, i) => {
+                    const prefijo = extraerPrefijoSubpaso(sub.nombreSubpaso || sub.descripcion || '');
+                    return prefijo || sub.numeroInterno || `${numeroPasoPrincipal}.${i + 1}`;
+                });
+
+                paso.subpasos.forEach((sub, i) => {
+                    const estadoGuardado = subpasosGuardados[i];
+                    const esOmitido = estadoGuardado === "omitido";
+                    const estaChequeado = estadoGuardado === true || (!esOmitido && sub.completado);
+                    const numeroDisplay = numerosDisplay[i];
+                    const nombreLimpio = limpiarNombreSubpaso(sub.nombreSubpaso || sub.descripcion || 'Subpaso sin nombre');
+
+                    const dotsCount = numeroDisplay.split('.').length;
+                    let mlClass = "";
+                    if (dotsCount === 3) mlClass = "ml-6 border-l border-white/20";
+                    else if (dotsCount === 4) mlClass = "ml-12 border-l border-white/20";
+                    else if (dotsCount >= 5) mlClass = "ml-16 border-l border-white/20";
+
+                    const wrapper = document.createElement('div');
+                    wrapper.className = `mt-1.5 ${mlClass}`;
+
+                    if (esOmitido) {
+                        wrapper.innerHTML = `
+                            <div class="flex items-center justify-between px-1 py-0.5 opacity-50">
+                                <div class="flex items-center space-x-2">
+                                    <input type="checkbox" disabled class="w-4 h-4 rounded text-gray-400 bg-gray-900/40 border-gray-400/30">
+                                    <span class="font-bold text-white text-xs line-through">${numeroDisplay}</span>
+                                </div>
+                            </div>
+                            <div class="ml-7 mt-1 bg-black/20 rounded-xl px-3 py-2 text-xs text-white/50 line-through leading-relaxed">${nombreLimpio} (Omitido)</div>`;
+                    } else {
+                        wrapper.innerHTML = `
+                            <div class="flex items-center justify-between px-1 py-0.5">
+                                <label class="flex items-center space-x-2 cursor-pointer select-none">
+                                    <input type="checkbox" data-index="${i}" ${estaChequeado ? 'checked' : ''} ${!esMiPaso ? 'disabled' : ''} onchange="manejarCambioCheckbox()" class="subpaso-checkbox w-4 h-4 rounded text-blue-600 flex-shrink-0">
+                                    <span class="font-bold text-white text-xs">${numeroDisplay}</span>
+                                </label>
+                                ${esMiPaso ? `<div class="flex space-x-1.5 flex-shrink-0">
+                                    <button onclick="saltarSubpaso(${i})" class="text-[10px] font-bold bg-amber-500/80 hover:bg-amber-500 text-white px-2.5 py-1 rounded-md transition shadow-sm">Saltar</button>
+                                    <button onclick="agregarSubpaso(${i})" class="text-[10px] font-bold bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-md transition shadow-sm">Agregar</button>
+                                </div>` : ''}
+                            </div>
+                            <div class="ml-7 mt-1 bg-black/20 rounded-xl px-3 py-2 text-xs text-white leading-relaxed">${nombreLimpio}</div>`;
+                    }
+                    contenedorSubpasos.appendChild(wrapper);
+                });
+
+                if (esMiPaso) {
+                    const divBotonGlobal = document.createElement('div');
+                    divBotonGlobal.className = "mt-3 pt-3 border-t border-white/20";
+                    divBotonGlobal.innerHTML = `
+                        <button onclick="agregarSubpaso(-1)" class="text-[10px] font-bold bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition border border-white/20 w-full flex items-center justify-center space-x-1 shadow-sm">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            <span>Agregar Subfase al Final</span>
+                        </button>`;
+                    contenedorSubpasos.appendChild(divBotonGlobal);
+                }
+            } else {
+                contenedorSubpasos.innerHTML = `<p class="text-[11px] text-white/60 italic p-2">Este paso no requiere subprocesos adicionales.</p>`;
+            }
+            // --- FIN RENDER SUBPASOS ---
 
             // Llenar Formulario con datos guardados
             document.getElementById('input-estado').value = respuestas.estado || '';
@@ -288,28 +445,34 @@
             document.getElementById('input-fecha').value = respuestas.fecha || obtenerFechaHoy();
             document.getElementById('input-medio').value = respuestas.medio || 'QUIPUX';
             document.getElementById('input-memorando').value = respuestas.memorando || '';
-            
+
             document.getElementById('select-elaborado').value = respuestas.elaborado || detallesGlobales.elaborado || '';
             document.getElementById('select-revisado').value = respuestas.revisado || detallesGlobales.revisado || '';
             document.getElementById('select-aprobado').value = respuestas.aprobado || detallesGlobales.aprobado || '';
             document.getElementById('input-observaciones').value = respuestas.observaciones || '';
-            
-            archivosAdjuntosTemporales = respuestas.archivos || [];
+
+            if (respuestas.archivos && respuestas.archivos.length > 0) {
+                archivosAdjuntosTemporales = respuestas.archivos;
+            } else if (respuestas.archivoBase64) {
+                archivosAdjuntosTemporales = [{ nombre: respuestas.archivoNombre || 'documento.pdf', base64: respuestas.archivoBase64 }];
+            } else {
+                archivosAdjuntosTemporales = [];
+            }
             renderizarListaArchivos();
-            
+
             document.getElementById('btn-anterior').disabled = (indicePasoActual === 0);
-            
+
             actualizarPorcentajeVisual();
         }
 
         function configurarUIporRol(esMiPaso) {
             const inputs = document.querySelectorAll('#form-paso-dinamico input, #form-paso-dinamico select, #form-paso-dinamico textarea');
             inputs.forEach(input => input.disabled = !esMiPaso);
-            
+
             const alerta = document.getElementById('alerta-rol');
             const btnSiguiente = document.getElementById('btn-siguiente');
             const btnOmitir = document.getElementById('btn-omitir');
-            
+
             if (!esMiPaso) {
                 alerta.classList.remove('hidden');
                 btnOmitir.classList.add('hidden');
@@ -327,8 +490,9 @@
             document.getElementById('input-pdf-multiple').addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
-                if (file.size > 2 * 1024 * 1024) { alert("Máximo 2MB por archivo."); return; }
-                
+                if (file.type !== "application/pdf") { alert("Solo se permiten archivos PDF."); this.value = ""; return; }
+                if (file.size > 2 * 1024 * 1024) { alert("Máximo 2MB por archivo."); this.value = ""; return; }
+
                 const reader = new FileReader();
                 reader.onload = (ev) => {
                     archivosAdjuntosTemporales.push({ nombre: file.name, base64: ev.target.result });
@@ -364,18 +528,19 @@
             });
         }
 
-        // ==========================================
-        // LA LÓGICA CORE DE GUARDADO 
-        // ==========================================
         function guardarProgresoActual(silencioso = true) {
             const paso = pasosFlujo[indicePasoActual];
             if (!tienePermisoEnPaso(paso)) return;
 
-            // Extraer estado de Checklists (Subpasos)
-            const estadosSubpasos = {};
-            const checkboxes = document.querySelectorAll('#contenedor-subpasos input[type="checkbox"]');
-            checkboxes.forEach((chk, idx) => {
-                estadosSubpasos[idx] = chk.checked;
+            const respuestasActuales = paso.respuestasUsuario || {};
+            const estadosSubpasos = respuestasActuales.estadosSubpasos || {};
+
+            // Leer checkboxes preservando estados "omitido"
+            document.querySelectorAll('.subpaso-checkbox').forEach(chk => {
+                const idx = chk.getAttribute('data-index');
+                if (estadosSubpasos[idx] !== "omitido") {
+                    estadosSubpasos[idx] = chk.checked;
+                }
                 if (paso.subpasos && paso.subpasos[idx]) {
                     paso.subpasos[idx].completado = chk.checked;
                 }
@@ -383,7 +548,6 @@
 
             const estadoSeleccionado = document.getElementById('input-estado').value;
 
-            // Guardar toda la data en el paso correspondiente
             paso.respuestasUsuario = {
                 estado: estadoSeleccionado,
                 responsable: document.getElementById('input-responsable').value,
@@ -402,12 +566,10 @@
             procesoActivo.pipelineSnapshot = pasosFlujo;
             procesoActivo.ultimoIndiceTrabajado = indicePasoActual;
 
-            // RE-CALCULAR PORCENTAJE GLOBAL
             const completados = pasosFlujo.filter(p => p.respuestasUsuario && p.respuestasUsuario.completado).length;
             procesoActivo.porcentaje = Math.round((completados / pasosFlujo.length) * 100) || 0;
             procesoActivo.pasosCompletados = completados;
 
-            // Reemplazar el proceso modificado en la lista Global
             const idxBase = procesosGlobales.findIndex(p => p.id === procesoActivo.id);
             if (idxBase !== -1) procesosGlobales[idxBase] = procesoActivo;
 
@@ -417,6 +579,10 @@
                 if (!silencioso) alert("¡Progreso y archivos guardados correctamente!");
             } catch (e) {
                 alert("⚠️ Error al guardar: El tamaño de los archivos adjuntos supera el límite del navegador. Elimina alguno e intenta de nuevo.");
+                pasosFlujo[indicePasoActual].respuestasUsuario.archivos = [];
+                archivosAdjuntosTemporales = [];
+                renderizarListaArchivos();
+                localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
             }
         }
 
@@ -427,7 +593,6 @@
         }
 
         function ejecutarAccionSiguiente() {
-            // Si le da a avanzar y no ha puesto estado, lo forzamos a Completado
             if (!document.getElementById('input-estado').value) {
                 document.getElementById('input-estado').value = "Completado";
             }
@@ -438,7 +603,7 @@
         function omitirPasoActual() {
             const paso = pasosFlujo[indicePasoActual];
             if (!tienePermisoEnPaso(paso)) return;
-            
+
             document.getElementById('input-estado').value = "Omitido";
             guardarProgresoActual(true);
             ejecutarNavegacion(1);
@@ -463,18 +628,18 @@
                 const esMiPaso = tienePermisoEnPaso(p);
                 const isDone = p.respuestasUsuario?.completado;
                 const isOmitido = p.respuestasUsuario?.estado === "Omitido";
-                
+
                 const item = document.createElement('div');
                 item.className = `p-2 border rounded-xl text-[10px] flex justify-between items-center cursor-pointer transition-colors ${esActivo ? 'border-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'}`;
                 item.onclick = () => { indicePasoActual = i; cargarPasoActual(); renderizarIndiceLateral(); };
-                
+
                 let icon = esMiPaso ? '⚪' : '🔒';
                 if (isDone) icon = isOmitido ? '⚠️' : '✅';
                 if (esActivo) icon = esMiPaso ? '🔵' : '🔒';
 
                 item.innerHTML = `
                     <div class="flex items-center space-x-2 truncate">
-                        <span class="font-bold text-gray-400">#${i + 1}</span>
+                        <span class="font-bold text-gray-400">#${p.orden || (i + 1)}</span>
                         <span class="truncate ${isOmitido ? 'line-through text-gray-400' : 'text-gray-700'}">${p.nombrePaso}</span>
                     </div>
                     <span class="flex-shrink-0">${icon}</span>`;
@@ -484,14 +649,20 @@
 
         function aplicarColorPorFase(f) {
             const b = document.getElementById('banner-tarea');
+            const badge = document.getElementById('badge-contador-paso');
             const fase = (f || '').toUpperCase();
-            if (fase.includes('CONTRACTUAL')) b.className = "bg-emerald-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500";
-            else if (fase.includes('PREPARATORIA')) b.className = "bg-blue-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500";
-            else b.className = "bg-purple-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500";
+
+            let bgClass = "bg-blue-600", badgeClass = "bg-blue-700/60";
+            if (fase.includes('PRECONTRACTUAL')) { bgClass = "bg-purple-600"; badgeClass = "bg-purple-700/60"; }
+            else if (fase.includes('CONTRACTUAL')) { bgClass = "bg-emerald-600"; badgeClass = "bg-emerald-700/60"; }
+            else if (fase.includes('EVALUACI')) { bgClass = "bg-amber-500"; badgeClass = "bg-amber-600/60"; }
+
+            b.className = `text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500 ${bgClass}`;
+            badge.className = `text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider ${badgeClass}`;
         }
 
         function obtenerFechaHoy() { return new Date().toISOString().split('T')[0]; }
-        function toggleAcordeon() { document.getElementById('cuerpo-acordeon').classList.toggle('hidden'); document.getElementById('icono-acordeon').classList.toggle('rotate-180');}
+        function toggleAcordeon() { document.getElementById('cuerpo-acordeon').classList.toggle('hidden'); document.getElementById('icono-acordeon').classList.toggle('rotate-180'); }
         function irAlDashboard() { window.location.href = '/dashboard.html'; }
     </script>
 </body>

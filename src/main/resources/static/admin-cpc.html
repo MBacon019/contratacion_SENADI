@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCP - Carga de Tabla CPC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f4f7fc] font-sans antialiased text-gray-800 min-h-screen">
+
+    <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
+        <div class="flex items-center space-x-3">
+            <a href="/dashboard.html" class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 font-semibold text-xs py-2 px-4 rounded-xl shadow-sm transition flex items-center space-x-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <span>Inicio</span>
+            </a>
+            <h2 class="text-sm font-bold text-gray-700">Administración — Tabla CPC / Umbral VAE</h2>
+        </div>
+        <div id="badge-total" class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100 hidden">
+            <span id="txt-total">0</span> registros en BD
+        </div>
+    </nav>
+
+    <main class="max-w-2xl mx-auto p-8 space-y-6">
+
+        <!-- ESTADO ACTUAL -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-3">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Estado Actual de la Tabla CPC</h3>
+                <button onclick="verificarTotal()" class="text-xs text-blue-600 hover:underline font-medium">Actualizar</button>
+            </div>
+            <div id="estado-bd" class="text-sm text-gray-500 italic">Consultando base de datos...</div>
+        </div>
+
+        <!-- FORMULARIO DE CARGA -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-5">
+            <div>
+                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Cargar / Reemplazar datos CPC</h3>
+                <p class="text-xs text-gray-400 mt-1">
+                    Selecciona el archivo <strong>umbral_vae.csv</strong>. La carga reemplazará todos los datos existentes.
+                    Columnas requeridas: <code class="bg-gray-100 px-1 rounded text-gray-600">cpc, descripcion, umbral_vae</code>
+                </p>
+            </div>
+
+            <div id="zona-drop" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/30 transition-colors"
+                 onclick="document.getElementById('input-csv').click()"
+                 ondragover="event.preventDefault(); this.classList.add('border-blue-400','bg-blue-50/30')"
+                 ondragleave="this.classList.remove('border-blue-400','bg-blue-50/30')"
+                 ondrop="manejarDrop(event)">
+                <svg class="w-10 h-10 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <p class="text-sm font-medium text-gray-500">Arrastra el CSV aquí o haz clic para seleccionarlo</p>
+                <p id="txt-archivo-seleccionado" class="text-xs text-blue-600 font-bold mt-2 hidden"></p>
+            </div>
+            <input type="file" id="input-csv" accept=".csv" class="hidden" onchange="seleccionarArchivo(this)">
+
+            <button id="btn-cargar" onclick="subirCSV()" disabled
+                    class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold text-sm py-3 rounded-xl transition flex items-center justify-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                <span>Cargar CSV en Base de Datos</span>
+            </button>
+        </div>
+
+        <!-- RESULTADO -->
+        <div id="panel-resultado" class="hidden rounded-2xl border p-5 space-y-3"></div>
+
+        <!-- BUSCADOR DE PRUEBA -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 space-y-3">
+            <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wider">Probar búsqueda CPC</h3>
+            <div class="flex space-x-2">
+                <input type="text" id="input-buscar" placeholder="Escribe código o descripción..." oninput="probarBusqueda()"
+                       class="flex-1 border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-400 focus:bg-white transition">
+            </div>
+            <div id="resultados-busqueda" class="space-y-1.5 max-h-64 overflow-y-auto"></div>
+        </div>
+
+    </main>
+
+    <script>
+        let archivoSeleccionado = null;
+
+        document.addEventListener('DOMContentLoaded', verificarTotal);
+
+        function verificarTotal() {
+            fetch('/api/cpc/total')
+                .then(r => r.json())
+                .then(data => {
+                    const total = data.total || 0;
+                    document.getElementById('estado-bd').innerHTML = total > 0
+                        ? `<span class="text-green-600 font-bold">✓ ${total.toLocaleString()} registros CPC cargados en la base de datos.</span>`
+                        : `<span class="text-amber-500 font-bold">⚠ La tabla CPC está vacía. Carga el archivo para comenzar.</span>`;
+                    document.getElementById('txt-total').innerText = total.toLocaleString();
+                    document.getElementById('badge-total').classList.toggle('hidden', total === 0);
+                })
+                .catch(() => {
+                    document.getElementById('estado-bd').innerHTML = '<span class="text-red-500">No se pudo conectar con el servidor.</span>';
+                });
+        }
+
+        function seleccionarArchivo(input) {
+            if (input.files.length > 0) {
+                archivoSeleccionado = input.files[0];
+                mostrarArchivoSeleccionado(archivoSeleccionado.name);
+            }
+        }
+
+        function manejarDrop(event) {
+            event.preventDefault();
+            document.getElementById('zona-drop').classList.remove('border-blue-400', 'bg-blue-50/30');
+            const file = event.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                archivoSeleccionado = file;
+                mostrarArchivoSeleccionado(file.name);
+            } else {
+                mostrarError('Solo se aceptan archivos .csv');
+            }
+        }
+
+        function mostrarArchivoSeleccionado(nombre) {
+            const txt = document.getElementById('txt-archivo-seleccionado');
+            txt.innerText = '📄 ' + nombre;
+            txt.classList.remove('hidden');
+            document.getElementById('btn-cargar').disabled = false;
+        }
+
+        async function subirCSV() {
+            if (!archivoSeleccionado) return;
+
+            const btn = document.getElementById('btn-cargar');
+            btn.disabled = true;
+            btn.innerHTML = `<svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg><span>Procesando...</span>`;
+
+            const formData = new FormData();
+            formData.append('archivo', archivoSeleccionado);
+
+            try {
+                const resp = await fetch('/api/cpc/cargar', { method: 'POST', body: formData });
+                const data = await resp.json();
+
+                const panel = document.getElementById('panel-resultado');
+                panel.classList.remove('hidden');
+
+                if (resp.ok) {
+                    panel.className = 'rounded-2xl border border-green-200 bg-green-50 p-5 space-y-2';
+                    panel.innerHTML = `
+                        <p class="text-sm font-bold text-green-700">✓ Carga completada correctamente</p>
+                        <ul class="text-xs text-green-600 space-y-0.5">
+                            <li>• Registros cargados: <strong>${data.cargados?.toLocaleString()}</strong></li>
+                            <li>• Filas omitidas: <strong>${data.omitidos}</strong></li>
+                        </ul>`;
+                    verificarTotal();
+                } else {
+                    mostrarError(data.error || 'Error desconocido al cargar el archivo.');
+                }
+            } catch (e) {
+                mostrarError('No se pudo conectar con el servidor.');
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg><span>Cargar CSV en Base de Datos</span>`;
+        }
+
+        function mostrarError(msg) {
+            const panel = document.getElementById('panel-resultado');
+            panel.classList.remove('hidden');
+            panel.className = 'rounded-2xl border border-red-200 bg-red-50 p-5';
+            panel.innerHTML = `<p class="text-sm font-bold text-red-600">✕ ${msg}</p>`;
+        }
+
+        let timerBusqueda = null;
+        function probarBusqueda() {
+            clearTimeout(timerBusqueda);
+            const q = document.getElementById('input-buscar').value.trim();
+            const contenedor = document.getElementById('resultados-busqueda');
+            if (q.length < 2) { contenedor.innerHTML = ''; return; }
+
+            timerBusqueda = setTimeout(async () => {
+                const data = await fetch(`/api/cpc/buscar?q=${encodeURIComponent(q)}`).then(r => r.json());
+                if (!data.length) {
+                    contenedor.innerHTML = '<p class="text-xs text-gray-400 italic p-2">Sin resultados.</p>';
+                    return;
+                }
+                contenedor.innerHTML = data.map(c => `
+                    <div class="flex justify-between items-center bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-xs">
+                        <span><strong class="text-blue-600">${c.codigo}</strong> — ${c.descripcion}</span>
+                        ${c.umbralVae != null ? `<span class="text-[10px] text-gray-400 flex-shrink-0 ml-2">VAE: $${c.umbralVae.toLocaleString()}</span>` : ''}
+                    </div>`).join('');
+            }, 250);
+        }
+    </script>
+</body>
+</html>
