@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCP - Ejecución Integral</title>
+    <title>SCP - Ejecución de Proceso</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
@@ -17,12 +17,18 @@
             color: #9ca3af !important;
             cursor: not-allowed !important;
             border-color: #e5e7eb !important;
-            opacity: 0.8;
+            opacity: 0.7;
         }
         .tema-oscuro input:disabled, .tema-oscuro select:disabled, .tema-oscuro textarea:disabled {
             background-color: #1e293b !important;
             color: #64748b !important;
             border-color: #334155 !important;
+        }
+        
+        /* Estilo para los checkboxes bloqueados por rol */
+        input[type="checkbox"]:disabled {
+            filter: grayscale(100%) opacity(0.5);
+            cursor: not-allowed;
         }
     </style>
 </head>
@@ -31,8 +37,8 @@
     <nav class="bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
         <div class="flex items-center space-x-3">
             <button onclick="irAlDashboard()" class="bg-white hover:bg-gray-50 border border-gray-200 text-gray-600 font-semibold text-xs py-2 px-4 rounded-xl shadow-sm transition flex items-center space-x-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 001 1m-6 0h6"/></svg>
-                <span>Inicio</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <span>Ir al Inicio</span>
             </button>
             <div>
                 <h2 id="txt-proceso-titulo" class="text-lg font-bold text-gray-900">Cargando Proceso...</h2>
@@ -53,10 +59,10 @@
 
             <button id="btn-guardar-parcial" onclick="guardarProgresoActual(false)" class="bg-white hover:bg-gray-50 text-gray-700 font-semibold text-xs py-2 px-4 rounded-xl border border-gray-200 shadow-sm transition flex items-center space-x-1.5">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
-                <span>Guardar</span>
+                <span>Guardar Parcial</span>
             </button>
             <div class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100">
-                <span id="txt-porcentaje-barra">0%</span>
+                <span id="txt-porcentaje-barra">0%</span> Completado
             </div>
         </div>
     </nav>
@@ -67,15 +73,27 @@
             <div class="bg-gray-50/50 px-5 py-3 border-b border-gray-100 flex justify-between items-center cursor-pointer" onclick="toggleAcordeon()">
                 <span class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center space-x-2">
                     <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                    <span>Información General y Presupuesto</span>
+                    <span>Información General del Proceso</span>
                 </span>
                 <svg id="icono-acordeon" class="w-4 h-4 text-gray-400 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
             <div id="cuerpo-acordeon" class="p-5 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-                <div><span class="text-gray-400 block font-medium">POA NRO:</span><span id="info-poa" class="font-bold text-gray-800">-</span></div>
-                <div><span class="text-gray-400 block font-medium">ITEM PRESUPUESTARIO:</span><span id="info-item" class="font-bold text-gray-800">-</span></div>
-                <div><span class="text-gray-400 block font-medium">CÓDIGO CPC:</span><span id="info-cpc" class="font-bold text-gray-800">-</span></div>
-                <div><span class="text-gray-400 block font-medium">ASIGNACIÓN:</span><span id="info-asignacion" class="font-bold text-blue-600 font-mono">$ 0,00</span></div>
+                <div>
+                    <span class="text-gray-400 block font-medium">POA NRO:</span>
+                    <span id="info-poa" class="font-bold text-gray-800">-</span>
+                </div>
+                <div>
+                    <span class="text-gray-400 block font-medium">ITEM PRESUPUESTARIO:</span>
+                    <span id="info-item" class="font-bold text-gray-800">-</span>
+                </div>
+                <div>
+                    <span class="text-gray-400 block font-medium">CÓDIGO CPC:</span>
+                    <span id="info-cpc" class="font-bold text-gray-800">-</span>
+                </div>
+                <div>
+                    <span class="text-gray-400 block font-medium">ASIGNACIÓN:</span>
+                    <span id="info-asignacion" class="font-bold text-blue-600 font-mono">$ 0,00</span>
+                </div>
             </div>
         </div>
 
@@ -83,26 +101,38 @@
 
             <div class="lg:col-span-2 space-y-6">
                 <div id="banner-tarea" class="bg-blue-600 text-white rounded-2xl p-6 shadow-sm relative overflow-hidden transition-colors duration-500">
+                    <div class="absolute -right-6 -bottom-6 opacity-10 text-white">
+                        <svg class="w-36 h-36" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+                    </div>
+
                     <div class="flex items-center space-x-2">
-                        <span id="badge-contador-paso" class="bg-blue-700/60 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">PASO 1</span>
+                        <span id="badge-contador-paso" class="bg-blue-700/60 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider transition-colors duration-500">PASO 1 DE 1</span>
                         <span id="badge-rol-requerido" class="bg-white/20 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">RESPONSABLE: -</span>
-                        <span id="badge-fase-actual" class="bg-white/90 text-gray-800 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ml-auto">FASE PREPARATORIA</span>
+                        <span id="badge-fase-actual" class="bg-white/90 text-gray-800 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider ml-auto shadow-sm">FASE PREPARATORIA</span>
+                    </div>
+
+                    <h3 id="txt-paso-fase" class="text-xl font-black tracking-tight mt-3 uppercase">FASE PREPARATORIA</h3>
+
+                    <div class="mt-4 pt-4 border-t border-white/20 space-y-1">
+                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Área Responsable:</span>
+                        <span id="txt-paso-area" class="font-bold text-sm tracking-wide">Cargando...</span>
                     </div>
 
                     <h3 id="txt-paso-nombre-grande" class="text-xl font-black tracking-tight mt-3 uppercase">NOMBRE DE LA TAREA</h3>
 
                     <div class="mt-4 pt-4 border-t border-white/20 space-y-1">
                         <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Actividad / Paso Operativo:</span>
-                        <p id="txt-paso-nombre" class="text-sm font-medium leading-relaxed">Descripción del paso...</p>
+                        <p id="txt-paso-nombre" class="text-sm font-medium leading-relaxed">Cargando descripción del paso...</p>
                     </div>
 
                     <div class="mt-5 pt-4 border-t border-white/20 space-y-2 relative z-10">
-                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Checklist de Requisitos:</span>
+                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Subpasos / Requisitos (Opcionales):</span>
                         <div id="contenedor-subpasos" class="space-y-1.5 mt-2"></div>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 relative">
+                    
                     <div id="alerta-rol" class="hidden bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-xl text-xs mb-5 flex items-start space-x-2 shadow-sm">
                         <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                         <div>
@@ -134,16 +164,18 @@
                         <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Nro. Memorando / Oficio</label><input id="input-memorando" type="text" placeholder="SENADI-DTIC-2026-..." class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
 
                         <div>
-                            <label class="block font-bold text-gray-700 mb-1">Elaborado por</label>
-                            <select id="select-elaborado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl funcionario-select transition-colors focus:bg-white focus:outline-none"></select>
-                        </div>
-                        <div>
-                            <label class="block font-bold text-gray-700 mb-1">Revisado por</label>
-                            <select id="select-revisado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl funcionario-select transition-colors focus:bg-white focus:outline-none"></select>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block font-bold text-gray-700 mb-1">Aprobado por</label>
-                            <select id="select-aprobado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl funcionario-select transition-colors focus:bg-white focus:outline-none"></select>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block font-bold text-gray-700">Estado del Proceso</label>
+                                <label class="flex items-center space-x-1 cursor-pointer text-gray-500 hover:text-amber-600 transition">
+                                    <input type="checkbox" id="skip-estado" class="skip-cb w-3 h-3 rounded accent-amber-500" onchange="guardarProgresoActual(true)">
+                                    <span class="text-[10px] font-bold uppercase">Saltar</span>
+                                </label>
+                            </div>
+                            <select id="input-estado" class="valida-campo w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl font-medium text-gray-700 focus:bg-white transition outline-none" data-skip="skip-estado">
+                                <option value="">Seleccionar...</option>
+                                <option value="Completado">Completado con éxito</option>
+                                <option value="Observado">En revisión con observaciones</option>
+                            </select>
                         </div>
 
                         <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Observaciones</label><textarea id="input-observaciones" rows="2" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl resize-none transition-colors focus:bg-white focus:outline-none"></textarea></div>
@@ -155,24 +187,32 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 <span>Añadir PDF</span>
                             </button>
-                            <input type="file" id="input-pdf-multiple" accept="application/pdf" class="hidden">
+                            <input type="file" id="input-pdf-multiple" multiple accept="application/pdf" class="hidden">
                         </div>
                     </form>
 
                     <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
-                        <button onclick="ejecutarNavegacion(-1)" id="btn-anterior" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs py-2 px-4 rounded-xl transition disabled:opacity-40">← Anterior</button>
+                        <button onclick="ejecutarNavegacion(-1)" id="btn-anterior" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs py-2 px-4 rounded-xl transition disabled:opacity-40">
+                            ← Anterior
+                        </button>
                         <div class="flex space-x-2">
-                            <button id="btn-omitir" onclick="omitirPasoActual()" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold text-xs py-2 px-4 rounded-xl transition">Omitir</button>
-                            <button id="btn-siguiente" onclick="ejecutarAccionSiguiente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition">Guardar y Avanzar ➔</button>
+                            <button id="btn-omitir" onclick="omitirPasoActual()" class="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-bold text-xs py-2 px-4 rounded-xl transition">
+                                Omitir Paso
+                            </button>
+                            <button id="btn-siguiente" onclick="ejecutarAccionSiguiente()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition">
+                                Guardar y Avanzar ➔
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 space-y-3">
-                <h4 class="text-xs font-bold text-gray-900 tracking-tight uppercase border-b border-gray-100 pb-2">Flujo del Proceso</h4>
-                <div id="lista-navegacion-pasos" class="space-y-1.5 max-h-[60vh] overflow-y-auto pr-1"></div>
+                <h4 class="text-xs font-bold text-gray-900 tracking-tight uppercase border-b border-gray-100 pb-2">Índice del Flujo</h4>
+                <div id="lista-navegacion-pasos" class="space-y-1.5 max-h-[60vh] overflow-y-auto pr-1">
+                    </div>
             </div>
+
         </div>
     </main>
 
@@ -181,7 +221,10 @@
         let procesoActivo = null;
         let indicePasoActual = 0;
         let pasosFlujo = [];
-        let archivosAdjuntosTemporales = [];
+        
+        let archivosAdjuntosTemporales = []; 
+
+        // MANEJO DE ROLES
         let rolActivoUsuario = localStorage.getItem('rolSimulado') || 'ROLE_SUPER_ADMIN';
 
         const LISTA_FUNCIONARIOS = [
@@ -191,18 +234,10 @@
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            llenarSelectsFuncionarios();
             document.getElementById('select-rol').value = rolActivoUsuario;
             inicializarPantallaEjecucion();
             configurarValidacionPDF();
         });
-
-        function llenarSelectsFuncionarios() {
-            const selects = document.querySelectorAll('.funcionario-select');
-            selects.forEach(sel => {
-                sel.innerHTML = LISTA_FUNCIONARIOS.map(f => `<option value="${f === "— Seleccionar —" ? "" : f}">${f}</option>`).join('');
-            });
-        }
 
         function cambiarRol() {
             rolActivoUsuario = document.getElementById('select-rol').value;
@@ -223,15 +258,94 @@
             return false;
         }
 
+        // ----------------------------------------------------
+        // LÓGICA DE MANEJO MULTIPLE DE ARCHIVOS PDF
+        // ----------------------------------------------------
+        function configurarValidacionPDF() {
+            document.getElementById('input-pdf-multiple').addEventListener('change', function(e) {
+                const files = e.target.files;
+                if (!files || files.length === 0) return;
+                
+                Array.from(files).forEach(file => {
+                    if (file.type !== "application/pdf") {
+                        alert(`El archivo ${file.name} no es válido. Solo se permiten PDF.`);
+                        return;
+                    } 
+                    if (file.size > 2 * 1024 * 1024) { 
+                        alert(`El archivo ${file.name} supera el límite de 2 MB.`);
+                        return; 
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        archivosAdjuntosTemporales.push({ nombre: file.name, base64: event.target.result });
+                        renderizarListaArchivos();
+                        guardarProgresoActual(true);
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                this.value = ""; 
+            });
+        }
+
+        function renderizarListaArchivos() {
+            const contenedor = document.getElementById('lista-archivos-adjuntos');
+            contenedor.innerHTML = '';
+            
+            const esMiPaso = tienePermisoEnPaso(pasosFlujo[indicePasoActual]);
+
+            if (archivosAdjuntosTemporales.length === 0) {
+                contenedor.innerHTML = '<p class="text-[10px] italic text-gray-400">Ningún documento adjunto.</p>';
+                return;
+            }
+
+            archivosAdjuntosTemporales.forEach((file, idx) => {
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-white p-2 border border-emerald-100 rounded-lg text-[11px] shadow-sm mb-1.5";
+                item.innerHTML = `
+                    <div class="flex items-center space-x-2 overflow-hidden pr-2">
+                        <svg class="w-4 h-4 text-red-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                        <span class="truncate font-bold text-gray-700">${file.nombre}</span>
+                    </div>
+                    <div class="flex space-x-3 flex-shrink-0">
+                        <a href="${file.base64}" download="${file.nombre}" class="text-blue-600 hover:text-blue-800 font-bold tracking-wide">Descargar</a>
+                        ${esMiPaso ? `<button type="button" onclick="eliminarArchivoPDF(${idx})" class="text-red-500 hover:text-red-700 font-bold tracking-wide">Quitar</button>` : ''}
+                    </div>
+                `;
+                contenedor.appendChild(item);
+            });
+        }
+
+        function eliminarArchivoPDF(idx) {
+            archivosAdjuntosTemporales.splice(idx, 1);
+            renderizarListaArchivos();
+            guardarProgresoActual(true);
+        }
+        // ----------------------------------------------------
+
         function inicializarPantallaEjecucion() {
             const idProcesoActivo = localStorage.getItem('idProcesoActivo');
             const rawProcesos = localStorage.getItem('instanciaProcesoEnProgreso');
-            if (!idProcesoActivo || !rawProcesos) { irAlDashboard(); return; }
+
+            if (!idProcesoActivo || !rawProcesos) {
+                alert("No se encontró ninguna sesión de ejecución activa.");
+                irAlDashboard();
+                return;
+            }
 
             procesosGlobales = JSON.parse(rawProcesos);
             procesoActivo = procesosGlobales.find(p => p.id === idProcesoActivo);
+
+            if (!procesoActivo || !procesoActivo.pipelineSnapshot || procesoActivo.pipelineSnapshot.length === 0) {
+                alert("El proceso seleccionado ya no existe o no tiene pasos.");
+                irAlDashboard();
+                return;
+            }
+
             pasosFlujo = procesoActivo.pipelineSnapshot;
             indicePasoActual = procesoActivo.ultimoIndiceTrabajado || 0;
+            if (indicePasoActual >= pasosFlujo.length) indicePasoActual = 0;
 
             const detallesStr = localStorage.getItem('detallesActividad');
             const detallesGlobales = detallesStr ? JSON.parse(detallesStr) : {};
@@ -345,18 +459,16 @@
 
         function cargarPasoActual() {
             const paso = pasosFlujo[indicePasoActual];
+            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
             const esMiPaso = tienePermisoEnPaso(paso);
             const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
-
-            const detallesStr = localStorage.getItem('detallesActividad');
-            const detallesGlobales = detallesStr ? JSON.parse(detallesStr) : {};
 
             document.getElementById('txt-proceso-subtitulo').innerText = `Paso ${indicePasoActual + 1} de ${pasosFlujo.length}`;
             document.getElementById('badge-contador-paso').innerText = `PASO ${paso.orden || (indicePasoActual + 1)}`;
             document.getElementById('txt-paso-nombre-grande').innerText = paso.nombrePaso;
             document.getElementById('txt-paso-nombre').innerText = paso.nombrePaso;
             document.getElementById('badge-rol-requerido').innerText = `REQ: ${paso.area || 'N/A'}`;
-            document.getElementById('badge-fase-actual').innerText = paso.fase || 'FASE';
+            document.getElementById('txt-paso-nombre').innerText = `${numeroPasoPrincipal} – ${paso.nombrePaso}`;
 
             aplicarColorPorFase(paso.fase);
             configurarUIporRol(esMiPaso);
@@ -439,11 +551,14 @@
             }
             // --- FIN RENDER SUBPASOS ---
 
-            // Llenar Formulario con datos guardados
+            // 4. Llenar Formulario
+            const selectMedio = document.getElementById('input-medio');
+            selectMedio.innerHTML = `<option value="${paso.medio || 'QUIPUX'}">${paso.medio || 'QUIPUX'}</option><option value="ZIMBRA">ZIMBRA</option><option value="QUIPUX">QUIPUX</option><option value="FISICO">DOCUMENTO FÍSICO</option>`;
+
             document.getElementById('input-estado').value = respuestas.estado || '';
             document.getElementById('input-responsable').value = respuestas.responsable || '';
             document.getElementById('input-fecha').value = respuestas.fecha || obtenerFechaHoy();
-            document.getElementById('input-medio').value = respuestas.medio || 'QUIPUX';
+            document.getElementById('input-medio').value = respuestas.medio || paso.medio || 'QUIPUX';
             document.getElementById('input-memorando').value = respuestas.memorando || '';
 
             document.getElementById('select-elaborado').value = respuestas.elaborado || detallesGlobales.elaborado || '';
@@ -466,7 +581,7 @@
         }
 
         function configurarUIporRol(esMiPaso) {
-            const inputs = document.querySelectorAll('#form-paso-dinamico input, #form-paso-dinamico select, #form-paso-dinamico textarea');
+            const inputs = document.querySelectorAll('#form-paso-dinamico input:not(.skip-cb), #form-paso-dinamico select, #form-paso-dinamico textarea');
             inputs.forEach(input => input.disabled = !esMiPaso);
 
             const alerta = document.getElementById('alerta-rol');
@@ -530,7 +645,101 @@
 
         function guardarProgresoActual(silencioso = true) {
             const paso = pasosFlujo[indicePasoActual];
-            if (!tienePermisoEnPaso(paso)) return;
+            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
+            
+            const nuevoNombre = prompt("Escribe el nombre de la nueva sub-tarea:", "Nueva tarea");
+            if (nuevoNombre && nuevoNombre.trim() !== "") {
+                if (!paso.subpasos) paso.subpasos = [];
+                
+                // Asegurarse de que todos tengan base ID para no romper
+                paso.subpasos.forEach((sub, i) => {
+                    if (!sub.numeroInterno) {
+                        sub.numeroInterno = `${numeroPasoPrincipal}.${i + 1}`;
+                    }
+                    if (!sub.parentId) {
+                        const partes = sub.numeroInterno.split('.');
+                        partes.pop();
+                        sub.parentId = partes.join('.');
+                    }
+                });
+
+                let parentNum = `${numeroPasoPrincipal}`;
+                let insertIndex = paso.subpasos.length;
+
+                const getDisplayNum = s => extraerPrefijoSubpaso(s.nombreSubpaso || s.descripcion || '') || s.numeroInterno || '';
+
+                if (indexSubpaso !== -1) {
+                    parentNum = getDisplayNum(paso.subpasos[indexSubpaso]);
+                    insertIndex = indexSubpaso + 1;
+                    // Saltamos los hijos directos que ya existen
+                    while (insertIndex < paso.subpasos.length && getDisplayNum(paso.subpasos[insertIndex]).startsWith(parentNum + '.')) {
+                        insertIndex++;
+                    }
+                }
+
+                const hermanos = paso.subpasos.filter(s => {
+                    const num = getDisplayNum(s);
+                    if (!num.startsWith(parentNum + '.')) return false;
+                    const resto = num.slice(parentNum.length + 1);
+                    return !resto.includes('.');
+                });
+                let siguienteHijo = 1;
+                if (hermanos.length > 0) {
+                    const maxHijo = Math.max(...hermanos.map(h => {
+                        const num = getDisplayNum(h);
+                        const partes = num.split('.');
+                        return parseInt(partes[partes.length - 1]) || 0;
+                    }));
+                    siguienteHijo = maxHijo + 1;
+                }
+                const nuevoNumero = `${parentNum}.${siguienteHijo}`;
+
+                const nuevaSubfase = {
+                    nombreSubpaso: `${nuevoNumero} – ${nuevoNombre.trim()}`,
+                    completado: false,
+                    numeroInterno: nuevoNumero,
+                    parentId: parentNum
+                };
+
+                paso.subpasos.splice(insertIndex, 0, nuevaSubfase);
+
+                // Reparación importante: Mover los estados de las casillas de Saltar para que coincidan con los nuevos índices
+                if (paso.respuestasUsuario && paso.respuestasUsuario.skips) {
+                    const viejosSkips = paso.respuestasUsuario.skips;
+                    const nuevosSkips = {};
+                    
+                    // Copiar los que no son de subpasos (del form principal)
+                    for (let key in viejosSkips) {
+                        if (!key.startsWith('subpaso-')) nuevosSkips[key] = viejosSkips[key];
+                    }
+
+                    for (let i = 0; i < paso.subpasos.length; i++) {
+                        if (i < insertIndex) nuevosSkips[`subpaso-${i}`] = viejosSkips[`subpaso-${i}`];
+                        else if (i === insertIndex) nuevosSkips[`subpaso-${i}`] = false;
+                        else nuevosSkips[`subpaso-${i}`] = viejosSkips[`subpaso-${i - 1}`]; 
+                    }
+                    paso.respuestasUsuario.skips = nuevosSkips;
+                }
+
+                if (paso.respuestasUsuario && paso.respuestasUsuario.estadosSubpasos) {
+                    const viejosEstados = paso.respuestasUsuario.estadosSubpasos;
+                    const nuevosEstados = {};
+                    for (let i = 0; i < paso.subpasos.length; i++) {
+                        if (i < insertIndex) nuevosEstados[i] = viejosEstados[i];
+                        else if (i === insertIndex) nuevosEstados[i] = false;
+                        else nuevosEstados[i] = viejosEstados[i - 1]; 
+                    }
+                    paso.respuestasUsuario.estadosSubpasos = nuevosEstados;
+                }
+                
+                guardarProgresoActual(true);
+                cargarPasoActual();
+            }
+        }
+
+        function guardarProgresoActual(silencioso = true) {
+            const pasoActual = pasosFlujo[indicePasoActual];
+            if (!tienePermisoEnPaso(pasoActual)) return;
 
             const respuestasActuales = paso.respuestasUsuario || {};
             const estadosSubpasos = respuestasActuales.estadosSubpasos || {};
@@ -546,6 +755,16 @@
                 }
             });
 
+            const skipsState = {};
+            document.querySelectorAll('.skip-cb:not(.skip-subpaso-cb)').forEach(chk => {
+                const idCampo = chk.id.replace('skip-', '');
+                skipsState[idCampo] = chk.checked;
+            });
+            document.querySelectorAll('.skip-subpaso-cb').forEach(chk => {
+                skipsState[`subpaso-${chk.getAttribute('data-subindex')}`] = chk.checked;
+            });
+
+            const respuestasActuales = pasoActual.respuestasUsuario || {};
             const estadoSeleccionado = document.getElementById('input-estado').value;
 
             paso.respuestasUsuario = {
@@ -554,21 +773,29 @@
                 fecha: document.getElementById('input-fecha').value,
                 medio: document.getElementById('input-medio').value,
                 memorando: document.getElementById('input-memorando').value,
-                elaborado: document.getElementById('select-elaborado').value,
-                revisado: document.getElementById('select-revisado').value,
-                aprobado: document.getElementById('select-aprobado').value,
+                elaborado: document.getElementById('input-elaborado').value,
+                revisado: document.getElementById('input-revisado').value,
+                aprobado: document.getElementById('input-aprobado').value,
+                dirigido: document.getElementById('input-dirigido').value,
                 observaciones: document.getElementById('input-observaciones').value,
                 archivos: archivosAdjuntosTemporales,
                 estadosSubpasos: estadosSubpasos,
-                completado: estadoSeleccionado === "Completado" || estadoSeleccionado === "Omitido"
+                skips: skipsState, 
+                completado: estadoSeleccionado === "Completado" || estadoSeleccionado === "Omitido" || (respuestasActuales.completado)
             };
 
-            procesoActivo.pipelineSnapshot = pasosFlujo;
-            procesoActivo.ultimoIndiceTrabajado = indicePasoActual;
+            pasosFlujo[indicePasoActual].respuestasUsuario = respuestasForm;
+            actualizarBaseDeDatos(silencioso);
+        }
 
             const completados = pasosFlujo.filter(p => p.respuestasUsuario && p.respuestasUsuario.completado).length;
-            procesoActivo.porcentaje = Math.round((completados / pasosFlujo.length) * 100) || 0;
+            const nuevoPorcentaje = Math.round((completados / pasosFlujo.length) * 100);
+
             procesoActivo.pasosCompletados = completados;
+            procesoActivo.porcentaje = nuevoPorcentaje;
+            procesoActivo.ultimoIndiceTrabajado = indicePasoActual;
+            procesoActivo.pipelineSnapshot = pasosFlujo; 
+            procesoActivo.fechaModificacion = new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
             const idxBase = procesosGlobales.findIndex(p => p.id === procesoActivo.id);
             if (idxBase !== -1) procesosGlobales[idxBase] = procesoActivo;
@@ -576,7 +803,9 @@
             try {
                 localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
                 actualizarPorcentajeVisual();
-                if (!silencioso) alert("¡Progreso y archivos guardados correctamente!");
+                if (!silencioso) {
+                    alert("Progreso y archivos guardados exitosamente.");
+                }
             } catch (e) {
                 alert("⚠️ Error al guardar: El tamaño de los archivos adjuntos supera el límite del navegador. Elimina alguno e intenta de nuevo.");
                 pasosFlujo[indicePasoActual].respuestasUsuario.archivos = [];
@@ -596,6 +825,7 @@
             if (!document.getElementById('input-estado').value) {
                 document.getElementById('input-estado').value = "Completado";
             }
+
             guardarProgresoActual(true);
             ejecutarNavegacion(1);
         }
@@ -605,19 +835,66 @@
             if (!tienePermisoEnPaso(paso)) return;
 
             document.getElementById('input-estado').value = "Omitido";
+            
             guardarProgresoActual(true);
             ejecutarNavegacion(1);
         }
 
-        function ejecutarNavegacion(dir) {
-            if (indicePasoActual + dir >= 0 && indicePasoActual + dir < pasosFlujo.length) {
-                indicePasoActual += dir;
+        function ejecutarNavegacion(direccion) {
+            guardarProgresoActual(true);
+            
+            const nuevoIndice = indicePasoActual + direccion;
+
+            if (nuevoIndice < pasosFlujo.length && nuevoIndice >= 0) {
+                // Verificar avance lineal
+                if (direccion > 0) {
+                    let bloquearAvance = false;
+                    for (let i = 0; i < nuevoIndice; i++) {
+                        const esPasoMio = tienePermisoEnPaso(pasosFlujo[i]);
+                        const estaCompletado = pasosFlujo[i].respuestasUsuario && pasosFlujo[i].respuestasUsuario.completado;
+                        
+                        if (esPasoMio && !estaCompletado) {
+                            bloquearAvance = true;
+                            break;
+                        }
+                    }
+                    if (bloquearAvance) {
+                        alert("⚠️ Debes completar o terminar tu paso actual antes de avanzar.");
+                        return;
+                    }
+                }
+
+                indicePasoActual = nuevoIndice;
                 cargarPasoActual();
                 renderizarIndiceLateral();
-            } else if (indicePasoActual + dir >= pasosFlujo.length) {
-                alert("Has finalizado el flujo del proceso.");
+            } else if (nuevoIndice >= pasosFlujo.length) {
+                alert("¡Has llegado al final del flujo del proceso!");
                 irAlDashboard();
             }
+        }
+
+        function saltarAlPaso(index) {
+            if (index > indicePasoActual) {
+                let bloquearAvance = false;
+                for (let i = 0; i < index; i++) {
+                    const esPasoMio = tienePermisoEnPaso(pasosFlujo[i]);
+                    const estaCompletado = pasosFlujo[i].respuestasUsuario && pasosFlujo[i].respuestasUsuario.completado;
+                    
+                    if (esPasoMio && !estaCompletado) {
+                        bloquearAvance = true;
+                        break;
+                    }
+                }
+                if (bloquearAvance) {
+                    alert("⚠️ No puedes adelantar. Por favor, termina y guarda tu paso en curso antes de continuar.");
+                    return; 
+                }
+            }
+
+            guardarProgresoActual(true);
+            indicePasoActual = index;
+            cargarPasoActual();
+            renderizarIndiceLateral();
         }
 
         function renderizarIndiceLateral() {
@@ -634,7 +911,7 @@
                 item.onclick = () => { indicePasoActual = i; cargarPasoActual(); renderizarIndiceLateral(); };
 
                 let icon = esMiPaso ? '⚪' : '🔒';
-                if (isDone) icon = isOmitido ? '⚠️' : '✅';
+                if (isDone) icon = esOmitido ? '⚠️' : '✅';
                 if (esActivo) icon = esMiPaso ? '🔵' : '🔒';
 
                 item.innerHTML = `
@@ -642,7 +919,10 @@
                         <span class="font-bold text-gray-400">#${p.orden || (i + 1)}</span>
                         <span class="truncate ${isOmitido ? 'line-through text-gray-400' : 'text-gray-700'}">${p.nombrePaso}</span>
                     </div>
-                    <span class="flex-shrink-0">${icon}</span>`;
+                    <div class="flex-shrink-0 opacity-80">
+                        ${icon}
+                    </div>
+                `;
                 contenedor.appendChild(item);
             });
         }
