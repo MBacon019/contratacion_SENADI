@@ -128,7 +128,7 @@
                     </div>
 
                     <div class="mt-5 pt-4 border-t border-white/20 space-y-2 relative z-10">
-                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Subpasos / Requisitos (Opcionales):</span>
+                        <span class="text-white/70 text-[10px] font-bold tracking-wider uppercase block">Subpasos / Requisitos <span class="text-amber-300">(OBLIGATORIOS)</span>:</span>
                         <div id="contenedor-subpasos" class="space-y-1.5 mt-2"></div>
                     </div>
                 </div>
@@ -145,7 +145,8 @@
 
                     <form id="form-paso-dinamico" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                         <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Nro. Memorando / Oficio</label><input id="input-memorando" type="text" placeholder="SENADI-DTIC-2026-..." class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
-                        <div><label class="block font-bold text-gray-700 mb-1">Custodio Actual</label><input id="input-responsable" type="text" placeholder="Nombre" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
+                        <div><label class="block font-bold text-gray-700 mb-1">Custodio Actual</label><input id="input-responsable" type="text" placeholder="Área / responsable" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
+                        <div><label class="block font-bold text-gray-700 mb-1">Dirigido A</label><input id="input-dirigido-a" type="text" placeholder="Destinatario" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
                         <div><label class="block font-bold text-gray-700 mb-1">Fecha</label><input id="input-fecha" type="date" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
                         <div>
                             <label class="block font-bold text-gray-700 mb-1">Medio</label>
@@ -170,6 +171,16 @@
                                 <option value="Observado">En revisión con observaciones</option>
                                 <option value="Omitido">Omitido (No aplica)</option>
                             </select>
+                        </div>
+
+                        <div id="zona-anexos" class="md:col-span-2 hidden">
+                            <div class="flex items-start space-x-2 bg-amber-50 border border-amber-200 p-3 rounded-xl">
+                                <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                <div>
+                                    <span class="font-bold text-amber-800 block text-[11px] uppercase tracking-wide">Documentos / Anexos requeridos:</span>
+                                    <span id="txt-anexos" class="text-amber-700 font-medium"></span>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Observaciones</label><textarea id="input-observaciones" rows="2" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl resize-none transition-colors focus:bg-white focus:outline-none"></textarea></div>
@@ -216,7 +227,8 @@
         let indicePasoActual = 0;
         let pasosFlujo = [];
         
-        let archivosAdjuntosTemporales = []; 
+        let archivosAdjuntosTemporales = [];
+        let indiceSubpasoActual = -1;
 
         // MANEJO DE ROLES
         let rolActivoUsuario = localStorage.getItem('rolSimulado') || 'ROLE_SUPER_ADMIN';
@@ -340,6 +352,7 @@
             pasosFlujo = procesoActivo.pipelineSnapshot;
             indicePasoActual = procesoActivo.ultimoIndiceTrabajado || 0;
             if (indicePasoActual >= pasosFlujo.length) indicePasoActual = 0;
+            indiceSubpasoActual = (procesoActivo.ultimoIndiceSubpaso !== undefined && procesoActivo.ultimoIndiceSubpaso !== null) ? procesoActivo.ultimoIndiceSubpaso : -1;
 
             const detallesStr = localStorage.getItem('detallesActividad');
             const detallesGlobales = detallesStr ? JSON.parse(detallesStr) : {};
@@ -373,20 +386,6 @@
             if (!texto) return null;
             const match = texto.match(/^([\d]+(?:\.[\d]+)*)(?:\s|$)/);
             return match ? match[1] : null;
-        }
-
-        function manejarCambioCheckbox() {
-            guardarProgresoActual(true);
-            cargarPasoActual();
-        }
-
-        function saltarSubpaso(indexSubpaso) {
-            const paso = pasosFlujo[indicePasoActual];
-            if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
-            if (!paso.respuestasUsuario.estadosSubpasos) paso.respuestasUsuario.estadosSubpasos = {};
-            paso.respuestasUsuario.estadosSubpasos[indexSubpaso] = "omitido";
-            guardarProgresoActual(true);
-            cargarPasoActual();
         }
 
         function agregarSubpaso(indexSubpaso = -1) {
@@ -448,6 +447,17 @@
                 paso.respuestasUsuario.estadosSubpasos = nuevosEstados;
             }
 
+            if (paso.respuestasSubpasos) {
+                const viejosSub = paso.respuestasSubpasos;
+                const nuevosSub = {};
+                for (let i = 0; i < paso.subpasos.length; i++) {
+                    if (i < insertIndex) nuevosSub[i] = viejosSub[i];
+                    else if (i === insertIndex) nuevosSub[i] = undefined;
+                    else if (viejosSub[i - 1]) nuevosSub[i] = viejosSub[i - 1];
+                }
+                paso.respuestasSubpasos = nuevosSub;
+            }
+
             guardarProgresoActual(true);
             cargarPasoActual();
         }
@@ -455,125 +465,192 @@
 
         function cargarPasoActual() {
             const paso = pasosFlujo[indicePasoActual];
-            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
             const esMiPaso = tienePermisoEnPaso(paso);
+            const tieneSubpasos = paso.subpasos && paso.subpasos.length > 0;
+
+            aplicarColorPorFase(paso.fase);
+
+            if (indiceSubpasoActual >= 0 && tieneSubpasos) {
+                cargarVistaSubpaso(paso, esMiPaso);
+            } else {
+                cargarVistaPasoPrincipal(paso, esMiPaso);
+            }
+
+            document.getElementById('btn-anterior').disabled = (indicePasoActual === 0 && indiceSubpasoActual === -1);
+            actualizarPorcentajeVisual();
+        }
+
+        function cargarVistaPasoPrincipal(paso, esMiPaso) {
+            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
+            const tieneSubpasos = paso.subpasos && paso.subpasos.length > 0;
+            const respuestas = paso.respuestasUsuario || {};
 
             document.getElementById('txt-proceso-subtitulo').innerText = `Paso ${indicePasoActual + 1} de ${pasosFlujo.length}`;
-            document.getElementById('badge-contador-paso').innerText = `PASO ${paso.orden || (indicePasoActual + 1)}`;
+            document.getElementById('badge-contador-paso').innerText = `PASO ${numeroPasoPrincipal}`;
+            document.getElementById('badge-fase-actual').innerText = paso.fase || 'FASE PREPARATORIA';
             document.getElementById('txt-paso-fase').innerText = (paso.fase || 'FASE PREPARATORIA').toUpperCase();
             document.getElementById('txt-paso-nombre-grande').innerText = paso.nombrePaso;
             document.getElementById('txt-paso-area').innerText = paso.area || 'N/A';
             document.getElementById('badge-rol-requerido').innerText = `REQ: ${paso.area || 'N/A'}`;
             document.getElementById('txt-paso-nombre').innerText = `${numeroPasoPrincipal} – ${paso.nombrePaso}`;
 
-            aplicarColorPorFase(paso.fase);
-            configurarUIporRol(esMiPaso);
+            configurarUIporRol(esMiPaso, tieneSubpasos ? 'paso-con-subpasos' : 'paso-sin-subpasos');
 
-            // --- RENDER SUBPASOS (lógica compleja con numeración jerárquica) ---
             const contenedorSubpasos = document.getElementById('contenedor-subpasos');
             contenedorSubpasos.innerHTML = '';
-            const respuestas = paso.respuestasUsuario || {};
-            const subpasosGuardados = respuestas.estadosSubpasos || {};
 
-            if (paso.subpasos && paso.subpasos.length > 0) {
+            if (tieneSubpasos) {
+                const respSub = paso.respuestasSubpasos || {};
+                const numSubs = paso.subpasos.length;
+                const completados = paso.subpasos.filter((_, si) => respSub[si] && respSub[si].completado).length;
+
                 paso.subpasos.forEach((sub, i) => {
                     if (!sub.numeroInterno) sub.numeroInterno = `${numeroPasoPrincipal}.${i + 1}`;
-                    if (!sub.parentId) {
-                        const partes = sub.numeroInterno.split('.');
-                        partes.pop();
-                        sub.parentId = partes.join('.');
-                    }
-                });
+                    const numDisplay = extraerPrefijoSubpaso(sub.nombreSubpaso || sub.descripcion || '') || sub.numeroInterno;
+                    const nombreLimpio = limpiarNombreSubpaso(sub.nombreSubpaso || sub.descripcion || 'Subpaso');
+                    const subResp = respSub[i] || {};
+                    const subDone = subResp.completado;
+                    const subOmitido = subResp.estado === "Omitido";
 
-                const numerosDisplay = paso.subpasos.map((sub, i) => {
-                    const prefijo = extraerPrefijoSubpaso(sub.nombreSubpaso || sub.descripcion || '');
-                    return prefijo || sub.numeroInterno || `${numeroPasoPrincipal}.${i + 1}`;
-                });
+                    const metaParts = [];
+                    if (sub.area) metaParts.push(`👤 ${sub.area}`);
+                    if (sub.dirigidoA) metaParts.push(`→ ${sub.dirigidoA}`);
+                    const metaLine = metaParts.length > 0
+                        ? `<p class="mt-1 text-[9px] text-white/50 leading-tight">${metaParts.join(' &nbsp;·&nbsp; ')}</p>`
+                        : '';
 
-                paso.subpasos.forEach((sub, i) => {
-                    const estadoGuardado = subpasosGuardados[i];
-                    const esOmitido = estadoGuardado === "omitido";
-                    const estaChequeado = estadoGuardado === true || (!esOmitido && sub.completado);
-                    const numeroDisplay = numerosDisplay[i];
-                    const nombreLimpio = limpiarNombreSubpaso(sub.nombreSubpaso || sub.descripcion || 'Subpaso sin nombre');
+                    let icon = '⚪';
+                    if (subDone && subOmitido) icon = '⚠️';
+                    else if (subDone) icon = '✅';
 
-                    const dotsCount = numeroDisplay.split('.').length;
-                    let mlClass = "";
-                    if (dotsCount === 3) mlClass = "ml-6 border-l border-white/20";
-                    else if (dotsCount === 4) mlClass = "ml-12 border-l border-white/20";
-                    else if (dotsCount >= 5) mlClass = "ml-16 border-l border-white/20";
+                    const dotsCount = numDisplay.split('.').length;
+                    let mlClass = '';
+                    if (dotsCount === 3) mlClass = 'ml-6';
+                    else if (dotsCount >= 4) mlClass = 'ml-12';
 
                     const wrapper = document.createElement('div');
                     wrapper.className = `mt-1.5 ${mlClass}`;
 
-                    if (esOmitido) {
-                        wrapper.innerHTML = `
-                            <div class="flex items-center justify-between px-1 py-0.5 opacity-50">
-                                <div class="flex items-center space-x-2">
-                                    <input type="checkbox" disabled class="w-4 h-4 rounded text-gray-400 bg-gray-900/40 border-gray-400/30">
-                                    <span class="font-bold text-white text-xs line-through">${numeroDisplay}</span>
-                                </div>
+                    const div = document.createElement('div');
+                    div.className = `flex items-start justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-white/10 transition bg-black/15`;
+                    div.onclick = esMiPaso ? () => saltarASubpaso(indicePasoActual, i) : null;
+                    div.innerHTML = `
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs flex-shrink-0">${icon}</span>
+                                <span class="font-bold text-white text-xs flex-shrink-0">${numDisplay}</span>
                             </div>
-                            <div class="ml-7 mt-1 bg-black/20 rounded-xl px-3 py-2 text-xs text-white/50 line-through leading-relaxed">${nombreLimpio} (Omitido)</div>`;
-                    } else {
-                        wrapper.innerHTML = `
-                            <div class="flex items-center justify-between px-1 py-0.5">
-                                <label class="flex items-center space-x-2 cursor-pointer select-none">
-                                    <input type="checkbox" data-index="${i}" ${estaChequeado ? 'checked' : ''} ${!esMiPaso ? 'disabled' : ''} onchange="manejarCambioCheckbox()" class="subpaso-checkbox w-4 h-4 rounded text-blue-600 flex-shrink-0">
-                                    <span class="font-bold text-white text-xs">${numeroDisplay}</span>
-                                </label>
-                                ${esMiPaso ? `<div class="flex space-x-1.5 flex-shrink-0">
-                                    <button onclick="saltarSubpaso(${i})" class="text-[10px] font-bold bg-amber-500/80 hover:bg-amber-500 text-white px-2.5 py-1 rounded-md transition shadow-sm">Saltar</button>
-                                    <button onclick="agregarSubpaso(${i})" class="text-[10px] font-bold bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-md transition shadow-sm">Agregar</button>
-                                </div>` : ''}
+                            <div class="ml-5 mt-0.5">
+                                <p class="text-[10px] text-white/75 leading-tight ${subOmitido ? 'line-through opacity-60' : ''}">${nombreLimpio}</p>
+                                ${metaLine}
                             </div>
-                            <div class="ml-7 mt-1 bg-black/20 rounded-xl px-3 py-2 text-xs text-white leading-relaxed">${nombreLimpio}</div>`;
-                    }
+                        </div>
+                        ${esMiPaso ? `<button onclick="event.stopPropagation(); saltarASubpaso(${indicePasoActual}, ${i})" class="flex-shrink-0 ml-2 text-[9px] font-bold bg-white/15 hover:bg-white/25 text-white px-2 py-1 rounded-md transition">Ir ➔</button>` : ''}
+                    `;
+                    wrapper.appendChild(div);
                     contenedorSubpasos.appendChild(wrapper);
                 });
 
-                if (esMiPaso) {
-                    const divBotonGlobal = document.createElement('div');
-                    divBotonGlobal.className = "mt-3 pt-3 border-t border-white/20";
-                    divBotonGlobal.innerHTML = `
-                        <button onclick="agregarSubpaso(-1)" class="text-[10px] font-bold bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition border border-white/20 w-full flex items-center justify-center space-x-1 shadow-sm">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-                            <span>Agregar Subfase al Final</span>
-                        </button>`;
-                    contenedorSubpasos.appendChild(divBotonGlobal);
-                }
+                const summary = document.createElement('div');
+                summary.className = 'mt-2 pt-2 border-t border-white/20 flex items-center justify-between';
+                summary.innerHTML = `
+                    <span class="text-[10px] text-white/60">${completados} de ${numSubs} subpasos completados</span>
+                    ${esMiPaso ? `<button onclick="agregarSubpaso(-1)" class="text-[9px] font-bold bg-white/10 hover:bg-white/20 text-white px-2.5 py-1 rounded-md transition border border-white/20">+ Agregar subfase</button>` : ''}
+                `;
+                contenedorSubpasos.appendChild(summary);
             } else {
                 contenedorSubpasos.innerHTML = `<p class="text-[11px] text-white/60 italic p-2">Este paso no requiere subprocesos adicionales.</p>`;
             }
-            // --- FIN RENDER SUBPASOS ---
 
-            // 4. Llenar Formulario
             const selectMedio = document.getElementById('input-medio');
             selectMedio.innerHTML = `<option value="${paso.medio || 'QUIPUX'}">${paso.medio || 'QUIPUX'}</option><option value="ZIMBRA">ZIMBRA</option><option value="QUIPUX">QUIPUX</option><option value="FISICO">DOCUMENTO FÍSICO</option>`;
 
             document.getElementById('input-estado').value = respuestas.estado || '';
-            document.getElementById('input-responsable').value = respuestas.responsable || '';
+            document.getElementById('input-responsable').value = respuestas.responsable || paso.area || '';
+            document.getElementById('input-dirigido-a').value = respuestas.dirigidoA || paso.dirigidoA || '';
             document.getElementById('input-fecha').value = respuestas.fecha || obtenerFechaHoy();
             document.getElementById('input-medio').value = respuestas.medio || paso.medio || 'QUIPUX';
             document.getElementById('input-memorando').value = respuestas.memorando || '';
-
             document.getElementById('input-observaciones').value = respuestas.observaciones || '';
+
+            const zonaAnexos = document.getElementById('zona-anexos');
+            const txtAnexos = document.getElementById('txt-anexos');
+            if (paso.anexos) { txtAnexos.textContent = paso.anexos; zonaAnexos.classList.remove('hidden'); }
+            else { zonaAnexos.classList.add('hidden'); }
 
             if (respuestas.archivos && respuestas.archivos.length > 0) {
                 archivosAdjuntosTemporales = respuestas.archivos;
-            } else if (respuestas.archivoBase64) {
-                archivosAdjuntosTemporales = [{ nombre: respuestas.archivoNombre || 'documento.pdf', base64: respuestas.archivoBase64 }];
-            } else {
-                archivosAdjuntosTemporales = [];
-            }
+            } else { archivosAdjuntosTemporales = []; }
             renderizarListaArchivos();
-
-            document.getElementById('btn-anterior').disabled = (indicePasoActual === 0);
-
-            actualizarPorcentajeVisual();
         }
 
-        function configurarUIporRol(esMiPaso) {
+        function cargarVistaSubpaso(paso, esMiPaso) {
+            const sub = paso.subpasos[indiceSubpasoActual];
+            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
+            const numDisplay = extraerPrefijoSubpaso(sub.nombreSubpaso || sub.descripcion || '') || `${numeroPasoPrincipal}.${indiceSubpasoActual + 1}`;
+            const nombreLimpio = limpiarNombreSubpaso(sub.nombreSubpaso || sub.descripcion || 'Subpaso sin nombre');
+            const totalSubs = paso.subpasos.length;
+            const respSub = paso.respuestasSubpasos || {};
+            const respuestas = respSub[indiceSubpasoActual] || {};
+
+            document.getElementById('txt-proceso-subtitulo').innerText = `Paso ${indicePasoActual + 1} › Subpaso ${indiceSubpasoActual + 1}/${totalSubs}`;
+            document.getElementById('badge-contador-paso').innerText = `SUBPASO ${indiceSubpasoActual + 1}/${totalSubs}`;
+            document.getElementById('badge-fase-actual').innerText = paso.fase || 'FASE PREPARATORIA';
+            document.getElementById('txt-paso-fase').innerText = `PASO ${numeroPasoPrincipal} → ${numDisplay}`;
+            document.getElementById('txt-paso-nombre-grande').innerText = nombreLimpio;
+            document.getElementById('txt-paso-area').innerText = sub.area || paso.area || 'N/A';
+            document.getElementById('badge-rol-requerido').innerText = `REQ: ${sub.area || paso.area || 'N/A'}`;
+            document.getElementById('txt-paso-nombre').innerText = sub.nombreSubpaso || nombreLimpio;
+
+            configurarUIporRol(esMiPaso, 'subpaso');
+
+            const contenedorSubpasos = document.getElementById('contenedor-subpasos');
+            contenedorSubpasos.innerHTML = '';
+
+            paso.subpasos.forEach((s, i) => {
+                const sResp = respSub[i] || {};
+                const sDone = sResp.completado;
+                const sOmitido = sResp.estado === "Omitido";
+                const esActualSub = i === indiceSubpasoActual;
+                const numS = extraerPrefijoSubpaso(s.nombreSubpaso || '') || `${numeroPasoPrincipal}.${i + 1}`;
+                const nombreS = limpiarNombreSubpaso(s.nombreSubpaso || s.descripcion || '');
+
+                let icon = '⚪';
+                if (sDone && sOmitido) icon = '⚠️';
+                else if (sDone) icon = '✅';
+                if (esActualSub) icon = '🔵';
+
+                const div = document.createElement('div');
+                div.className = `flex items-center space-x-2 px-2 py-1 rounded-lg cursor-pointer ${esActualSub ? 'bg-white/20 border border-white/30' : 'hover:bg-white/10'} transition mt-1`;
+                div.onclick = esMiPaso ? () => saltarASubpaso(indicePasoActual, i) : null;
+                div.innerHTML = `<span class="text-xs flex-shrink-0">${icon}</span><span class="font-bold text-[10px] text-white/80 flex-shrink-0">${numS}</span><span class="text-[9px] text-white/60 truncate">${nombreS}</span>`;
+                contenedorSubpasos.appendChild(div);
+            });
+
+            const medioDefault = sub.medio || paso.medio || 'QUIPUX';
+            const selectMedio = document.getElementById('input-medio');
+            selectMedio.innerHTML = `<option value="${medioDefault}">${medioDefault}</option><option value="ZIMBRA">ZIMBRA</option><option value="QUIPUX">QUIPUX</option><option value="FISICO">DOCUMENTO FÍSICO</option>`;
+
+            document.getElementById('input-estado').value = respuestas.estado || '';
+            document.getElementById('input-responsable').value = respuestas.responsable || sub.area || '';
+            document.getElementById('input-dirigido-a').value = respuestas.dirigidoA || sub.dirigidoA || '';
+            document.getElementById('input-fecha').value = respuestas.fecha || obtenerFechaHoy();
+            document.getElementById('input-medio').value = respuestas.medio || medioDefault;
+            document.getElementById('input-memorando').value = respuestas.memorando || '';
+            document.getElementById('input-observaciones').value = respuestas.observaciones || '';
+
+            const zonaAnexos = document.getElementById('zona-anexos');
+            const txtAnexos = document.getElementById('txt-anexos');
+            if (sub.anexos) { txtAnexos.textContent = sub.anexos; zonaAnexos.classList.remove('hidden'); }
+            else { zonaAnexos.classList.add('hidden'); }
+
+            if (respuestas.archivos && respuestas.archivos.length > 0) {
+                archivosAdjuntosTemporales = respuestas.archivos;
+            } else { archivosAdjuntosTemporales = []; }
+            renderizarListaArchivos();
+        }
+
+        function configurarUIporRol(esMiPaso, modo) {
             const inputs = document.querySelectorAll('#form-paso-dinamico input:not(.skip-cb), #form-paso-dinamico select, #form-paso-dinamico textarea');
             inputs.forEach(input => input.disabled = !esMiPaso);
 
@@ -589,8 +666,20 @@
             } else {
                 alerta.classList.add('hidden');
                 btnOmitir.classList.remove('hidden');
-                btnSiguiente.innerHTML = "Guardar y Avanzar ➔";
                 btnSiguiente.className = "bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
+
+                if (modo === 'paso-con-subpasos') {
+                    btnSiguiente.innerHTML = "Guardar e Ir a Subpasos ➔";
+                    btnOmitir.innerText = "Omitir Paso";
+                } else if (modo === 'subpaso') {
+                    const paso = pasosFlujo[indicePasoActual];
+                    const esUltimo = indiceSubpasoActual === paso.subpasos.length - 1;
+                    btnSiguiente.innerHTML = esUltimo ? "Guardar y Siguiente Paso ➔" : "Guardar y Siguiente Subpaso ➔";
+                    btnOmitir.innerText = "Omitir Subpaso";
+                } else {
+                    btnSiguiente.innerHTML = "Guardar y Avanzar ➔";
+                    btnOmitir.innerText = "Omitir Paso";
+                }
             }
         }
 
@@ -598,42 +687,47 @@
             const pasoActual = pasosFlujo[indicePasoActual];
             if (!tienePermisoEnPaso(pasoActual)) return;
 
-            const respuestasActuales = pasoActual.respuestasUsuario || {};
-            const estadosSubpasos = respuestasActuales.estadosSubpasos || {};
-
-            document.querySelectorAll('.subpaso-checkbox').forEach(chk => {
-                const idx = chk.getAttribute('data-index');
-                if (estadosSubpasos[idx] !== "omitido") {
-                    estadosSubpasos[idx] = chk.checked;
-                }
-                if (pasoActual.subpasos && pasoActual.subpasos[idx]) {
-                    pasoActual.subpasos[idx].completado = chk.checked;
-                }
-            });
-
-            const skipsState = {};
-            document.querySelectorAll('.skip-cb:not(.skip-subpaso-cb)').forEach(chk => {
-                const idCampo = chk.id.replace('skip-', '');
-                skipsState[idCampo] = chk.checked;
-            });
-            document.querySelectorAll('.skip-subpaso-cb').forEach(chk => {
-                skipsState[`subpaso-${chk.getAttribute('data-subindex')}`] = chk.checked;
-            });
-
             const estadoSeleccionado = document.getElementById('input-estado').value;
-
-            pasoActual.respuestasUsuario = {
+            const formData = {
                 estado: estadoSeleccionado,
                 responsable: document.getElementById('input-responsable').value,
+                dirigidoA: document.getElementById('input-dirigido-a').value,
                 fecha: document.getElementById('input-fecha').value,
                 medio: document.getElementById('input-medio').value,
                 memorando: document.getElementById('input-memorando').value,
                 observaciones: document.getElementById('input-observaciones').value,
                 archivos: archivosAdjuntosTemporales,
-                estadosSubpasos: estadosSubpasos,
-                skips: skipsState,
-                completado: estadoSeleccionado === "Completado" || estadoSeleccionado === "Omitido" || (respuestasActuales.completado)
+                completado: estadoSeleccionado === "Completado" || estadoSeleccionado === "Omitido"
             };
+
+            if (indiceSubpasoActual >= 0) {
+                if (!pasoActual.respuestasSubpasos) pasoActual.respuestasSubpasos = {};
+                const prevResp = pasoActual.respuestasSubpasos[indiceSubpasoActual] || {};
+                formData.completado = formData.completado || prevResp.completado || false;
+                pasoActual.respuestasSubpasos[indiceSubpasoActual] = formData;
+
+                if (!pasoActual.respuestasUsuario) pasoActual.respuestasUsuario = {};
+                if (!pasoActual.respuestasUsuario.estadosSubpasos) pasoActual.respuestasUsuario.estadosSubpasos = {};
+                pasoActual.respuestasUsuario.estadosSubpasos[indiceSubpasoActual] =
+                    estadoSeleccionado === "Omitido" ? "omitido" : (formData.completado ? true : false);
+
+                const totalSubs = pasoActual.subpasos ? pasoActual.subpasos.length : 0;
+                const allDone = totalSubs > 0 && pasoActual.subpasos.every((_, si) => {
+                    const r = pasoActual.respuestasSubpasos[si];
+                    return r && r.completado;
+                });
+                pasoActual.respuestasUsuario.completado = allDone;
+            } else {
+                const respuestasActuales = pasoActual.respuestasUsuario || {};
+                formData.estadosSubpasos = respuestasActuales.estadosSubpasos || {};
+                formData.skips = respuestasActuales.skips || {};
+                if (pasoActual.subpasos && pasoActual.subpasos.length > 0) {
+                    formData.completado = respuestasActuales.completado || false;
+                } else {
+                    formData.completado = formData.completado || respuestasActuales.completado || false;
+                }
+                pasoActual.respuestasUsuario = formData;
+            }
 
             const completados = pasosFlujo.filter(p => p.respuestasUsuario && p.respuestasUsuario.completado).length;
             const nuevoPorcentaje = Math.round((completados / pasosFlujo.length) * 100);
@@ -641,6 +735,7 @@
             procesoActivo.pasosCompletados = completados;
             procesoActivo.porcentaje = nuevoPorcentaje;
             procesoActivo.ultimoIndiceTrabajado = indicePasoActual;
+            procesoActivo.ultimoIndiceSubpaso = indiceSubpasoActual;
             procesoActivo.pipelineSnapshot = pasosFlujo;
             procesoActivo.fechaModificacion = new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
@@ -650,12 +745,15 @@
             try {
                 localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
                 actualizarPorcentajeVisual();
-                if (!silencioso) {
-                    alert("Progreso y archivos guardados exitosamente.");
-                }
+                if (!silencioso) alert("Progreso y archivos guardados exitosamente.");
             } catch (e) {
                 alert("⚠️ Error al guardar: El tamaño de los archivos adjuntos supera el límite del navegador. Elimina alguno e intenta de nuevo.");
-                pasosFlujo[indicePasoActual].respuestasUsuario.archivos = [];
+                if (indiceSubpasoActual >= 0) {
+                    if (pasoActual.respuestasSubpasos && pasoActual.respuestasSubpasos[indiceSubpasoActual])
+                        pasoActual.respuestasSubpasos[indiceSubpasoActual].archivos = [];
+                } else {
+                    if (pasoActual.respuestasUsuario) pasoActual.respuestasUsuario.archivos = [];
+                }
                 archivosAdjuntosTemporales = [];
                 renderizarListaArchivos();
                 localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
@@ -669,12 +767,64 @@
         }
 
         function ejecutarAccionSiguiente() {
+            const paso = pasosFlujo[indicePasoActual];
+            const esMiPaso = tienePermisoEnPaso(paso);
+            const tieneSubpasos = paso.subpasos && paso.subpasos.length > 0;
+
             if (!document.getElementById('input-estado').value) {
                 document.getElementById('input-estado').value = "Completado";
             }
 
             guardarProgresoActual(true);
-            ejecutarNavegacion(1);
+
+            if (indiceSubpasoActual === -1) {
+                if (tieneSubpasos) {
+                    indiceSubpasoActual = 0;
+                    cargarPasoActual();
+                    renderizarIndiceLateral();
+                } else {
+                    const estaCompletado = paso.respuestasUsuario && paso.respuestasUsuario.completado;
+                    if (esMiPaso && !estaCompletado) {
+                        alert("⚠️ Debes completar o terminar tu paso actual antes de avanzar.");
+                        return;
+                    }
+                    avanzarAlSiguientePasoPrincipal();
+                }
+            } else {
+                const siguienteSubpaso = indiceSubpasoActual + 1;
+                if (siguienteSubpaso < paso.subpasos.length) {
+                    indiceSubpasoActual = siguienteSubpaso;
+                    cargarPasoActual();
+                    renderizarIndiceLateral();
+                } else {
+                    const respSub = paso.respuestasSubpasos || {};
+                    const todosCompletos = paso.subpasos.every((_, si) => {
+                        const r = respSub[si];
+                        return r && (r.completado || r.estado === "Omitido");
+                    });
+                    if (esMiPaso && !todosCompletos) {
+                        alert("⚠️ Hay subpasos sin completar. Puedes usar 'Omitir Subpaso' si alguno no aplica.");
+                        return;
+                    }
+                    if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
+                    paso.respuestasUsuario.completado = true;
+                    avanzarAlSiguientePasoPrincipal();
+                }
+            }
+        }
+
+        function avanzarAlSiguientePasoPrincipal() {
+            const nuevoIndice = indicePasoActual + 1;
+            if (nuevoIndice < pasosFlujo.length) {
+                indicePasoActual = nuevoIndice;
+                indiceSubpasoActual = -1;
+                cargarPasoActual();
+                renderizarIndiceLateral();
+            } else {
+                guardarProgresoActual(true);
+                alert("¡Has llegado al final del flujo del proceso!");
+                irAlDashboard();
+            }
         }
 
         function omitirPasoActual() {
@@ -682,88 +832,136 @@
             if (!tienePermisoEnPaso(paso)) return;
 
             document.getElementById('input-estado').value = "Omitido";
-            
             guardarProgresoActual(true);
-            ejecutarNavegacion(1);
+
+            if (indiceSubpasoActual >= 0) {
+                const siguienteSubpaso = indiceSubpasoActual + 1;
+                if (siguienteSubpaso < paso.subpasos.length) {
+                    indiceSubpasoActual = siguienteSubpaso;
+                    cargarPasoActual();
+                    renderizarIndiceLateral();
+                } else {
+                    if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
+                    paso.respuestasUsuario.completado = true;
+                    avanzarAlSiguientePasoPrincipal();
+                }
+            } else {
+                avanzarAlSiguientePasoPrincipal();
+            }
         }
 
         function ejecutarNavegacion(direccion) {
-            const nuevoIndice = indicePasoActual + direccion;
+            if (direccion >= 0) return;
 
-            if (nuevoIndice < pasosFlujo.length && nuevoIndice >= 0) {
-                if (direccion > 0) {
-                    // Al avanzar: guardar primero, luego verificar que el paso actual esté completado
-                    guardarProgresoActual(true);
-                    const pasoActualObj = pasosFlujo[indicePasoActual];
-                    const esMiPaso = tienePermisoEnPaso(pasoActualObj);
-                    const estaCompletado = pasoActualObj.respuestasUsuario && pasoActualObj.respuestasUsuario.completado;
-                    if (esMiPaso && !estaCompletado) {
-                        alert("⚠️ Debes completar o terminar tu paso actual antes de avanzar.");
-                        return;
-                    }
+            guardarProgresoActual(true);
+
+            if (indiceSubpasoActual > 0) {
+                indiceSubpasoActual--;
+            } else if (indiceSubpasoActual === 0) {
+                indiceSubpasoActual = -1;
+            } else {
+                if (indicePasoActual > 0) {
+                    indicePasoActual--;
+                    indiceSubpasoActual = -1;
                 }
-                // Al retroceder: NO guardar el paso incompleto para no sobrescribir datos completados
-                indicePasoActual = nuevoIndice;
-                cargarPasoActual();
-                renderizarIndiceLateral();
-            } else if (nuevoIndice >= pasosFlujo.length) {
-                guardarProgresoActual(true);
-                alert("¡Has llegado al final del flujo del proceso!");
-                irAlDashboard();
             }
+            cargarPasoActual();
+            renderizarIndiceLateral();
         }
 
-        function saltarAlPaso(index) {
-            if (index > indicePasoActual) {
-                let bloquearAvance = false;
-                for (let i = 0; i < index; i++) {
-                    const esPasoMio = tienePermisoEnPaso(pasosFlujo[i]);
-                    const estaCompletado = pasosFlujo[i].respuestasUsuario && pasosFlujo[i].respuestasUsuario.completado;
-                    
-                    if (esPasoMio && !estaCompletado) {
-                        bloquearAvance = true;
-                        break;
+        function saltarASubpaso(pasoIndex, subpasoIndex) {
+            const irAtras = pasoIndex < indicePasoActual ||
+                (pasoIndex === indicePasoActual && subpasoIndex < indiceSubpasoActual) ||
+                (pasoIndex === indicePasoActual && subpasoIndex === -1 && indiceSubpasoActual > -1);
+
+            if (!irAtras) {
+                let bloquear = false;
+                for (let i = 0; i < pasoIndex; i++) {
+                    if (tienePermisoEnPaso(pasosFlujo[i]) && !(pasosFlujo[i].respuestasUsuario && pasosFlujo[i].respuestasUsuario.completado)) {
+                        bloquear = true; break;
                     }
                 }
-                if (bloquearAvance) {
-                    alert("⚠️ No puedes adelantar. Por favor, termina y guarda tu paso en curso antes de continuar.");
-                    return; 
+                if (!bloquear && pasoIndex === indicePasoActual && subpasoIndex > 0) {
+                    const respSub = pasosFlujo[pasoIndex].respuestasSubpasos || {};
+                    for (let si = 0; si < subpasoIndex; si++) {
+                        if (!(respSub[si] && (respSub[si].completado || respSub[si].estado === "Omitido"))) {
+                            bloquear = true; break;
+                        }
+                    }
+                }
+                if (bloquear) {
+                    alert("⚠️ No puedes adelantar. Por favor, termina tu paso en curso antes de continuar.");
+                    return;
                 }
             }
 
             guardarProgresoActual(true);
-            indicePasoActual = index;
+            indicePasoActual = pasoIndex;
+            indiceSubpasoActual = subpasoIndex;
             cargarPasoActual();
             renderizarIndiceLateral();
+        }
+
+        function saltarAlPaso(index) {
+            saltarASubpaso(index, -1);
         }
 
         function renderizarIndiceLateral() {
             const contenedor = document.getElementById('lista-navegacion-pasos');
             contenedor.innerHTML = '';
+
             pasosFlujo.forEach((p, i) => {
-                const esActivo = i === indicePasoActual;
+                const esActivoPaso = i === indicePasoActual && indiceSubpasoActual === -1;
                 const esMiPaso = tienePermisoEnPaso(p);
                 const isDone = p.respuestasUsuario?.completado;
                 const isOmitido = p.respuestasUsuario?.estado === "Omitido";
+                const tieneSubpasos = p.subpasos && p.subpasos.length > 0;
 
                 const item = document.createElement('div');
-                item.className = `p-2 border rounded-xl text-[10px] flex justify-between items-center cursor-pointer transition-colors ${esActivo ? 'border-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'}`;
-                item.onclick = () => { indicePasoActual = i; cargarPasoActual(); renderizarIndiceLateral(); };
+                item.className = `p-2 border rounded-xl text-[10px] flex justify-between items-center cursor-pointer transition-colors ${esActivoPaso ? 'border-blue-500 bg-blue-50' : 'bg-white hover:bg-gray-50'}`;
+                item.onclick = () => saltarASubpaso(i, -1);
 
                 let icon = esMiPaso ? '⚪' : '🔒';
                 if (isDone) icon = isOmitido ? '⚠️' : '✅';
-                if (esActivo) icon = esMiPaso ? '🔵' : '🔒';
+                if (esActivoPaso) icon = esMiPaso ? '🔵' : '🔒';
 
                 item.innerHTML = `
                     <div class="flex items-center space-x-2 truncate">
                         <span class="font-bold text-gray-400">#${p.orden || (i + 1)}</span>
                         <span class="truncate ${isOmitido ? 'line-through text-gray-400' : 'text-gray-700'}">${p.nombrePaso}</span>
                     </div>
-                    <div class="flex-shrink-0 opacity-80">
-                        ${icon}
-                    </div>
+                    <div class="flex-shrink-0 opacity-80">${icon}</div>
                 `;
                 contenedor.appendChild(item);
+
+                if (tieneSubpasos) {
+                    const numeroPasoPrincipal = p.orden || (i + 1);
+                    const respSub = p.respuestasSubpasos || {};
+
+                    p.subpasos.forEach((sub, si) => {
+                        const esActivoSub = i === indicePasoActual && si === indiceSubpasoActual;
+                        const sResp = respSub[si] || {};
+                        const subDone = sResp.completado;
+                        const subOmitido = sResp.estado === "Omitido";
+                        const numS = extraerPrefijoSubpaso(sub.nombreSubpaso || '') || `${numeroPasoPrincipal}.${si + 1}`;
+                        const nombreCorto = limpiarNombreSubpaso(sub.nombreSubpaso || sub.descripcion || '');
+
+                        let subIcon = '○';
+                        if (subDone && subOmitido) subIcon = '⚠';
+                        else if (subDone) subIcon = '✓';
+                        if (esActivoSub) subIcon = '●';
+
+                        const subItem = document.createElement('div');
+                        subItem.className = `pl-5 pr-2 py-1 text-[9px] flex items-center space-x-1.5 cursor-pointer transition-colors rounded-lg ${esActivoSub ? 'bg-blue-50 border border-blue-300' : 'hover:bg-gray-50'} mt-0.5`;
+                        subItem.onclick = () => saltarASubpaso(i, si);
+                        subItem.innerHTML = `
+                            <span class="font-bold flex-shrink-0 ${subDone ? 'text-emerald-600' : esActivoSub ? 'text-blue-600' : 'text-gray-400'}">${subIcon}</span>
+                            <span class="font-bold text-gray-400 flex-shrink-0">${numS}</span>
+                            <span class="truncate ${subOmitido ? 'line-through text-gray-300' : subDone ? 'text-gray-500' : 'text-gray-600'}">${nombreCorto}</span>
+                        `;
+                        contenedor.appendChild(subItem);
+                    });
+                }
             });
         }
 
