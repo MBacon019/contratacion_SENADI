@@ -6,8 +6,8 @@ import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j
 @Service
-@RequiredArgsConstructor
 public class CpcService {
 
+    private static final Logger log = LoggerFactory.getLogger(CpcService.class);
     private final CpcRepository cpcRepository;
+
+    public CpcService(CpcRepository cpcRepository) {
+        this.cpcRepository = cpcRepository;
+    }
 
     @Transactional
     public Map<String, Object> cargarDesdeCSV(MultipartFile file) throws Exception {

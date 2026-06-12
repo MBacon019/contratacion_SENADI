@@ -2,7 +2,6 @@ package com.example.sistema_contratacion.controller;
 
 import com.example.sistema_contratacion.entity.Item;
 import com.example.sistema_contratacion.service.ItemService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,10 +10,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/item")
-@RequiredArgsConstructor
 public class ItemController {
 
     private final ItemService itemService;
+
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
+    }
 
     @GetMapping("/buscar")
     public List<Item> buscar(@RequestParam("q") String q) {

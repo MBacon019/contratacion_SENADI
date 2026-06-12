@@ -41,8 +41,11 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-1.5">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">No. de actividad en POA *</label>
-                        <input id="input-poa" type="text" placeholder="Ej: 1, 2, 3..." class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">No. de actividad en POA</label>
+                        <div class="flex items-center space-x-2">
+                            <input id="input-poa" type="text" readonly class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm text-gray-500 cursor-not-allowed font-mono font-bold">
+                            <span class="text-[10px] text-gray-400 whitespace-nowrap">Auto-generado</span>
+                        </div>
                     </div>
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Estado</label>
@@ -101,10 +104,16 @@
                     </div>
                 </div>
 
+                <div id="alerta-asignacion" class="hidden bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl px-4 py-3 flex items-start space-x-2">
+                    <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="txt-alerta-asignacion"></span>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">$ Asignación Presupuestaria</label>
-                        <input id="input-asignacion" type="number" step="0.01" placeholder="$ 0.00" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        <input id="input-asignacion" type="number" step="0.01" placeholder="$ 0.00" oninput="validarAsignacion()" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                        <p id="hint-umbral" class="text-[11px] text-gray-400"></p>
                     </div>
                     <div class="space-y-1.5">
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Cuatrimestre</label>
@@ -198,17 +207,75 @@
     </main>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        let umbralActivo = null;
+        let tipoContratoActual = '';
+
+        document.addEventListener('DOMContentLoaded', async () => {
             initTema();
             const datosContrato = localStorage.getItem('contratoSeleccionado');
             if (datosContrato) {
                 const contrato = JSON.parse(datosContrato);
-                const nombreLimpio = contrato.nombre.replace("Contrato ", "");
+                tipoContratoActual = contrato.nombre || '';
+                const nombreLimpio = tipoContratoActual.replace("Contrato ", "");
                 document.getElementById('subtitulo-proceso').innerText = nombreLimpio;
             } else {
                 regresarAlDashboard();
+                return;
+            }
+
+            // Item 1: Auto-numerar POA
+            const procesos = JSON.parse(localStorage.getItem('instanciaProcesoEnProgreso') || '[]');
+            const siguienteNumero = Array.isArray(procesos) ? procesos.length + 1 : 1;
+            document.getElementById('input-poa').value = siguienteNumero;
+
+            // Item 2: Cargar umbral activo
+            try {
+                const resp = await fetch('/api/umbrales/activo');
+                umbralActivo = await resp.json();
+                actualizarHintUmbral();
+            } catch (e) {
+                umbralActivo = { montoUmbral: 10000.0 };
             }
         });
+
+        function actualizarHintUmbral() {
+            if (!umbralActivo) return;
+            const monto = umbralActivo.montoUmbral;
+            const hint = document.getElementById('hint-umbral');
+            const tipo = tipoContratoActual.toUpperCase();
+            if (tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) {
+                hint.textContent = `Ínfima Cuantía: máximo $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
+            } else if (tipo.includes('SUBASTA')) {
+                hint.textContent = `Subasta: mínimo $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
+            } else {
+                hint.textContent = `Umbral referencial: $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})} (año ${umbralActivo.anio || ''})`;
+            }
+        }
+
+        function validarAsignacion() {
+            if (!umbralActivo) return;
+            const valor = parseFloat(document.getElementById('input-asignacion').value) || 0;
+            const monto = umbralActivo.montoUmbral;
+            const tipo = tipoContratoActual.toUpperCase();
+            const alerta = document.getElementById('alerta-asignacion');
+            const txtAlerta = document.getElementById('txt-alerta-asignacion');
+            let error = '';
+
+            if ((tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) && valor > monto) {
+                error = `La Ínfima Cuantía no puede superar $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
+            } else if (tipo.includes('SUBASTA') && valor > 0 && valor <= monto) {
+                error = `La Subasta debe ser mayor a $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
+            }
+
+            if (error) {
+                txtAlerta.textContent = error;
+                alerta.classList.remove('hidden');
+                document.getElementById('input-asignacion').classList.add('border-red-400');
+            } else {
+                alerta.classList.add('hidden');
+                document.getElementById('input-asignacion').classList.remove('border-red-400');
+            }
+        }
 
         function regresarAlDashboard() { window.location.href = '/dashboard.html'; }
 
@@ -222,12 +289,21 @@
         document.getElementById('form-actividad').addEventListener('submit', (e) => {
             e.preventDefault();
 
+            // Item 2: Bloquear submit si hay error de asignación
+            if (!document.getElementById('alerta-asignacion').classList.contains('hidden')) {
+                document.getElementById('alerta-asignacion').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            // Item 4: Guardar también nombre de item y descripción de CPC
             const detallesActividad = {
                 noPoa: document.getElementById('input-poa').value,
                 estado: document.getElementById('select-estado').value,
                 actividadEspecifica: document.getElementById('input-actividad').value,
                 item: document.getElementById('input-item').value,
+                itemNombre: document.getElementById('item-sel-nombre').textContent || '',
                 cpc: document.getElementById('input-cpc').value,
+                cpcDescripcion: document.getElementById('cpc-sel-desc').textContent || '',
                 asignacion: document.getElementById('input-asignacion').value,
                 cuatrimestre: document.getElementById('select-cuatrimestre').value,
                 elaborado: document.getElementById('select-elaborado').value,

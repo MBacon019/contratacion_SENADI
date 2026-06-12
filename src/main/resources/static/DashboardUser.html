@@ -87,8 +87,30 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Items 7 y 8: Desglose individual de presupuesto y avance -->
+                <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+                    <h3 class="text-sm font-bold text-gray-800 mb-4 border-b border-gray-50 pb-2">Desglose Individual por Proceso</h3>
+                    <div id="tabla-desglose-global" class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead>
+                                <tr class="text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100">
+                                    <th class="pb-2 pr-4">POA</th>
+                                    <th class="pb-2 pr-4">Actividad</th>
+                                    <th class="pb-2 pr-4">Tipo</th>
+                                    <th class="pb-2 pr-4 text-right">Presupuesto</th>
+                                    <th class="pb-2 pr-4 text-right">Avance</th>
+                                    <th class="pb-2">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-desglose" class="divide-y divide-gray-50"></tbody>
+                        </table>
+                        <p id="msg-sin-procesos" class="hidden text-center text-gray-400 py-6 text-xs">No hay procesos registrados.</p>
+                    </div>
+                </div>
             </div>
 
+            <!-- VISTA: ADMIN UMBRALES (Item 3) -->
             <!-- VISTA: LISTADO DE CONTRATOS -->
             <div id="vista-lista" class="space-y-6 hidden">
                 <div>
@@ -179,9 +201,32 @@
         let chartAvanceInstance = null;
         let chartGlobalTiposInstance = null;
         let chartGlobalEstadosInstance = null;
-        
+
         let procesosReales = [];
-        let procesoActivoAuditoria = null; // Variable para almacenar el proceso que se está viendo en detalles
+        let procesoActivoAuditoria = null;
+
+        // Item 9: Mapa de colores consistentes por tipo de contrato
+        const COLORES_TIPO = {
+            'ÍNFIMA CUANTÍA': '#3b82f6',      // Azul
+            'INFIMA CUANTIA': '#3b82f6',
+            'RÉGIMEN ESPECIAL': '#8b5cf6',     // Violeta
+            'REGIMEN ESPECIAL': '#8b5cf6',
+            'CATÁLOGO ELECTRÓNICO': '#f59e0b', // Ámbar
+            'CATALOGO ELECTRONICO': '#f59e0b',
+            'SUBASTA INVERSA': '#10b981',      // Esmeralda
+            'LICITACIÓN': '#f43f5e',           // Rosa/Rojo
+            'LICITACION': '#f43f5e',
+            'MENOR CUANTÍA': '#06b6d4',        // Cyan
+            'MENOR CUANTIA': '#06b6d4',
+        };
+
+        function colorPorTipo(nombreTipo) {
+            const key = (nombreTipo || '').toUpperCase().replace('CONTRATO ', '').trim();
+            for (const [patron, color] of Object.entries(COLORES_TIPO)) {
+                if (key.includes(patron)) return color;
+            }
+            return '#94a3b8'; // Gris por defecto
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             cargarProcesosDesdeLocalStorage();
@@ -189,27 +234,23 @@
 
         function cambiarPestaña(tab) {
             const tabs = document.getElementById('contenedor-tabs');
-            
-            document.getElementById('vista-global').classList.add('hidden');
-            document.getElementById('vista-lista').classList.add('hidden');
-            document.getElementById('vista-estadisticas').classList.add('hidden');
-            
-            document.getElementById('tab-global').className = "pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800 font-bold text-sm transition";
-            document.getElementById('tab-lista').className = "pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800 font-bold text-sm transition";
+            const inactive = "pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800 font-bold text-sm transition";
+            const active   = "pb-3 border-b-2 border-blue-600 text-blue-600 font-bold text-sm transition";
 
-            if(tab === 'global') {
+            ['vista-global','vista-lista','vista-estadisticas'].forEach(v => document.getElementById(v).classList.add('hidden'));
+            ['tab-global','tab-lista'].forEach(t => { const el = document.getElementById(t); if (el) el.className = inactive; });
+
+            if (tab === 'global') {
                 tabs.classList.remove('hidden');
                 document.getElementById('vista-global').classList.remove('hidden');
-                document.getElementById('tab-global').className = "pb-3 border-b-2 border-blue-600 text-blue-600 font-bold text-sm transition";
+                document.getElementById('tab-global').className = active;
                 renderizarDashboardGlobal();
-            } 
-            else if(tab === 'lista') {
+            } else if (tab === 'lista') {
                 tabs.classList.remove('hidden');
                 document.getElementById('vista-lista').classList.remove('hidden');
-                document.getElementById('tab-lista').className = "pb-3 border-b-2 border-blue-600 text-blue-600 font-bold text-sm transition";
+                document.getElementById('tab-lista').className = active;
                 renderizarListaContratos();
-            }
-            else if(tab === 'estadisticas') {
+            } else if (tab === 'estadisticas') {
                 tabs.classList.add('hidden');
                 document.getElementById('vista-estadisticas').classList.remove('hidden');
             }
@@ -252,22 +293,69 @@
 
             document.getElementById('kpi-global-total').innerText = totalProcesos;
             document.getElementById('kpi-global-presupuesto').innerText = `$ ${presupuestoTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
-            
+
             let avancePromedio = totalProcesos > 0 ? Math.round(sumaAvances / totalProcesos) : 0;
             document.getElementById('kpi-global-avance').innerText = `${avancePromedio}%`;
 
             renderizarChartGlobalTipos(conteoTipos);
             renderizarChartGlobalEstados(conteoEstados);
+            renderizarDesgloseIndividual();
+        }
+
+        // Items 7 y 8: Tabla de desglose individual
+        function renderizarDesgloseIndividual() {
+            const tbody = document.getElementById('tbody-desglose');
+            const msg = document.getElementById('msg-sin-procesos');
+            tbody.innerHTML = '';
+
+            if (procesosReales.length === 0) {
+                msg.classList.remove('hidden');
+                return;
+            }
+            msg.classList.add('hidden');
+
+            procesosReales.forEach(proc => {
+                const pct = proc.porcentaje || 0;
+                const asig = parseFloat(proc.asignacion || 0);
+                const tipo = (proc.tipoContrato || '').replace('Contrato ', '');
+                const color = colorPorTipo(proc.tipoContrato || '');
+
+                let badgeEstado, textEstado;
+                if (pct === 100) { badgeEstado = 'bg-emerald-100 text-emerald-700'; textEstado = 'Finalizado'; }
+                else if (pct === 0) { badgeEstado = 'bg-gray-100 text-gray-600'; textEstado = 'Por ejecutar'; }
+                else { badgeEstado = 'bg-blue-100 text-blue-700'; textEstado = 'En ejecución'; }
+
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="py-2.5 pr-4 font-mono font-bold text-gray-600">${proc.codigoPoa || 'N/A'}</td>
+                        <td class="py-2.5 pr-4 text-gray-800 font-medium max-w-xs truncate">${proc.actividadNombre || 'Sin nombre'}</td>
+                        <td class="py-2.5 pr-4">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold text-white" style="background-color:${color}">${tipo}</span>
+                        </td>
+                        <td class="py-2.5 pr-4 text-right font-mono font-bold text-emerald-600">$ ${asig.toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+                        <td class="py-2.5 pr-4 text-right">
+                            <div class="flex items-center justify-end space-x-2">
+                                <div class="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="h-full rounded-full transition-all" style="width:${pct}%; background-color:${color}"></div>
+                                </div>
+                                <span class="font-bold text-gray-700 w-8 text-right">${pct}%</span>
+                            </div>
+                        </td>
+                        <td class="py-2.5"><span class="text-[10px] font-bold px-2 py-0.5 rounded ${badgeEstado}">${textEstado}</span></td>
+                    </tr>`);
+            });
         }
 
         function renderizarChartGlobalTipos(conteoTipos) {
             const ctx = document.getElementById('chartGlobalTipos').getContext('2d');
             if (chartGlobalTiposInstance) chartGlobalTiposInstance.destroy();
+            // Item 9: usar colores consistentes
+            const colores = Object.keys(conteoTipos).map(t => colorPorTipo('Contrato ' + t));
             chartGlobalTiposInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: Object.keys(conteoTipos),
-                    datasets: [{ data: Object.values(conteoTipos), backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#f43f5e'], borderWidth: 2, borderColor: '#ffffff' }]
+                    datasets: [{ data: Object.values(conteoTipos), backgroundColor: colores, borderWidth: 2, borderColor: '#ffffff' }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { usePointStyle: true, boxWidth: 8 } } } }
             });
@@ -303,20 +391,23 @@
             procesosReales.forEach(proc => {
                 const pct = proc.porcentaje || 0;
                 const tituloLimpio = (proc.tipoContrato || 'Contrato').replace('Contrato ', '');
+                // Item 9: color consistente por tipo
+                const color = colorPorTipo(proc.tipoContrato || '');
                 let colorEstado = pct === 100 ? "bg-emerald-100 text-emerald-700" : (pct === 0 ? "bg-gray-100 text-gray-600" : "bg-blue-100 text-blue-700");
                 let textEstado = pct === 100 ? "FINALIZADO" : (pct === 0 ? "POR EJECUTAR" : "EN EJECUCIÓN");
 
                 const cardHTML = `
-                    <div onclick="verDetallesProceso('${proc.id}')" class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm hover:shadow-lg hover:border-blue-300 transition cursor-pointer flex flex-col h-full">
+                    <div onclick="verDetallesProceso('${proc.id}')" class="bg-white rounded-2xl border border-gray-200 p-5 shadow-sm hover:shadow-lg transition cursor-pointer flex flex-col h-full" style="border-left: 4px solid ${color}">
                         <div class="flex justify-between items-start mb-3">
-                            <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-2.5 py-1 rounded uppercase tracking-wide">${tituloLimpio}</span>
+                            <span class="text-[10px] font-black px-2.5 py-1 rounded uppercase tracking-wide text-white" style="background-color:${color}">${tituloLimpio}</span>
                             <span class="${colorEstado} text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide">${textEstado}</span>
                         </div>
                         <h3 class="text-sm font-bold text-gray-900 leading-snug mb-2 hover:text-blue-600 transition line-clamp-3">${proc.actividadNombre || 'Sin Actividad'}</h3>
-                        <p class="text-[10px] text-gray-400 font-mono mb-4">POA: ${proc.codigoPoa || 'N/A'}</p>
+                        <p class="text-[10px] text-gray-400 font-mono mb-1">POA: ${proc.codigoPoa || 'N/A'}</p>
+                        <p class="text-[10px] text-emerald-600 font-bold font-mono mb-4">$ ${parseFloat(proc.asignacion || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</p>
                         <div class="mt-auto pt-4 border-t border-gray-100">
                             <div class="flex justify-between items-center mb-1.5"><span class="text-[10px] font-bold text-gray-500 uppercase">Avance del Flujo</span><span class="text-[10px] font-bold text-gray-800">${pct}%</span></div>
-                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width: ${pct}%"></div></div>
+                            <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:${pct}%; background-color:${color}"></div></div>
                         </div>
                     </div>`;
                 grid.insertAdjacentHTML('beforeend', cardHTML);

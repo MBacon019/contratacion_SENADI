@@ -84,11 +84,13 @@
                 </div>
                 <div>
                     <span class="text-gray-400 block font-medium">ITEM PRESUPUESTARIO:</span>
-                    <span id="info-item" class="font-bold text-gray-800">-</span>
+                    <span id="info-item" class="font-bold text-gray-800 font-mono">-</span>
+                    <span id="info-item-nombre" class="text-gray-500 block mt-0.5 leading-tight">-</span>
                 </div>
                 <div>
                     <span class="text-gray-400 block font-medium">CÓDIGO CPC:</span>
-                    <span id="info-cpc" class="font-bold text-gray-800">-</span>
+                    <span id="info-cpc" class="font-bold text-gray-800 font-mono">-</span>
+                    <span id="info-cpc-descripcion" class="text-gray-500 block mt-0.5 leading-tight">-</span>
                 </div>
                 <div>
                     <span class="text-gray-400 block font-medium">ASIGNACIÓN:</span>
@@ -142,15 +144,7 @@
                     </div>
 
                     <form id="form-paso-dinamico" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                        <div>
-                            <label class="block font-bold text-gray-700 mb-1">Estado</label>
-                            <select id="input-estado" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none">
-                                <option value="">Seleccionar...</option>
-                                <option value="Completado">Completado</option>
-                                <option value="Observado">Observado</option>
-                                <option value="Omitido">Omitido (No aplica)</option>
-                            </select>
-                        </div>
+                        <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Nro. Memorando / Oficio</label><input id="input-memorando" type="text" placeholder="SENADI-DTIC-2026-..." class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
                         <div><label class="block font-bold text-gray-700 mb-1">Custodio Actual</label><input id="input-responsable" type="text" placeholder="Nombre" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
                         <div><label class="block font-bold text-gray-700 mb-1">Fecha</label><input id="input-fecha" type="date" class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
                         <div>
@@ -161,7 +155,6 @@
                                 <option value="FÍSICO">FÍSICO</option>
                             </select>
                         </div>
-                        <div class="md:col-span-2"><label class="block font-bold text-gray-700 mb-1">Nro. Memorando / Oficio</label><input id="input-memorando" type="text" placeholder="SENADI-DTIC-2026-..." class="w-full bg-gray-50 border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none"></div>
 
                         <div>
                             <div class="flex justify-between items-center mb-1">
@@ -175,6 +168,7 @@
                                 <option value="">Seleccionar...</option>
                                 <option value="Completado">Completado con éxito</option>
                                 <option value="Observado">En revisión con observaciones</option>
+                                <option value="Omitido">Omitido (No aplica)</option>
                             </select>
                         </div>
 
@@ -354,7 +348,9 @@
 
             document.getElementById('info-poa').innerText = procesoActivo.codigoPoa || detallesGlobales.noPoa || '-';
             document.getElementById('info-item').innerText = procesoActivo.itemPresupuestario || detallesGlobales.item || '-';
+            document.getElementById('info-item-nombre').innerText = detallesGlobales.itemNombre || '';
             document.getElementById('info-cpc').innerText = procesoActivo.codigoCpc || detallesGlobales.cpc || '-';
+            document.getElementById('info-cpc-descripcion').innerText = detallesGlobales.cpcDescripcion || '';
 
             const asig = parseFloat(procesoActivo.asignacion || detallesGlobales.asignacion || 0);
             document.getElementById('info-asignacion').innerText = '$ ' + asig.toLocaleString('es-EC', { minimumFractionDigits: 2 });
@@ -461,12 +457,12 @@
             const paso = pasosFlujo[indicePasoActual];
             const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
             const esMiPaso = tienePermisoEnPaso(paso);
-            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
 
             document.getElementById('txt-proceso-subtitulo').innerText = `Paso ${indicePasoActual + 1} de ${pasosFlujo.length}`;
             document.getElementById('badge-contador-paso').innerText = `PASO ${paso.orden || (indicePasoActual + 1)}`;
+            document.getElementById('txt-paso-fase').innerText = (paso.fase || 'FASE PREPARATORIA').toUpperCase();
             document.getElementById('txt-paso-nombre-grande').innerText = paso.nombrePaso;
-            document.getElementById('txt-paso-nombre').innerText = paso.nombrePaso;
+            document.getElementById('txt-paso-area').innerText = paso.area || 'N/A';
             document.getElementById('badge-rol-requerido').innerText = `REQ: ${paso.area || 'N/A'}`;
             document.getElementById('txt-paso-nombre').innerText = `${numeroPasoPrincipal} – ${paso.nombrePaso}`;
 
@@ -561,9 +557,6 @@
             document.getElementById('input-medio').value = respuestas.medio || paso.medio || 'QUIPUX';
             document.getElementById('input-memorando').value = respuestas.memorando || '';
 
-            document.getElementById('select-elaborado').value = respuestas.elaborado || detallesGlobales.elaborado || '';
-            document.getElementById('select-revisado').value = respuestas.revisado || detallesGlobales.revisado || '';
-            document.getElementById('select-aprobado').value = respuestas.aprobado || detallesGlobales.aprobado || '';
             document.getElementById('input-observaciones').value = respuestas.observaciones || '';
 
             if (respuestas.archivos && respuestas.archivos.length > 0) {
@@ -601,157 +594,20 @@
             }
         }
 
-        function configurarValidacionPDF() {
-            document.getElementById('input-pdf-multiple').addEventListener('change', function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                if (file.type !== "application/pdf") { alert("Solo se permiten archivos PDF."); this.value = ""; return; }
-                if (file.size > 2 * 1024 * 1024) { alert("Máximo 2MB por archivo."); this.value = ""; return; }
-
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    archivosAdjuntosTemporales.push({ nombre: file.name, base64: ev.target.result });
-                    renderizarListaArchivos();
-                    guardarProgresoActual(true);
-                };
-                reader.readAsDataURL(file);
-                this.value = "";
-            });
-        }
-
-        function renderizarListaArchivos() {
-            const contenedor = document.getElementById('lista-archivos-adjuntos');
-            contenedor.innerHTML = '';
-            const esMiPaso = tienePermisoEnPaso(pasosFlujo[indicePasoActual]);
-
-            if (archivosAdjuntosTemporales.length === 0) {
-                contenedor.innerHTML = '<p class="text-[10px] italic text-gray-400">Ningún documento adjunto.</p>';
-                return;
-            }
-
-            archivosAdjuntosTemporales.forEach((file, idx) => {
-                const item = document.createElement('div');
-                item.className = "flex justify-between items-center bg-white p-2 border border-emerald-100 rounded-lg text-[11px] shadow-sm";
-                item.innerHTML = `
-                    <span class="truncate w-40 font-bold text-gray-700">📄 ${file.nombre}</span>
-                    <div class="flex space-x-2">
-                        <a href="${file.base64}" download="${file.nombre}" class="text-blue-600 font-bold hover:text-blue-800">Ver</a>
-                        ${esMiPaso ? `<button type="button" onclick="archivosAdjuntosTemporales.splice(${idx},1); guardarProgresoActual(true); renderizarListaArchivos();" class="text-red-500 font-bold hover:text-red-700">X</button>` : ''}
-                    </div>
-                `;
-                contenedor.appendChild(item);
-            });
-        }
-
-        function guardarProgresoActual(silencioso = true) {
-            const paso = pasosFlujo[indicePasoActual];
-            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
-            
-            const nuevoNombre = prompt("Escribe el nombre de la nueva sub-tarea:", "Nueva tarea");
-            if (nuevoNombre && nuevoNombre.trim() !== "") {
-                if (!paso.subpasos) paso.subpasos = [];
-                
-                // Asegurarse de que todos tengan base ID para no romper
-                paso.subpasos.forEach((sub, i) => {
-                    if (!sub.numeroInterno) {
-                        sub.numeroInterno = `${numeroPasoPrincipal}.${i + 1}`;
-                    }
-                    if (!sub.parentId) {
-                        const partes = sub.numeroInterno.split('.');
-                        partes.pop();
-                        sub.parentId = partes.join('.');
-                    }
-                });
-
-                let parentNum = `${numeroPasoPrincipal}`;
-                let insertIndex = paso.subpasos.length;
-
-                const getDisplayNum = s => extraerPrefijoSubpaso(s.nombreSubpaso || s.descripcion || '') || s.numeroInterno || '';
-
-                if (indexSubpaso !== -1) {
-                    parentNum = getDisplayNum(paso.subpasos[indexSubpaso]);
-                    insertIndex = indexSubpaso + 1;
-                    // Saltamos los hijos directos que ya existen
-                    while (insertIndex < paso.subpasos.length && getDisplayNum(paso.subpasos[insertIndex]).startsWith(parentNum + '.')) {
-                        insertIndex++;
-                    }
-                }
-
-                const hermanos = paso.subpasos.filter(s => {
-                    const num = getDisplayNum(s);
-                    if (!num.startsWith(parentNum + '.')) return false;
-                    const resto = num.slice(parentNum.length + 1);
-                    return !resto.includes('.');
-                });
-                let siguienteHijo = 1;
-                if (hermanos.length > 0) {
-                    const maxHijo = Math.max(...hermanos.map(h => {
-                        const num = getDisplayNum(h);
-                        const partes = num.split('.');
-                        return parseInt(partes[partes.length - 1]) || 0;
-                    }));
-                    siguienteHijo = maxHijo + 1;
-                }
-                const nuevoNumero = `${parentNum}.${siguienteHijo}`;
-
-                const nuevaSubfase = {
-                    nombreSubpaso: `${nuevoNumero} – ${nuevoNombre.trim()}`,
-                    completado: false,
-                    numeroInterno: nuevoNumero,
-                    parentId: parentNum
-                };
-
-                paso.subpasos.splice(insertIndex, 0, nuevaSubfase);
-
-                // Reparación importante: Mover los estados de las casillas de Saltar para que coincidan con los nuevos índices
-                if (paso.respuestasUsuario && paso.respuestasUsuario.skips) {
-                    const viejosSkips = paso.respuestasUsuario.skips;
-                    const nuevosSkips = {};
-                    
-                    // Copiar los que no son de subpasos (del form principal)
-                    for (let key in viejosSkips) {
-                        if (!key.startsWith('subpaso-')) nuevosSkips[key] = viejosSkips[key];
-                    }
-
-                    for (let i = 0; i < paso.subpasos.length; i++) {
-                        if (i < insertIndex) nuevosSkips[`subpaso-${i}`] = viejosSkips[`subpaso-${i}`];
-                        else if (i === insertIndex) nuevosSkips[`subpaso-${i}`] = false;
-                        else nuevosSkips[`subpaso-${i}`] = viejosSkips[`subpaso-${i - 1}`]; 
-                    }
-                    paso.respuestasUsuario.skips = nuevosSkips;
-                }
-
-                if (paso.respuestasUsuario && paso.respuestasUsuario.estadosSubpasos) {
-                    const viejosEstados = paso.respuestasUsuario.estadosSubpasos;
-                    const nuevosEstados = {};
-                    for (let i = 0; i < paso.subpasos.length; i++) {
-                        if (i < insertIndex) nuevosEstados[i] = viejosEstados[i];
-                        else if (i === insertIndex) nuevosEstados[i] = false;
-                        else nuevosEstados[i] = viejosEstados[i - 1]; 
-                    }
-                    paso.respuestasUsuario.estadosSubpasos = nuevosEstados;
-                }
-                
-                guardarProgresoActual(true);
-                cargarPasoActual();
-            }
-        }
-
         function guardarProgresoActual(silencioso = true) {
             const pasoActual = pasosFlujo[indicePasoActual];
             if (!tienePermisoEnPaso(pasoActual)) return;
 
-            const respuestasActuales = paso.respuestasUsuario || {};
+            const respuestasActuales = pasoActual.respuestasUsuario || {};
             const estadosSubpasos = respuestasActuales.estadosSubpasos || {};
 
-            // Leer checkboxes preservando estados "omitido"
             document.querySelectorAll('.subpaso-checkbox').forEach(chk => {
                 const idx = chk.getAttribute('data-index');
                 if (estadosSubpasos[idx] !== "omitido") {
                     estadosSubpasos[idx] = chk.checked;
                 }
-                if (paso.subpasos && paso.subpasos[idx]) {
-                    paso.subpasos[idx].completado = chk.checked;
+                if (pasoActual.subpasos && pasoActual.subpasos[idx]) {
+                    pasoActual.subpasos[idx].completado = chk.checked;
                 }
             });
 
@@ -764,29 +620,20 @@
                 skipsState[`subpaso-${chk.getAttribute('data-subindex')}`] = chk.checked;
             });
 
-            const respuestasActuales = pasoActual.respuestasUsuario || {};
             const estadoSeleccionado = document.getElementById('input-estado').value;
 
-            paso.respuestasUsuario = {
+            pasoActual.respuestasUsuario = {
                 estado: estadoSeleccionado,
                 responsable: document.getElementById('input-responsable').value,
                 fecha: document.getElementById('input-fecha').value,
                 medio: document.getElementById('input-medio').value,
                 memorando: document.getElementById('input-memorando').value,
-                elaborado: document.getElementById('input-elaborado').value,
-                revisado: document.getElementById('input-revisado').value,
-                aprobado: document.getElementById('input-aprobado').value,
-                dirigido: document.getElementById('input-dirigido').value,
                 observaciones: document.getElementById('input-observaciones').value,
                 archivos: archivosAdjuntosTemporales,
                 estadosSubpasos: estadosSubpasos,
-                skips: skipsState, 
+                skips: skipsState,
                 completado: estadoSeleccionado === "Completado" || estadoSeleccionado === "Omitido" || (respuestasActuales.completado)
             };
-
-            pasosFlujo[indicePasoActual].respuestasUsuario = respuestasForm;
-            actualizarBaseDeDatos(silencioso);
-        }
 
             const completados = pasosFlujo.filter(p => p.respuestasUsuario && p.respuestasUsuario.completado).length;
             const nuevoPorcentaje = Math.round((completados / pasosFlujo.length) * 100);
@@ -794,7 +641,7 @@
             procesoActivo.pasosCompletados = completados;
             procesoActivo.porcentaje = nuevoPorcentaje;
             procesoActivo.ultimoIndiceTrabajado = indicePasoActual;
-            procesoActivo.pipelineSnapshot = pasosFlujo; 
+            procesoActivo.pipelineSnapshot = pasosFlujo;
             procesoActivo.fechaModificacion = new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 
             const idxBase = procesosGlobales.findIndex(p => p.id === procesoActivo.id);
@@ -817,7 +664,7 @@
 
         function actualizarPorcentajeVisual() {
             if (procesoActivo) {
-                document.getElementById('txt-porcentaje-barra').innerText = `${procesoActivo.porcentaje || 0}% Completado`;
+                document.getElementById('txt-porcentaje-barra').innerText = `${procesoActivo.porcentaje || 0}%`;
             }
         }
 
@@ -841,33 +688,26 @@
         }
 
         function ejecutarNavegacion(direccion) {
-            guardarProgresoActual(true);
-            
             const nuevoIndice = indicePasoActual + direccion;
 
             if (nuevoIndice < pasosFlujo.length && nuevoIndice >= 0) {
-                // Verificar avance lineal
                 if (direccion > 0) {
-                    let bloquearAvance = false;
-                    for (let i = 0; i < nuevoIndice; i++) {
-                        const esPasoMio = tienePermisoEnPaso(pasosFlujo[i]);
-                        const estaCompletado = pasosFlujo[i].respuestasUsuario && pasosFlujo[i].respuestasUsuario.completado;
-                        
-                        if (esPasoMio && !estaCompletado) {
-                            bloquearAvance = true;
-                            break;
-                        }
-                    }
-                    if (bloquearAvance) {
+                    // Al avanzar: guardar primero, luego verificar que el paso actual esté completado
+                    guardarProgresoActual(true);
+                    const pasoActualObj = pasosFlujo[indicePasoActual];
+                    const esMiPaso = tienePermisoEnPaso(pasoActualObj);
+                    const estaCompletado = pasoActualObj.respuestasUsuario && pasoActualObj.respuestasUsuario.completado;
+                    if (esMiPaso && !estaCompletado) {
                         alert("⚠️ Debes completar o terminar tu paso actual antes de avanzar.");
                         return;
                     }
                 }
-
+                // Al retroceder: NO guardar el paso incompleto para no sobrescribir datos completados
                 indicePasoActual = nuevoIndice;
                 cargarPasoActual();
                 renderizarIndiceLateral();
             } else if (nuevoIndice >= pasosFlujo.length) {
+                guardarProgresoActual(true);
                 alert("¡Has llegado al final del flujo del proceso!");
                 irAlDashboard();
             }
@@ -911,7 +751,7 @@
                 item.onclick = () => { indicePasoActual = i; cargarPasoActual(); renderizarIndiceLateral(); };
 
                 let icon = esMiPaso ? '⚪' : '🔒';
-                if (isDone) icon = esOmitido ? '⚠️' : '✅';
+                if (isDone) icon = isOmitido ? '⚠️' : '✅';
                 if (esActivo) icon = esMiPaso ? '🔵' : '🔒';
 
                 item.innerHTML = `

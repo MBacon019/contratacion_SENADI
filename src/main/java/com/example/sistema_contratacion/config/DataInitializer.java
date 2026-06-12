@@ -14,12 +14,15 @@ public class DataInitializer implements CommandLineRunner {
     private final RoleRepository roleRepository;
     private final UsuarioRepository usuarioRepository;
     private final TipoContratoRepository tipoContratoRepository;
+    private final ConfiguracionUmbralRepository umbralRepository;
 
-    // Corrección: Inyectamos los 3 repositorios necesarios en el constructor
-    public DataInitializer(RoleRepository roleRepository, UsuarioRepository usuarioRepository, TipoContratoRepository tipoContratoRepository) {
+    public DataInitializer(RoleRepository roleRepository, UsuarioRepository usuarioRepository,
+                           TipoContratoRepository tipoContratoRepository,
+                           ConfiguracionUmbralRepository umbralRepository) {
         this.roleRepository = roleRepository;
         this.usuarioRepository = usuarioRepository;
         this.tipoContratoRepository = tipoContratoRepository;
+        this.umbralRepository = umbralRepository;
     }
 
     @Override
@@ -90,8 +93,12 @@ public class DataInitializer implements CommandLineRunner {
 
         inicializarInfimaCuantia();
 
-        // 3. Inicializar Régimen Especial con los 41 pasos completos
         inicializarRegimenEspecial();
+
+        if (umbralRepository.findByActivoTrue().isEmpty()) {
+            umbralRepository.save(new ConfiguracionUmbral(2026, 10000.0, true,
+                    "Umbral inicial: Ínfima Cuantía ≤ $10,000 / Subasta > $10,000"));
+        }
     }
 
     private void inicializarRegimenEspecial() {

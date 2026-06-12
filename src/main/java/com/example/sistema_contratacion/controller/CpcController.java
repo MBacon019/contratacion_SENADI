@@ -2,7 +2,6 @@ package com.example.sistema_contratacion.controller;
 
 import com.example.sistema_contratacion.entity.Cpc;
 import com.example.sistema_contratacion.service.CpcService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,10 +11,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cpc")
-@RequiredArgsConstructor
 public class CpcController {
 
     private final CpcService cpcService;
+
+    public CpcController(CpcService cpcService) {
+        this.cpcService = cpcService;
+    }
 
     /**
      * POST /api/cpc/cargar
