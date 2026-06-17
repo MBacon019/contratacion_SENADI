@@ -82,6 +82,15 @@
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
+                        <p class="text-[11px] text-gray-400 mt-1">
+                            ¿No conoces tu código de ítem presupuestario?
+                            <a href="https://www.finanzas.gob.ec/wp-content/uploads/downloads/2025/02/Clasificador-Presupuestario-actualizado_05_02_2025_vf-1.pdf"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="text-indigo-500 hover:text-indigo-700 font-semibold hover:underline transition">
+                                Ver clasificador presupuestario →
+                            </a>
+                        </p>
                     </div>
                     <div class="space-y-1.5 relative">
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">CPC</label>
@@ -101,6 +110,15 @@
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
+                        <p class="text-[11px] text-gray-400 mt-1">
+                            ¿No conoces tu código CPC?
+                            <a href="https://www.compraspublicas.gob.ec/ProcesoContratacion/compras/RCC/RccFrmBuscarCpcEnCatalogo.cpe"
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               class="text-blue-500 hover:text-blue-700 font-semibold hover:underline transition">
+                                Búscalo aquí →
+                            </a>
+                        </p>
                     </div>
                 </div>
 
@@ -181,9 +199,14 @@
                             <label class="block text-[11px] font-bold text-gray-600 uppercase">Admin. de Contrato / Orden</label>
                             <select id="select-admin-contrato" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500/20">
                                 <option value="">— Seleccionar —</option>
+                                <option>Emerson Ceracapa</option>
                                 <option>Gonzalo Moncayo</option>
+                                <option>Juan Pablo Ponce</option>
+                                <option>Marco Molina</option>
+                                <option>María Fernanda Pilco</option>
+                                <option>Michael Yanangómez</option>
                                 <option>Miguel Cabrera</option>
-                                
+                                <option>Paul Orozco</option>
                             </select>
                         </div>
                     </div>
@@ -209,6 +232,7 @@
     <script>
         let umbralActivo = null;
         let tipoContratoActual = '';
+        let siguienteNumero = 1;
 
         function aplicarColorTipoContrato() {
             const banner = document.querySelector('.bg-blue-600.text-white.text-center');
@@ -250,7 +274,7 @@
             if (contadorPOA === 0) {
                 contadorPOA = listaActual.length;
             }
-            const siguienteNumero = contadorPOA + 1;
+            siguienteNumero = contadorPOA + 1;
             document.getElementById('input-poa').value = siguienteNumero;
 
             // Item 2: Cargar umbral activo
@@ -333,8 +357,7 @@
             const fRevisado = document.getElementById('select-revisado');
             const fAprobado = document.getElementById('select-aprobado');
             const fAdmin = document.getElementById('select-admin-contrato');
-            const fTecnico = document.getElementById('input-tecnico');
-            [fActividad, fAsignacion, fElaborado, fRevisado, fAprobado, fAdmin, fTecnico].forEach(c => c.classList.remove('border-red-400'));
+            [fActividad, fAsignacion, fElaborado, fRevisado, fAprobado, fAdmin].forEach(c => c.classList.remove('border-red-400'));
 
             let primerError = null;
             const marcar = (campo) => { campo.classList.add('border-red-400'); if (!primerError) primerError = campo; };
@@ -345,7 +368,6 @@
             if (!fRevisado.value) marcar(fRevisado);
             if (!fAprobado.value) marcar(fAprobado);
             if (!fAdmin.value) marcar(fAdmin);
-            if (!fTecnico.value.trim()) marcar(fTecnico);
 
             if (primerError) {
                 document.getElementById('txt-alerta-asignacion').textContent = 'Por favor completa todos los campos obligatorios antes de continuar.';
@@ -383,7 +405,7 @@
         });
 
         // Limpiar borde rojo al editar cada campo obligatorio
-        ['input-actividad', 'input-asignacion', 'input-tecnico'].forEach(id => {
+        ['input-actividad', 'input-asignacion'].forEach(id => {
             document.getElementById(id).addEventListener('input', function() { this.classList.remove('border-red-400'); });
         });
         ['select-elaborado', 'select-revisado', 'select-aprobado', 'select-admin-contrato'].forEach(id => {

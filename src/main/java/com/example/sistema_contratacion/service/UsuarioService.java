@@ -1,6 +1,8 @@
 package com.example.sistema_contratacion.service;
 
+import com.example.sistema_contratacion.entity.Role;
 import com.example.sistema_contratacion.entity.Usuario;
+import com.example.sistema_contratacion.repository.RoleRepository;
 import com.example.sistema_contratacion.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.mindrot.jbcrypt.BCrypt;
@@ -11,10 +13,12 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final RoleRepository roleRepository;
 
-    // Inyección de dependencias por constructor
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          RoleRepository roleRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.roleRepository = roleRepository;
     }
 
     /**
@@ -26,7 +30,7 @@ public class UsuarioService {
 
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            
+
             // 1. Verificamos que el usuario esté activo
             // 2. Comparamos la contraseña en texto plano con el hash seguro de la base de datos
             if (usuario.isActivo() && BCrypt.checkpw(password, usuario.getPassword())) {
@@ -34,5 +38,25 @@ public class UsuarioService {
             }
         }
         return Optional.empty();
+    }
+
+    public Usuario registrar(String nombre, String email, String password) {
+        if (usuarioRepository.findByEmail(email).isPresent()) {
+            throw new IllegalArgumentException(
+                "Ya existe una cuenta registrada con ese correo");
+        }
+
+        Role rolUser = roleRepository.findByNombre("ROLE_USER")
+            .orElseThrow(() -> new RuntimeException(
+                "Rol ROLE_USER no encontrado. Verifica el DataInitializer."));
+
+        Usuario nuevo = new Usuario();
+        nuevo.setNombreCompleto(nombre);
+        nuevo.setEmail(email);
+        nuevo.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
+        nuevo.setActivo(true);
+        nuevo.setRol(rolUser);
+
+        return usuarioRepository.save(nuevo);
     }
 }

@@ -134,7 +134,17 @@
                         <p class="text-sm text-gray-500 mt-1">Administración de umbrales presupuestarios y configuración del sistema.</p>
                     </div>
                 </div>
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="flex space-x-1 bg-gray-100 p-1 rounded-xl w-fit">
+                    <button id="tab-umbrales" onclick="mostrarTabPanel('umbrales')"
+                            class="text-xs font-bold px-4 py-2 rounded-lg bg-white text-gray-800 shadow-sm transition">
+                        Umbrales Presupuestarios
+                    </button>
+                    <button id="tab-usuarios" onclick="mostrarTabPanel('usuarios')"
+                            class="text-xs font-bold px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 transition">
+                        Gestión de Usuarios
+                    </button>
+                </div>
+                <div id="seccion-umbrales" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                     <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                         <div>
                             <h3 class="text-sm font-bold text-gray-800">Umbrales Presupuestarios</h3>
@@ -165,6 +175,24 @@
                             </div>
                         </div>
                         <div id="lista-umbrales" class="space-y-3"></div>
+                    </div>
+                </div>
+
+                <div id="seccion-usuarios" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-sm font-bold text-gray-800">Gestión de Usuarios</h3>
+                            <p class="text-xs text-gray-500 mt-0.5">Administra los usuarios registrados y sus roles de acceso al sistema.</p>
+                        </div>
+                        <button onclick="cargarUsuarios()"
+                                class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold px-4 py-2 rounded-xl transition">
+                            Actualizar
+                        </button>
+                    </div>
+                    <div class="p-6">
+                        <div id="lista-usuarios" class="space-y-2">
+                            <p class="text-xs text-gray-400">Cargando usuarios...</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -901,6 +929,146 @@
                 await fetch(`/api/umbrales/${id}`, { method: 'DELETE' });
                 cargarUmbrales();
             } catch (e) { alert('Error al eliminar.'); }
+        }
+
+        function mostrarTabPanel(tab) {
+            const secUmbrales = document.getElementById('seccion-umbrales');
+            const secUsuarios = document.getElementById('seccion-usuarios');
+            const tabU = document.getElementById('tab-umbrales');
+            const tabUs = document.getElementById('tab-usuarios');
+
+            const activeClass = ['bg-white', 'text-gray-800', 'shadow-sm'];
+            const inactiveClass = ['text-gray-500', 'hover:text-gray-700'];
+
+            if (tab === 'umbrales') {
+                secUmbrales.classList.remove('hidden');
+                secUsuarios.classList.add('hidden');
+                activeClass.forEach(c => tabU.classList.add(c));
+                inactiveClass.forEach(c => tabU.classList.remove(c));
+                inactiveClass.forEach(c => tabUs.classList.add(c));
+                activeClass.forEach(c => tabUs.classList.remove(c));
+            } else {
+                secUmbrales.classList.add('hidden');
+                secUsuarios.classList.remove('hidden');
+                activeClass.forEach(c => tabUs.classList.add(c));
+                inactiveClass.forEach(c => tabUs.classList.remove(c));
+                inactiveClass.forEach(c => tabU.classList.add(c));
+                activeClass.forEach(c => tabU.classList.remove(c));
+                cargarUsuarios();
+            }
+        }
+
+        async function cargarUsuarios() {
+            const lista = document.getElementById('lista-usuarios');
+            lista.innerHTML = '<p class="text-xs text-gray-400">Cargando...</p>';
+            try {
+                const usuarios = await fetch('/api/usuarios').then(r => r.json());
+                lista.innerHTML = '';
+
+                if (!usuarios.length) {
+                    lista.innerHTML = '<p class="text-xs text-gray-400 italic">No hay usuarios registrados.</p>';
+                    return;
+                }
+
+                usuarios.forEach(u => {
+                    const rolNombre = u.rol?.nombre || u.role?.nombre || 'Sin rol';
+                    const esAdmin = rolNombre === 'ROLE_ADMIN';
+                    const badgeRol = esAdmin
+                        ? 'bg-purple-100 text-purple-700'
+                        : 'bg-blue-100 text-blue-700';
+                    const badgeEstado = u.activo
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-red-100 text-red-600';
+
+                    lista.insertAdjacentHTML('beforeend', `
+                        <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+                            <div class="flex items-center space-x-3 min-w-0">
+                                <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                                    ${(u.nombreCompleto || u.email || '?')[0].toUpperCase()}
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-bold text-gray-800 truncate">${u.nombreCompleto || 'Sin nombre'}</p>
+                                    <p class="text-xs text-gray-400 truncate">${u.email}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2 flex-shrink-0 ml-4">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeRol}">
+                                    ${esAdmin ? '👑 Admin' : '👤 Usuario'}
+                                </span>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeEstado}">
+                                    ${u.activo ? 'Activo' : 'Inactivo'}
+                                </span>
+                                <select onchange="cambiarRolUsuario(${u.id}, this.value)"
+                                        class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                                    <option value="ROLE_USER" ${rolNombre === 'ROLE_USER' ? 'selected' : ''}>Usuario</option>
+                                    <option value="ROLE_ADMIN" ${rolNombre === 'ROLE_ADMIN' ? 'selected' : ''}>Admin</option>
+                                </select>
+                                <button onclick="toggleEstadoUsuario(${u.id}, ${u.activo})"
+                                        class="text-[11px] font-bold px-3 py-1.5 rounded-lg transition border ${u.activo ? 'bg-red-50 text-red-500 border-red-100 hover:bg-red-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'}">
+                                    ${u.activo ? 'Desactivar' : 'Activar'}
+                                </button>
+                                <button onclick="eliminarUsuario(${u.id}, '${(u.nombreCompleto || u.email).replace(/'/g, '')}')"
+                                        class="text-[11px] font-bold px-3 py-1.5 rounded-lg transition border bg-gray-50 text-gray-400 border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-100">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </div>
+                    `);
+                });
+            } catch (e) {
+                lista.innerHTML = '<p class="text-xs text-red-500">Error al cargar usuarios.</p>';
+            }
+        }
+
+        async function cambiarRolUsuario(id, rolNombre) {
+            try {
+                const res = await fetch(`/api/usuarios/${id}/rol`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rolNombre })
+                });
+                if (res.ok) {
+                    cargarUsuarios();
+                } else {
+                    alert('Error al cambiar el rol.');
+                }
+            } catch (e) {
+                alert('No se pudo conectar con el servidor.');
+            }
+        }
+
+        async function toggleEstadoUsuario(id, estadoActual) {
+            const nuevoEstado = !estadoActual;
+            const accion = nuevoEstado ? 'activar' : 'desactivar';
+            if (!confirm(`¿Deseas ${accion} este usuario?`)) return;
+            try {
+                const res = await fetch(`/api/usuarios/${id}/estado`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ activo: nuevoEstado })
+                });
+                if (res.ok) {
+                    cargarUsuarios();
+                } else {
+                    alert('Error al cambiar el estado.');
+                }
+            } catch (e) {
+                alert('No se pudo conectar con el servidor.');
+            }
+        }
+
+        async function eliminarUsuario(id, nombre) {
+            if (!confirm(`¿Eliminar al usuario "${nombre}"? Esta acción no se puede deshacer.`)) return;
+            try {
+                const res = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    cargarUsuarios();
+                } else {
+                    alert('Error al eliminar el usuario.');
+                }
+            } catch (e) {
+                alert('No se pudo conectar con el servidor.');
+            }
         }
     </script>
 </body>

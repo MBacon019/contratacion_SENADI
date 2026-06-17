@@ -763,31 +763,84 @@
                 });
 
                 card.innerHTML = `
-                    <div class="flex items-start space-x-3">
-                        <div class="flex flex-col items-center space-y-1 flex-shrink-0 mt-0.5">
-                            <span class="bg-blue-600 text-white font-bold text-[10px] w-5 h-5 flex items-center justify-center rounded-md shadow-sm">
-                                #${index + 1}
-                            </span>
-                            <span class="bg-gray-100 text-gray-500 font-mono text-[9px] px-1 rounded font-bold" title="Orden original del flujo">
-                                ${paso.orden}
-                            </span>
-                        </div>
-                        <div class="space-y-0.5">
-                            <div class="flex items-center space-x-2">
-                                <span class="bg-gray-50 text-gray-600 text-[9px] font-bold px-1.5 py-0.5 rounded border border-gray-100 uppercase tracking-wide">
-                                    ${paso.area || 'UNIDAD'}
+                    <div class="flex items-start justify-between w-full space-x-3">
+                        <div class="flex items-start space-x-3 flex-1 min-w-0">
+                            <div class="flex flex-col items-center space-y-1 flex-shrink-0 mt-0.5">
+                                <span class="bg-blue-600 text-white font-bold text-[10px] w-5 h-5
+                                             flex items-center justify-center rounded-md shadow-sm">
+                                    #${index + 1}
                                 </span>
-                                <span class="text-[10px] text-gray-400 font-medium">${paso.fase || 'Fase Preparatoria'}</span>
+                                <span class="bg-gray-100 text-gray-500 font-mono text-[9px] px-1
+                                             rounded font-bold" title="Orden original del flujo">
+                                    ${paso.orden}
+                                </span>
                             </div>
-                            <h4 class="text-xs font-semibold text-gray-800 leading-relaxed">${paso.nombrePaso}</h4>
+                            <div class="space-y-1.5 flex-1 min-w-0">
+                                <div class="flex items-center space-x-2 flex-wrap gap-y-0.5">
+                                    <span class="bg-gray-50 text-gray-600 text-[9px] font-bold
+                                                 px-1.5 py-0.5 rounded border border-gray-100
+                                                 uppercase tracking-wide">
+                                        ${paso.area || 'UNIDAD'}
+                                    </span>
+                                    <span class="text-[10px] text-gray-400 font-medium">
+                                        ${paso.fase || 'Fase Preparatoria'}
+                                    </span>
+                                </div>
+                                <h4 class="text-xs font-semibold text-gray-800 leading-relaxed">
+                                    ${paso.nombrePaso}
+                                </h4>
+                                ${paso.subpasos && paso.subpasos.length > 0 ? `
+                                <div class="mt-2 pt-2 border-t border-gray-100 space-y-1.5">
+                                    <span class="text-[10px] font-bold text-blue-500 tracking-wide block">
+                                        Sub-pasos (${paso.subpasos.length}):
+                                    </span>
+                                    ${paso.subpasos.map(sub => `
+                                        <div class="bg-gray-50 border border-gray-100 rounded-lg
+                                                    px-2.5 py-2 flex flex-col space-y-0.5">
+                                            <div class="flex items-center space-x-1.5 flex-wrap
+                                                        gap-y-0.5">
+                                                ${sub.medio ? `
+                                                <span class="text-[9px] font-bold text-blue-600
+                                                             uppercase tracking-wide">
+                                                    ${sub.medio}
+                                                </span>
+                                                <span class="text-gray-300 text-[9px]">➔</span>` : ''}
+                                                ${sub.dirigidoA ? `
+                                                <span class="text-[9px] font-bold text-blue-600
+                                                             uppercase tracking-wide">
+                                                    ${sub.dirigidoA}
+                                                </span>` : ''}
+                                            </div>
+                                            <span class="text-[10px] text-gray-600 font-medium
+                                                         leading-snug">
+                                                ${sub.nombreSubpaso || ''}
+                                            </span>
+                                            ${sub.anexos ? `
+                                            <span class="text-[9px] text-gray-400 italic">
+                                                Anexo: ${sub.anexos}
+                                            </span>` : ''}
+                                        </div>
+                                    `).join('')}
+                                </div>` : ''}
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex flex-col space-y-1 items-end">
-                        <button onclick="removerPaso('${paso.id}')" class="text-gray-400 hover:text-red-500 p-1 rounded-lg transition flex-shrink-0" title="Quitar paso">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                        <svg class="w-4 h-4 text-gray-300 pointer-events-none mt-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Arrastrar para mover"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+                        <div class="flex flex-col space-y-1 items-end flex-shrink-0">
+                            <button onclick="removerPaso('${paso.id}')"
+                                    class="text-gray-400 hover:text-red-500 p-1 rounded-lg
+                                           transition flex-shrink-0" title="Quitar paso">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                     viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                            <svg class="w-4 h-4 text-gray-300 pointer-events-none mt-2"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 title="Arrastrar para mover">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                      stroke-width="2" d="M4 8h16M4 16h16"/>
+                            </svg>
+                        </div>
                     </div>
                 `;
                 contenedor.appendChild(card);

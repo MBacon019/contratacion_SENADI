@@ -36,4 +36,25 @@ public class AuthController {
                     .body(Map.of("error", "Credenciales incorrectas o usuario inactivo"));
         }
     }
+
+    @PostMapping("/registro")
+    public ResponseEntity<?> registro(@RequestBody Map<String, String> body) {
+        String nombre   = body.get("nombre");
+        String email    = body.get("email");
+        String password = body.get("password");
+
+        if (nombre == null || email == null || password == null ||
+            nombre.isBlank() || email.isBlank() || password.isBlank()) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", "Todos los campos son obligatorios"));
+        }
+
+        try {
+            Usuario nuevo = usuarioService.registrar(nombre, email, password);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest()
+                .body(Map.of("error", e.getMessage()));
+        }
+    }
 }
