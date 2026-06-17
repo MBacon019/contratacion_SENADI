@@ -697,7 +697,8 @@
                 memorando: document.getElementById('input-memorando').value,
                 observaciones: document.getElementById('input-observaciones').value,
                 archivos: archivosAdjuntosTemporales,
-                completado: estadoSeleccionado === "Completado" || estadoSeleccionado === "Omitido"
+                completado: estadoSeleccionado === "Completado" || estadoSeleccionado === "Omitido",
+                savedAt: new Date().toISOString()
             };
 
             if (indiceSubpasoActual >= 0) {

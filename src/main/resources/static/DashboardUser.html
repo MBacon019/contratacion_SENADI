@@ -197,6 +197,20 @@
     </main>
 
     <script>
+        function diasLaborablesEntre(fecha1, fecha2) {
+            let count = 0;
+            let current = new Date(fecha1);
+            current.setHours(0, 0, 0, 0);
+            const fin = new Date(fecha2);
+            fin.setHours(0, 0, 0, 0);
+            while (current < fin) {
+                current.setDate(current.getDate() + 1);
+                const dow = current.getDay();
+                if (dow !== 0 && dow !== 6) count++;
+            }
+            return count;
+        }
+
         let chartTiemposInstance = null;
         let chartAvanceInstance = null;
         let chartGlobalTiposInstance = null;
@@ -472,7 +486,7 @@
                 if (!fAnt || !fAct) return;
                 const d1 = new Date(fAnt), d2 = new Date(fAct);
                 if (isNaN(d1) || isNaN(d2)) return;
-                const dias = Math.round((d2 - d1) / 86400000);
+                const dias = diasLaborablesEntre(d1, d2);
                 if (dias > 0) {
                     if (!areasData[item.area]) areasData[item.area] = { real: 0 };
                     areasData[item.area].real += dias;
@@ -533,7 +547,7 @@
                 if (!fAnt || !fAct) return null;
                 const d1 = new Date(fAnt), d2 = new Date(fAct);
                 if (isNaN(d1) || isNaN(d2)) return null;
-                const dias = Math.round((d2 - d1) / 86400000);
+                const dias = diasLaborablesEntre(d1, d2);
                 return dias >= 0 ? dias : null;
             });
 

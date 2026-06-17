@@ -136,10 +136,10 @@
                             <label class="block text-[11px] font-bold text-gray-600 uppercase">Elaborado por</label>
                             <select id="select-elaborado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
                                 <option value="">— Seleccionar —</option>
-                                <option>Gonzalo Moncayo</option>
-                                <option>Marco Molina</option>
-                                <option>Juan Pablo Ponce</option>
                                 <option>Emerson Ceracapa</option>
+                                <option>Gonzalo Moncayo</option>
+                                <option>Juan Pablo Ponce</option>
+                                <option>Marco Molina</option>
                                 <option>María Fernanda Pilco</option>
                                 <option>Michael Yanangómez</option>
                                 <option>Miguel Cabrera</option>
@@ -150,10 +150,10 @@
                             <label class="block text-[11px] font-bold text-gray-600 uppercase">Revisado por</label>
                             <select id="select-revisado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
                                 <option value="">— Seleccionar —</option>
-                                <option>Gonzalo Moncayo</option>
-                                <option>Marco Molina</option>
-                                <option>Juan Pablo Ponce</option>
                                 <option>Emerson Ceracapa</option>
+                                <option>Gonzalo Moncayo</option>
+                                <option>Juan Pablo Ponce</option>
+                                <option>Marco Molina</option>
                                 <option>María Fernanda Pilco</option>
                                 <option>Michael Yanangómez</option>
                                 <option>Miguel Cabrera</option>
@@ -167,10 +167,10 @@
                             <label class="block text-[11px] font-bold text-gray-600 uppercase">Aprobado por</label>
                             <select id="select-aprobado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
                                 <option value="">— Seleccionar —</option>
-                                <option>Gonzalo Moncayo</option>
-                                <option>Marco Molina</option>
-                                <option>Juan Pablo Ponce</option>
                                 <option>Emerson Ceracapa</option>
+                                <option>Gonzalo Moncayo</option>
+                                <option>Juan Pablo Ponce</option>
+                                <option>Marco Molina</option>
                                 <option>María Fernanda Pilco</option>
                                 <option>Michael Yanangómez</option>
                                 <option>Miguel Cabrera</option>
@@ -210,12 +210,31 @@
         let umbralActivo = null;
         let tipoContratoActual = '';
 
+        function aplicarColorTipoContrato() {
+            const banner = document.querySelector('.bg-blue-600.text-white.text-center');
+            if (!banner) return;
+            const tipo = tipoContratoActual.toUpperCase();
+            banner.classList.remove('bg-blue-600','bg-amber-500','bg-emerald-600','bg-purple-600');
+            if (tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) {
+                banner.classList.add('bg-blue-600');
+            } else if (tipo.includes('CATÁLOGO') || tipo.includes('CATALOGO')) {
+                banner.classList.add('bg-amber-500');
+            } else if (tipo.includes('SUBASTA')) {
+                banner.classList.add('bg-emerald-600');
+            } else if (tipo.includes('RÉGIMEN') || tipo.includes('REGIMEN')) {
+                banner.classList.add('bg-purple-600');
+            } else {
+                banner.classList.add('bg-blue-600');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             initTema();
             const datosContrato = localStorage.getItem('contratoSeleccionado');
             if (datosContrato) {
                 const contrato = JSON.parse(datosContrato);
                 tipoContratoActual = contrato.nombre || '';
+                aplicarColorTipoContrato();
                 const nombreLimpio = tipoContratoActual.replace("Contrato ", "");
                 document.getElementById('subtitulo-proceso').innerText = nombreLimpio;
             } else {
@@ -223,9 +242,15 @@
                 return;
             }
 
-            // Item 1: Auto-numerar POA
-            const procesos = JSON.parse(localStorage.getItem('instanciaProcesoEnProgreso') || '[]');
-            const siguienteNumero = Array.isArray(procesos) ? procesos.length + 1 : 1;
+            // Item 1: Auto-numerar POA con contador global que nunca retrocede
+            const procesosActuales = JSON.parse(localStorage.getItem('instanciaProcesoEnProgreso') || '[]');
+            const listaActual = Array.isArray(procesosActuales) ? procesosActuales : (procesosActuales ? [procesosActuales] : []);
+
+            let contadorPOA = parseInt(localStorage.getItem('contadorPOA') || '0');
+            if (contadorPOA === 0) {
+                contadorPOA = listaActual.length;
+            }
+            const siguienteNumero = contadorPOA + 1;
             document.getElementById('input-poa').value = siguienteNumero;
 
             // Item 2: Cargar umbral activo
@@ -240,31 +265,37 @@
 
         function actualizarHintUmbral() {
             if (!umbralActivo) return;
-            const monto = umbralActivo.montoUmbral;
+            const montoInfima = umbralActivo.montoUmbral;
+            const montoSubasta = umbralActivo.montoSubastaMinimo != null
+                ? umbralActivo.montoSubastaMinimo
+                : umbralActivo.montoUmbral;
             const hint = document.getElementById('hint-umbral');
             const tipo = tipoContratoActual.toUpperCase();
             if (tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) {
-                hint.textContent = `Ínfima Cuantía: máximo $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
+                hint.textContent = `Ínfima Cuantía: máximo $${montoInfima.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
             } else if (tipo.includes('SUBASTA')) {
-                hint.textContent = `Subasta: mínimo $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
+                hint.textContent = `Subasta: mínimo $${montoSubasta.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
             } else {
-                hint.textContent = `Umbral referencial: $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})} (año ${umbralActivo.anio || ''})`;
+                hint.textContent = `Umbral referencial: $${montoInfima.toLocaleString('es-EC', {minimumFractionDigits: 2})} (año ${umbralActivo.anio || ''})`;
             }
         }
 
         function validarAsignacion() {
             if (!umbralActivo) return;
             const valor = parseFloat(document.getElementById('input-asignacion').value) || 0;
-            const monto = umbralActivo.montoUmbral;
+            const montoInfima = umbralActivo.montoUmbral;
+            const montoSubasta = umbralActivo.montoSubastaMinimo != null
+                ? umbralActivo.montoSubastaMinimo
+                : umbralActivo.montoUmbral;
             const tipo = tipoContratoActual.toUpperCase();
             const alerta = document.getElementById('alerta-asignacion');
             const txtAlerta = document.getElementById('txt-alerta-asignacion');
             let error = '';
 
-            if ((tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) && valor > monto) {
-                error = `La Ínfima Cuantía no puede superar $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
-            } else if (tipo.includes('SUBASTA') && valor > 0 && valor <= monto) {
-                error = `La Subasta debe ser mayor a $${monto.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
+            if ((tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) && valor > montoInfima) {
+                error = `La Ínfima Cuantía no puede superar $${montoInfima.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
+            } else if (tipo.includes('SUBASTA') && valor > 0 && valor <= montoSubasta) {
+                error = `La Subasta debe ser mayor a $${montoSubasta.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
             }
 
             if (error) {
@@ -295,6 +326,34 @@
                 return;
             }
 
+            // Validar campos obligatorios
+            const fActividad = document.getElementById('input-actividad');
+            const fAsignacion = document.getElementById('input-asignacion');
+            const fElaborado = document.getElementById('select-elaborado');
+            const fRevisado = document.getElementById('select-revisado');
+            const fAprobado = document.getElementById('select-aprobado');
+            const fAdmin = document.getElementById('select-admin-contrato');
+            const fTecnico = document.getElementById('input-tecnico');
+            [fActividad, fAsignacion, fElaborado, fRevisado, fAprobado, fAdmin, fTecnico].forEach(c => c.classList.remove('border-red-400'));
+
+            let primerError = null;
+            const marcar = (campo) => { campo.classList.add('border-red-400'); if (!primerError) primerError = campo; };
+
+            if (!fActividad.value.trim()) marcar(fActividad);
+            if (!(parseFloat(fAsignacion.value) > 0)) marcar(fAsignacion);
+            if (!fElaborado.value) marcar(fElaborado);
+            if (!fRevisado.value) marcar(fRevisado);
+            if (!fAprobado.value) marcar(fAprobado);
+            if (!fAdmin.value) marcar(fAdmin);
+            if (!fTecnico.value.trim()) marcar(fTecnico);
+
+            if (primerError) {
+                document.getElementById('txt-alerta-asignacion').textContent = 'Por favor completa todos los campos obligatorios antes de continuar.';
+                document.getElementById('alerta-asignacion').classList.remove('hidden');
+                primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
             // Item 4: Guardar también nombre de item y descripción de CPC
             const detallesActividad = {
                 noPoa: document.getElementById('input-poa').value,
@@ -319,7 +378,16 @@
             const contratoActual = localStorage.getItem('contratoSeleccionado');
             if (contratoActual) localStorage.setItem('contratoSeleccionado', contratoActual);
 
+            localStorage.setItem('contadorPOA', siguienteNumero);
             window.location.href = '/configurar-flujo.html';
+        });
+
+        // Limpiar borde rojo al editar cada campo obligatorio
+        ['input-actividad', 'input-asignacion', 'input-tecnico'].forEach(id => {
+            document.getElementById(id).addEventListener('input', function() { this.classList.remove('border-red-400'); });
+        });
+        ['select-elaborado', 'select-revisado', 'select-aprobado', 'select-admin-contrato'].forEach(id => {
+            document.getElementById(id).addEventListener('change', function() { this.classList.remove('border-red-400'); });
         });
     </script>
 
