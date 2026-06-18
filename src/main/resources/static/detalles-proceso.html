@@ -6,50 +6,327 @@
     <title>SCP - Detalles del Proceso</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .tema-oscuro { background-color: #0f172a; color: #e2e8f0; }
-        .tema-oscuro .bg-white, .tema-oscuro .bg-gray-50, .tema-oscuro .bg-gray-100, .tema-oscuro .bg-blue-50, .tema-oscuro .bg-amber-50 { background-color: #111827 !important; color: #e2e8f0 !important; }
-        .tema-oscuro .text-gray-900, .tema-oscuro .text-gray-800, .tema-oscuro .text-gray-700, .tema-oscuro .text-gray-600, .tema-oscuro .text-gray-500, .tema-oscuro .text-gray-400 { color: #cbd5e1 !important; }
-        .tema-oscuro .text-blue-600 { color: #7dd3fc !important; }
-        .tema-oscuro .border-gray-200, .tema-oscuro .border-gray-100, .tema-oscuro .border-blue-100, .tema-oscuro .border-blue-200, .tema-oscuro .border-amber-200 { border-color: #334155 !important; }
-        .tema-oscuro input, .tema-oscuro select, .tema-oscuro textarea { background-color: #1e293b !important; color: #e2e8f0 !important; border-color: #475569 !important; }
-        .tema-oscuro input::placeholder, .tema-oscuro textarea::placeholder { color: #94a3b8 !important; }
-        .tema-oscuro .hover\:bg-gray-50:hover { background-color: #1e293b !important; }
+        * { box-sizing: border-box; }
+
+        body {
+            background: #eef2f9;
+            font-family: 'Segoe UI', 'Inter', sans-serif;
+            margin: 0; color: #1e293b;
+        }
+
+        /* ── Dark mode (compatible con lógica original) ── */
+        .tema-oscuro { background-color: #0f172a !important; color: #e2e8f0; }
+        .tema-oscuro .card-section { background: #1e293b !important; border-color: #334155 !important; }
+        .tema-oscuro .card-section h3 { color: #f1f5f9 !important; }
+        .tema-oscuro .lbl { color: #94a3b8 !important; }
+        .tema-oscuro input, .tema-oscuro select, .tema-oscuro textarea {
+            background: #0f172a !important; color: #e2e8f0 !important; border-color: #475569 !important;
+        }
+        .tema-oscuro input::placeholder, .tema-oscuro textarea::placeholder { color: #64748b !important; }
+        .tema-oscuro .poa-chip { background: #334155 !important; border-color: #475569 !important; color: #cbd5e1 !important; }
+        .tema-oscuro .tag-auto { background: #1d3a6b !important; color: #93c5fd !important; }
+        .tema-oscuro .hint { color: #64748b !important; }
+        .tema-oscuro .resp-divider { border-color: #334155 !important; }
+        .tema-oscuro .bg-indigo-50 { background: #1e3a5f !important; }
+        .tema-oscuro .border-indigo-200 { border-color: #4338ca !important; }
+        .tema-oscuro .bg-blue-50 { background: #1e3558 !important; }
+        .tema-oscuro .border-blue-200 { border-color: #2563eb !important; }
+        .tema-oscuro #dropdown-cpc, .tema-oscuro #dropdown-item {
+            background: #1e293b !important; border-color: #334155 !important;
+        }
+
+        /* ── Page layout ── */
+        .page-outer {
+            width: 100%;
+            padding: 0 40px 60px;
+        }
+
+        /* ── Top header ── */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 22px 0 14px;
+        }
+        .back-btn {
+            display: flex; align-items: center; gap: 6px;
+            background: none; border: none; cursor: pointer;
+            color: #64748b; font-size: 13px; font-weight: 600;
+            padding: 0; transition: color .15s;
+        }
+        .back-btn:hover { color: #0f172a; }
+        .proceso-title {
+            font-size: 18px; font-weight: 800;
+            color: #0f172a; margin: 0 0 18px;
+            letter-spacing: -.01em;
+        }
+
+        /* ── Banner tipo proceso ── */
+        .banner {
+            border-radius: 14px;
+            padding: 22px 32px;
+            margin-bottom: 16px;
+            display: flex; align-items: center; gap: 16px;
+            background: #2563eb;
+        }
+        .banner-icon {
+            width: 40px; height: 40px; flex-shrink: 0;
+            background: rgba(255,255,255,.18); border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .banner h3 {
+            font-size: 15px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .07em;
+            color: #fff; margin: 0 0 3px;
+        }
+        .banner p { font-size: 12px; color: rgba(255,255,255,.8); margin: 0; }
+
+        /* ── Cards ── */
+        .card-section {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 14px;
+            overflow: visible;
+        }
+        .card-header {
+            padding: 13px 24px 11px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .card-header h3 {
+            font-size: 11.5px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .08em;
+            color: #475569; margin: 0;
+        }
+        .card-body { padding: 20px 24px; }
+
+        /* ── Field label ── */
+        .lbl {
+            display: block;
+            font-size: 10.5px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: .07em;
+            color: #64748b; margin-bottom: 5px;
+        }
+
+        /* ── Section number badges ── */
+        .card-header-inner {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-num {
+            width: 22px; height: 22px; flex-shrink: 0;
+            background: var(--color-tipo, #2563eb); color: #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 800; line-height: 1;
+            transition: background .3s;
+        }
+
+        /* ── Inputs base ── */
+        .inp {
+            width: 100%;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            padding: 9px 14px;
+            font-size: 13.5px;
+            background: #fff; color: #111827;
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+            font-family: inherit;
+        }
+        .inp:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.12); }
+        .inp.border-red-400, .inp.error { border-color: #f87171 !important; }
+        textarea.inp { resize: none; }
+        select.inp {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 11px center;
+            padding-right: 34px; cursor: pointer;
+        }
+
+        /* ── POA readonly chip ── */
+        .poa-chip {
+            display: flex; align-items: center; gap: 8px;
+            background: #f8fafc; border: 1.5px solid #e2e8f0;
+            border-radius: 10px; padding: 9px 14px;
+        }
+        .poa-num { font-size: 14px; font-weight: 800; font-family: monospace; color: #374151; }
+        .tag-auto {
+            font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+            background: #dbeafe; color: #1d4ed8;
+            border-radius: 6px; padding: 2px 8px; white-space: nowrap;
+        }
+
+        /* ── Hint / helper ── */
+        .hint { font-size: 11px; color: #94a3b8; margin: 4px 0 0; }
+        .helper-a { font-size: 11px; font-weight: 700; color: #6366f1; text-decoration: none; }
+        .helper-a:hover { text-decoration: underline; }
+        .helper-a-blue { color: #3b82f6; }
+
+        /* ── Autocomplete dropdowns ── */
+        .ac-dropdown {
+            position: absolute; z-index: 50; width: 100%;
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.1);
+            max-height: 210px; overflow-y: auto;
+            margin-top: 4px; display: none;
+            list-style: none; padding: 0; margin-left: 0;
+        }
+        .ac-dropdown li {
+            padding: 9px 14px; font-size: 12.5px; cursor: pointer;
+            border-bottom: 1px solid #f8fafc;
+            display: flex; justify-content: space-between; align-items: center; gap: 8px;
+        }
+        .ac-dropdown li:last-child { border-bottom: none; }
+        .ac-dropdown li:hover { background: #f0f7ff; }
+
+        /* ── Item/CPC selection preview ── */
+        .sel-preview {
+            margin-top: 7px; border-radius: 9px; padding: 9px 12px;
+            display: none; justify-content: space-between;
+            align-items: flex-start; gap: 8px;
+        }
+        .sel-preview-btn {
+            background: none; border: none; cursor: pointer; padding: 0;
+            color: #9ca3af; flex-shrink: 0;
+        }
+        .sel-preview-btn:hover { color: #ef4444; }
+
+        /* ── Error / alerta ── */
+        .alerta-error {
+            background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: 10px; padding: 10px 14px;
+            font-size: 12.5px; color: #b91c1c;
+            align-items: flex-start; gap: 8px;
+            display: none;
+        }
+
+        /* ── $ prefix wrapper ── */
+        .inp-prefix-wrap { position: relative; }
+        .inp-prefix-wrap .prefix-sym {
+            position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+            color: #9ca3af; font-size: 13px; pointer-events: none;
+        }
+        .inp-prefix-wrap .inp { padding-left: 24px; }
+
+        /* ── Responsables divider title ── */
+        .resp-title {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; font-weight: 700; color: #374151;
+            margin: 0 0 16px; padding-top: 4px;
+        }
+
+        /* ── Grid helpers — responsive ── */
+        .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+        /* ── Tablet ≤ 768px ── */
+        @media (max-width: 768px) {
+            .page-outer { padding: 0 20px 48px; }
+            .banner { padding: 16px 20px; border-radius: 12px; }
+            .banner h3 { font-size: 13px; }
+            .card-body { padding: 16px 18px; }
+            .card-header { padding: 12px 18px 10px; }
+            .g2 { grid-template-columns: 1fr; gap: 14px; }
+            .g3 { grid-template-columns: 1fr 1fr; gap: 14px; }
+            .proceso-title { font-size: 16px; margin-bottom: 14px; }
+            .footer-bar { padding: 12px 18px; }
+        }
+
+        /* ── Móvil ≤ 480px ── */
+        @media (max-width: 480px) {
+            .page-outer { padding: 0 12px 40px; width: 100%; }
+            .banner { padding: 14px 16px; gap: 12px; border-radius: 10px; }
+            .banner-icon { width: 34px; height: 34px; }
+            .banner h3 { font-size: 12px; letter-spacing: .05em; }
+            .banner p { font-size: 11px; }
+            .card-body { padding: 14px 14px; }
+            .card-header { padding: 11px 14px 9px; }
+            .g2 { grid-template-columns: 1fr; gap: 12px; }
+            .g3 { grid-template-columns: 1fr; gap: 12px; }
+            .proceso-title { font-size: 15px; }
+            .footer-bar {
+                padding: 12px 14px;
+                flex-direction: column-reverse;
+                gap: 10px;
+            }
+            .btn-cancel, .btn-submit { width: 100%; justify-content: center; }
+            .top-header { padding: 16px 0 10px; }
+        }
+
+        /* ── Footer bar ── */
+        .footer-bar {
+            background: #fff; border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            padding: 14px 24px;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 4px;
+        }
+        .btn-cancel {
+            background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 10px;
+            padding: 9px 20px; font-size: 12.5px; font-weight: 700;
+            color: #475569; cursor: pointer; font-family: inherit;
+        }
+        .btn-cancel:hover { background: #e2e8f0; }
+        .btn-submit {
+            background: #2563eb; border: none; border-radius: 10px;
+            padding: 10px 22px; font-size: 12.5px; font-weight: 700;
+            color: #fff; cursor: pointer; font-family: inherit;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-submit:hover { background: #1d4ed8; }
     </style>
 </head>
-<body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
+<body>
 
-    <header class="max-w-4xl mx-auto pt-6 px-4 flex justify-between items-center">
-        <button onclick="regresarAlDashboard()" class="flex items-center space-x-2 text-gray-600 hover:text-gray-900 font-medium transition text-sm">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            <span>Detalles del Proceso</span>
+<div class="page-outer">
+
+    <!-- ── Header ── -->
+    <div class="top-header">
+        <button onclick="regresarAlDashboard()" class="back-btn">
+            <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Detalles del Proceso
         </button>
-    </header>
+    </div>
+    <p id="subtitulo-proceso" class="proceso-title">Cargando proceso...</p>
 
-    <div class="max-w-4xl mx-auto px-4 mt-2 mb-4">
-        <h2 id="subtitulo-proceso" class="text-xl font-bold text-gray-900 tracking-tight">Cargando proceso...</h2>
+    <!-- ── Banner ── -->
+    <div id="page-banner" class="banner">
+        <div class="banner-icon">
+            <svg width="20" height="20" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <div>
+            <h3>Actividad Específica</h3>
+            <p>Define el nombre y detalles principales de este proceso</p>
+        </div>
     </div>
 
-    <main class="max-w-4xl mx-auto px-4 pb-12">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+    <form id="form-actividad">
 
-            <div class="bg-blue-600 text-white text-center py-6 px-4 space-y-1">
-                <h3 class="text-lg font-bold uppercase tracking-wide">Actividad Específica</h3>
-                <p class="text-xs text-blue-100">Define el nombre y detalles principales de este proceso</p>
+        <!-- ══ CARD 1: Detalles Generales ══ -->
+        <div class="card-section">
+            <div class="card-header">
+                <div class="card-header-inner">
+                    <span class="section-num">1</span>
+                    <h3>Detalles Generales</h3>
+                </div>
             </div>
+            <div class="card-body">
 
-            <form id="form-actividad" class="p-6 space-y-6">
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="space-y-1.5">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">No. de actividad en POA</label>
-                        <div class="flex items-center space-x-2">
-                            <input id="input-poa" type="text" readonly class="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 text-sm text-gray-500 cursor-not-allowed font-mono font-bold">
-                            <span class="text-[10px] text-gray-400 whitespace-nowrap">Auto-generado</span>
+                <div class="g2" style="margin-bottom:16px; align-items:start;">
+                    <!-- POA -->
+                    <div>
+                        <label class="lbl">No. de actividad en POA</label>
+                        <div class="poa-chip">
+                            <input id="input-poa" type="text" readonly
+                                   style="background:none;border:none;outline:none;font-weight:800;font-family:monospace;font-size:14px;color:#374151;width:100%;padding:0;">
+                            <span class="tag-auto">Auto-generado</span>
                         </div>
                     </div>
-                    <div class="space-y-1.5">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Estado</label>
-                        <select id="select-estado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    <!-- Estado -->
+                    <div>
+                        <label class="lbl">Estado</label>
+                        <select id="select-estado" class="inp">
                             <option value="nueva">Nueva</option>
                             <option value="en_proceso">En Proceso</option>
                             <option value="aprobada">Aprobada</option>
@@ -57,85 +334,107 @@
                     </div>
                 </div>
 
-                <div class="space-y-1.5">
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Actividad Específica *</label>
-                    <textarea id="input-actividad" rows="3" placeholder="Ejemplo: SERVICIO DE MOVING DE LA INFRAESTRUCTURA DE SERVIDORES DE PRODUCCIÓN DEL SENADI" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition resize-none"></textarea>
-                    <p class="text-[11px] text-gray-400 mt-0.5">Describe de manera clara y específica el objeto de la contratación.</p>
+                <!-- Actividad específica -->
+                <div>
+                    <label class="lbl">Actividad Específica *</label>
+                    <textarea id="input-actividad" rows="3"
+                        placeholder="Ejemplo: SERVICIO DE MOVING DE LA INFRAESTRUCTURA DE SERVIDORES DE PRODUCCIÓN DEL SENADI"
+                        class="inp"></textarea>
+                    <p class="hint">Describe de manera clara y específica el objeto de la contratación.</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="space-y-1.5 relative">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Item</label>
-                        <input id="input-item" type="text" placeholder="Ej: 1.1.01.01 o nombre del ítem"
-                               autocomplete="off"
-                               class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                               oninput="buscarItem(this.value)" onblur="setTimeout(()=>cerrarDropdownItem(),200)">
-                        <ul id="dropdown-item"
-                            class="hidden absolute z-50 w-full bg-white border border-gray-200 rounded-xl shadow-lg mt-0.5 max-h-52 overflow-y-auto text-xs">
-                        </ul>
-                        <div id="item-seleccionado" class="hidden mt-1.5 bg-indigo-50 border border-indigo-200 rounded-xl px-3.5 py-2.5 flex justify-between items-start gap-2">
-                            <div class="min-w-0">
-                                <span id="item-sel-codigo" class="text-sm font-bold text-indigo-700 font-mono"></span>
-                                <p id="item-sel-nombre" class="text-xs text-gray-600 mt-0.5 leading-relaxed break-words"></p>
+            </div>
+        </div>
+
+        <!-- ══ CARD 2: Financiamiento y Clasificación ══ -->
+        <div class="card-section">
+            <div class="card-header">
+                <div class="card-header-inner">
+                    <span class="section-num">2</span>
+                    <h3>Financiamiento y Clasificación</h3>
+                </div>
+            </div>
+            <div class="card-body">
+
+                <div class="g2" style="margin-bottom:16px; align-items:start;">
+
+                    <!-- ITEM -->
+                    <div style="position:relative;">
+                        <label class="lbl">Item</label>
+                        <input id="input-item" type="text"
+                               placeholder="Ej: 1.1.01.01 o nombre del ítem"
+                               autocomplete="off" class="inp"
+                               oninput="buscarItem(this.value)"
+                               onblur="setTimeout(()=>cerrarDropdownItem(),200)">
+                        <ul id="dropdown-item" class="ac-dropdown"></ul>
+                        <div id="item-seleccionado" class="sel-preview bg-indigo-50 border border-indigo-200">
+                            <div style="min-width:0;">
+                                <span id="item-sel-codigo" style="font-size:13px;font-weight:800;color:#4338ca;font-family:monospace;display:block;"></span>
+                                <p id="item-sel-nombre" style="font-size:11.5px;color:#6b7280;margin:3px 0 0;line-height:1.4;word-break:break-word;"></p>
                             </div>
-                            <button type="button" onclick="limpiarItem()" class="text-gray-400 hover:text-red-500 flex-shrink-0 mt-0.5 transition" title="Quitar selección">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <button type="button" onclick="limpiarItem()" class="sel-preview-btn" title="Quitar selección">
+                                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
-                        <p class="text-[11px] text-gray-400 mt-1">
+                        <p class="hint" style="display:flex;flex-wrap:wrap;gap:3px;align-items:center;">
                             ¿No conoces tu código de ítem presupuestario?
-                            <a href="https://www.finanzas.gob.ec/wp-content/uploads/downloads/2025/02/Clasificador-Presupuestario-actualizado_05_02_2025_vf-1.pdf"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="text-indigo-500 hover:text-indigo-700 font-semibold hover:underline transition">
+                            <a href="https://www.finanzas.gob.ec/wp-content/uploads/2026/01/anexo_clasificador_presupuestario_2025_vf.pdf"
+                               target="_blank" rel="noopener noreferrer" class="helper-a">
                                 Ver clasificador presupuestario →
                             </a>
                         </p>
                     </div>
-                    <div class="space-y-1.5 relative">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">CPC</label>
-                        <input id="input-cpc" type="text" placeholder="Buscar código o descripción CPC..."
-                               autocomplete="off"
-                               class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
-                               oninput="buscarCPC(this.value)" onblur="setTimeout(()=>cerrarDropdownCPC(),200)">
-                        <ul id="dropdown-cpc"
-                            class="hidden absolute z-50 w-full bg-white border border-gray-200 rounded-xl shadow-lg mt-0.5 max-h-52 overflow-y-auto text-xs">
-                        </ul>
-                        <div id="cpc-seleccionado" class="hidden mt-1.5 bg-blue-50 border border-blue-200 rounded-xl px-3.5 py-2.5 flex justify-between items-start gap-2">
-                            <div class="min-w-0">
-                                <span id="cpc-sel-codigo" class="text-sm font-bold text-blue-700 font-mono"></span>
-                                <p id="cpc-sel-desc" class="text-xs text-gray-600 mt-0.5 leading-relaxed break-words"></p>
+
+                    <!-- CPC -->
+                    <div style="position:relative;">
+                        <label class="lbl">CPC</label>
+                        <input id="input-cpc" type="text"
+                               placeholder="Buscar código o descripción CPC..."
+                               autocomplete="off" class="inp"
+                               oninput="buscarCPC(this.value)"
+                               onblur="setTimeout(()=>cerrarDropdownCPC(),200)">
+                        <ul id="dropdown-cpc" class="ac-dropdown"></ul>
+                        <div id="cpc-seleccionado" class="sel-preview bg-blue-50 border border-blue-200">
+                            <div style="min-width:0;">
+                                <span id="cpc-sel-codigo" style="font-size:13px;font-weight:800;color:#1d4ed8;font-family:monospace;display:block;"></span>
+                                <p id="cpc-sel-desc" style="font-size:11.5px;color:#6b7280;margin:3px 0 0;line-height:1.4;word-break:break-word;"></p>
                             </div>
-                            <button type="button" onclick="limpiarCPC()" class="text-gray-400 hover:text-red-500 flex-shrink-0 mt-0.5 transition" title="Quitar selección">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <button type="button" onclick="limpiarCPC()" class="sel-preview-btn" title="Quitar selección">
+                                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
-                        <p class="text-[11px] text-gray-400 mt-1">
+                        <p class="hint" style="display:flex;flex-wrap:wrap;gap:3px;align-items:center;">
                             ¿No conoces tu código CPC?
                             <a href="https://www.compraspublicas.gob.ec/ProcesoContratacion/compras/RCC/RccFrmBuscarCpcEnCatalogo.cpe"
-                               target="_blank"
-                               rel="noopener noreferrer"
-                               class="text-blue-500 hover:text-blue-700 font-semibold hover:underline transition">
+                               target="_blank" rel="noopener noreferrer" class="helper-a helper-a-blue">
                                 Búscalo aquí →
                             </a>
                         </p>
                     </div>
+
                 </div>
 
-                <div id="alerta-asignacion" class="hidden bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl px-4 py-3 flex items-start space-x-2">
-                    <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <!-- Alerta asignación -->
+                <div id="alerta-asignacion" class="alerta-error">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span id="txt-alerta-asignacion"></span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="space-y-1.5">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">$ Asignación Presupuestaria</label>
-                        <input id="input-asignacion" type="number" step="0.01" placeholder="$ 0.00" oninput="validarAsignacion()" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
-                        <p id="hint-umbral" class="text-[11px] text-gray-400"></p>
+                <div class="g2" style="margin-top:16px; align-items:start;">
+                    <!-- Asignación -->
+                    <div>
+                        <label class="lbl">$ Asignación Presupuestaria</label>
+                        <div class="inp-prefix-wrap">
+                            <span class="prefix-sym">$</span>
+                            <input id="input-asignacion" type="number" step="0.01" placeholder="0.00"
+                                   oninput="validarAsignacion()" class="inp">
+                        </div>
+                        <p id="hint-umbral" class="hint"></p>
                     </div>
-                    <div class="space-y-1.5">
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Cuatrimestre</label>
-                        <select id="select-cuatrimestre" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+                    <!-- Cuatrimestre -->
+                    <div>
+                        <label class="lbl">Cuatrimestre</label>
+                        <select id="select-cuatrimestre" class="inp">
                             <option value="C1">C1</option>
                             <option value="C2">C2</option>
                             <option value="C3">C3</option>
@@ -143,376 +442,379 @@
                     </div>
                 </div>
 
-                <div class="pt-2 border-t border-gray-100 space-y-4">
-                    <div class="flex items-center space-x-2 text-gray-800">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        <h4 class="text-sm font-bold tracking-wide">Responsables del Proceso</h4>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="block text-[11px] font-bold text-gray-600 uppercase">Elaborado por</label>
-                            <select id="select-elaborado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
-                                <option value="">— Seleccionar —</option>
-                                <option>Emerson Ceracapa</option>
-                                <option>Gonzalo Moncayo</option>
-                                <option>Juan Pablo Ponce</option>
-                                <option>Marco Molina</option>
-                                <option>María Fernanda Pilco</option>
-                                <option>Michael Yanangómez</option>
-                                <option>Miguel Cabrera</option>
-                                <option>Paul Orozco</option>
-                            </select>
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="block text-[11px] font-bold text-gray-600 uppercase">Revisado por</label>
-                            <select id="select-revisado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
-                                <option value="">— Seleccionar —</option>
-                                <option>Emerson Ceracapa</option>
-                                <option>Gonzalo Moncayo</option>
-                                <option>Juan Pablo Ponce</option>
-                                <option>Marco Molina</option>
-                                <option>María Fernanda Pilco</option>
-                                <option>Michael Yanangómez</option>
-                                <option>Miguel Cabrera</option>
-                                <option>Paul Orozco</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="space-y-1.5">
-                            <label class="block text-[11px] font-bold text-gray-600 uppercase">Aprobado por</label>
-                            <select id="select-aprobado" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-white">
-                                <option value="">— Seleccionar —</option>
-                                <option>Emerson Ceracapa</option>
-                                <option>Gonzalo Moncayo</option>
-                                <option>Juan Pablo Ponce</option>
-                                <option>Marco Molina</option>
-                                <option>María Fernanda Pilco</option>
-                                <option>Michael Yanangómez</option>
-                                <option>Miguel Cabrera</option>
-                                <option>Paul Orozco</option>
-                            </select>
-                        </div>
-                        <div class="space-y-1.5">
-                            <label class="block text-[11px] font-bold text-gray-600 uppercase">Admin. de Contrato / Orden</label>
-                            <select id="select-admin-contrato" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:ring-2 focus:ring-blue-500/20">
-                                <option value="">— Seleccionar —</option>
-                                <option>Emerson Ceracapa</option>
-                                <option>Gonzalo Moncayo</option>
-                                <option>Juan Pablo Ponce</option>
-                                <option>Marco Molina</option>
-                                <option>María Fernanda Pilco</option>
-                                <option>Michael Yanangómez</option>
-                                <option>Miguel Cabrera</option>
-                                <option>Paul Orozco</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="space-y-1.5">
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase">Técnico Afín</label>
-                        <input id="input-tecnico" type="text" placeholder="Nombre completo" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500/20">
-                    </div>
-                </div>
-
-                <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
-                    <button type="button" onclick="regresarAlDashboard()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2.5 px-5 rounded-xl transition">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-5 rounded-xl shadow-sm hover:shadow transition flex items-center space-x-2">
-                        <span>Continuar a Configuración</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                    </button>
-                </div>
-
-            </form>
+            </div>
         </div>
-    </main>
 
-    <script>
-        let umbralActivo = null;
-        let tipoContratoActual = '';
-        let siguienteNumero = 1;
+        <!-- ══ CARD 3: Responsables ══ -->
+        <div class="card-section">
+            <div class="card-header">
+                <div class="card-header-inner">
+                    <span class="section-num">3</span>
+                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:#64748b;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <h3>Responsables del Proceso</h3>
+                </div>
+            </div>
+            <div class="card-body">
 
-        function aplicarColorTipoContrato() {
-            const banner = document.querySelector('.bg-blue-600.text-white.text-center');
-            if (!banner) return;
-            const tipo = tipoContratoActual.toUpperCase();
-            banner.classList.remove('bg-blue-600','bg-amber-500','bg-emerald-600','bg-purple-600');
-            if (tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) {
-                banner.classList.add('bg-blue-600');
-            } else if (tipo.includes('CATÁLOGO') || tipo.includes('CATALOGO')) {
-                banner.classList.add('bg-amber-500');
-            } else if (tipo.includes('SUBASTA')) {
-                banner.classList.add('bg-emerald-600');
-            } else if (tipo.includes('RÉGIMEN') || tipo.includes('REGIMEN')) {
-                banner.classList.add('bg-purple-600');
-            } else {
-                banner.classList.add('bg-blue-600');
-            }
+                <div class="g3" style="margin-bottom:16px; align-items:start;">
+                    <div>
+                        <label class="lbl">Elaborado por</label>
+                        <select id="select-elaborado" class="inp">
+                            <option value="">— Seleccionar —</option>
+                            <option>Emerson Ceracapa</option>
+                            <option>Gonzalo Moncayo</option>
+                            <option>Juan Pablo Ponce</option>
+                            <option>Marco Molina</option>
+                            <option>María Fernanda Pilco</option>
+                            <option>Michael Yanangómez</option>
+                            <option>Miguel Cabrera</option>
+                            <option>Paul Orozco</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="lbl">Revisado por</label>
+                        <select id="select-revisado" class="inp">
+                            <option value="">— Seleccionar —</option>
+                            <option>Emerson Ceracapa</option>
+                            <option>Gonzalo Moncayo</option>
+                            <option>Juan Pablo Ponce</option>
+                            <option>Marco Molina</option>
+                            <option>María Fernanda Pilco</option>
+                            <option>Michael Yanangómez</option>
+                            <option>Miguel Cabrera</option>
+                            <option>Paul Orozco</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="lbl">Aprobado por</label>
+                        <select id="select-aprobado" class="inp">
+                            <option value="">— Seleccionar —</option>
+                            <option>Emerson Ceracapa</option>
+                            <option>Gonzalo Moncayo</option>
+                            <option>Juan Pablo Ponce</option>
+                            <option>Marco Molina</option>
+                            <option>María Fernanda Pilco</option>
+                            <option>Michael Yanangómez</option>
+                            <option>Miguel Cabrera</option>
+                            <option>Paul Orozco</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="g2" style="align-items:start;">
+                    <div>
+                        <label class="lbl">Admin. de Contrato / Orden</label>
+                        <select id="select-admin-contrato" class="inp">
+                            <option value="">— Seleccionar —</option>
+                            <option>Emerson Ceracapa</option>
+                            <option>Gonzalo Moncayo</option>
+                            <option>Juan Pablo Ponce</option>
+                            <option>Marco Molina</option>
+                            <option>María Fernanda Pilco</option>
+                            <option>Michael Yanangómez</option>
+                            <option>Miguel Cabrera</option>
+                            <option>Paul Orozco</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="lbl">Técnico Afín</label>
+                        <input id="input-tecnico" type="text" placeholder="Nombre completo" class="inp">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ══ Footer ══ -->
+        <div class="footer-bar">
+            <button type="button" onclick="regresarAlDashboard()" class="btn-cancel">Cancelar</button>
+            <button type="submit" class="btn-submit">
+                <span>Continuar a Configuración</span>
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+        </div>
+
+    </form>
+</div>
+
+<!-- ═══════════════ SCRIPTS ORIGINALES (sin modificar) ═══════════════ -->
+<script>
+    let umbralActivo = null;
+    let tipoContratoActual = '';
+    let siguienteNumero = 1;
+
+    function aplicarColorTipoContrato() {
+        const banner = document.getElementById('page-banner');
+        if (!banner) return;
+        const tipo = tipoContratoActual.toUpperCase();
+        let color = '#2563eb';
+        if (tipo.includes('ÍNFIMA') || tipo.includes('INFIMA'))         color = '#2563eb';
+        else if (tipo.includes('CATÁLOGO') || tipo.includes('CATALOGO')) color = '#d97706';
+        else if (tipo.includes('SUBASTA'))                               color = '#059669';
+        else if (tipo.includes('RÉGIMEN') || tipo.includes('REGIMEN'))   color = '#7c3aed';
+
+        banner.style.background = color;
+        // Propagar color a los números de sección y al botón submit
+        document.documentElement.style.setProperty('--color-tipo', color);
+        document.querySelectorAll('.section-num').forEach(el => el.style.background = color);
+        const btnSubmit = document.querySelector('.btn-submit');
+        if (btnSubmit) btnSubmit.style.background = color;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        initTema();
+        const datosContrato = localStorage.getItem('contratoSeleccionado');
+        if (datosContrato) {
+            const contrato = JSON.parse(datosContrato);
+            tipoContratoActual = contrato.nombre || '';
+            aplicarColorTipoContrato();
+            const nombreLimpio = tipoContratoActual.replace("Contrato ", "");
+            document.getElementById('subtitulo-proceso').innerText = nombreLimpio;
+        } else {
+            regresarAlDashboard();
+            return;
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            initTema();
-            const datosContrato = localStorage.getItem('contratoSeleccionado');
-            if (datosContrato) {
-                const contrato = JSON.parse(datosContrato);
-                tipoContratoActual = contrato.nombre || '';
-                aplicarColorTipoContrato();
-                const nombreLimpio = tipoContratoActual.replace("Contrato ", "");
-                document.getElementById('subtitulo-proceso').innerText = nombreLimpio;
-            } else {
-                regresarAlDashboard();
-                return;
-            }
+        // Item 1: Auto-numerar POA con contador global que nunca retrocede
+        const procesosActuales = JSON.parse(localStorage.getItem('instanciaProcesoEnProgreso') || '[]');
+        const listaActual = Array.isArray(procesosActuales) ? procesosActuales : (procesosActuales ? [procesosActuales] : []);
 
-            // Item 1: Auto-numerar POA con contador global que nunca retrocede
-            const procesosActuales = JSON.parse(localStorage.getItem('instanciaProcesoEnProgreso') || '[]');
-            const listaActual = Array.isArray(procesosActuales) ? procesosActuales : (procesosActuales ? [procesosActuales] : []);
+        let contadorPOA = parseInt(localStorage.getItem('contadorPOA') || '0');
+        if (contadorPOA === 0) {
+            contadorPOA = listaActual.length;
+        }
+        siguienteNumero = contadorPOA + 1;
+        document.getElementById('input-poa').value = siguienteNumero;
 
-            let contadorPOA = parseInt(localStorage.getItem('contadorPOA') || '0');
-            if (contadorPOA === 0) {
-                contadorPOA = listaActual.length;
-            }
-            siguienteNumero = contadorPOA + 1;
-            document.getElementById('input-poa').value = siguienteNumero;
+        // Item 2: Cargar umbral activo
+        try {
+            const resp = await fetch('/api/umbrales/activo');
+            umbralActivo = await resp.json();
+            actualizarHintUmbral();
+        } catch (e) {
+            umbralActivo = { montoUmbral: 10000.0 };
+            actualizarHintUmbral();
+        }
+    });
 
-            // Item 2: Cargar umbral activo
+    function actualizarHintUmbral() {
+        if (!umbralActivo) return;
+        const montoInfima = umbralActivo.montoUmbral;
+        const montoSubasta = umbralActivo.montoSubastaMinimo != null
+            ? umbralActivo.montoSubastaMinimo
+            : umbralActivo.montoUmbral;
+        const hint = document.getElementById('hint-umbral');
+        const tipo = tipoContratoActual.toUpperCase();
+        if (tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) {
+            hint.textContent = `Ínfima Cuantía: máximo $${montoInfima.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
+        } else if (tipo.includes('SUBASTA')) {
+            hint.textContent = `Subasta: mínimo $${montoSubasta.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
+        } else {
+            hint.textContent = `Umbral referencial: $${montoInfima.toLocaleString('es-EC', {minimumFractionDigits: 2})} (año ${umbralActivo.anio || ''})`;
+        }
+    }
+
+    function validarAsignacion() {
+        if (!umbralActivo) return;
+        const valor = parseFloat(document.getElementById('input-asignacion').value) || 0;
+        const montoInfima = umbralActivo.montoUmbral;
+        const montoSubasta = umbralActivo.montoSubastaMinimo != null
+            ? umbralActivo.montoSubastaMinimo
+            : umbralActivo.montoUmbral;
+        const tipo = tipoContratoActual.toUpperCase();
+        const alerta = document.getElementById('alerta-asignacion');
+        const txtAlerta = document.getElementById('txt-alerta-asignacion');
+        let error = '';
+
+        if ((tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) && valor > montoInfima) {
+            error = `La Ínfima Cuantía no puede superar $${montoInfima.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
+        } else if (tipo.includes('SUBASTA') && valor > 0 && valor <= montoSubasta) {
+            error = `La Subasta debe ser mayor a $${montoSubasta.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
+        }
+
+        if (error) {
+            txtAlerta.textContent = error;
+            alerta.style.display = 'flex';
+            document.getElementById('input-asignacion').classList.add('border-red-400');
+        } else {
+            alerta.style.display = 'none';
+            document.getElementById('input-asignacion').classList.remove('border-red-400');
+        }
+    }
+
+    function regresarAlDashboard() { window.location.href = '/dashboard.html'; }
+
+    function aplicarTema(oscuro) {
+        document.body.classList.toggle('tema-oscuro', oscuro);
+        localStorage.setItem('temaPreferido', oscuro ? 'oscuro' : 'claro');
+    }
+    function toggleTema() { aplicarTema(!document.body.classList.contains('tema-oscuro')); }
+    function initTema() { if (localStorage.getItem('temaPreferido') === 'oscuro') aplicarTema(true); }
+
+    document.getElementById('form-actividad').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // Item 2: Bloquear submit si hay error de asignación
+        if (document.getElementById('alerta-asignacion').style.display === 'flex') {
+            document.getElementById('alerta-asignacion').scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
+        // Validar campos obligatorios
+        const fActividad = document.getElementById('input-actividad');
+        const fAsignacion = document.getElementById('input-asignacion');
+        const fElaborado = document.getElementById('select-elaborado');
+        const fRevisado = document.getElementById('select-revisado');
+        const fAprobado = document.getElementById('select-aprobado');
+        const fAdmin = document.getElementById('select-admin-contrato');
+        [fActividad, fAsignacion, fElaborado, fRevisado, fAprobado, fAdmin].forEach(c => c.classList.remove('border-red-400'));
+
+        let primerError = null;
+        const marcar = (campo) => { campo.classList.add('border-red-400'); if (!primerError) primerError = campo; };
+
+        if (!fActividad.value.trim()) marcar(fActividad);
+        if (!(parseFloat(fAsignacion.value) > 0)) marcar(fAsignacion);
+        if (!fElaborado.value) marcar(fElaborado);
+        if (!fRevisado.value) marcar(fRevisado);
+        if (!fAprobado.value) marcar(fAprobado);
+        if (!fAdmin.value) marcar(fAdmin);
+
+        if (primerError) {
+            document.getElementById('txt-alerta-asignacion').textContent = 'Por favor completa todos los campos obligatorios antes de continuar.';
+            document.getElementById('alerta-asignacion').style.display = 'flex';
+            primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        // Item 4: Guardar también nombre de item y descripción de CPC
+        const detallesActividad = {
+            noPoa: document.getElementById('input-poa').value,
+            estado: document.getElementById('select-estado').value,
+            actividadEspecifica: document.getElementById('input-actividad').value,
+            item: document.getElementById('input-item').value,
+            itemNombre: document.getElementById('item-sel-nombre').textContent || '',
+            cpc: document.getElementById('input-cpc').value,
+            cpcDescripcion: document.getElementById('cpc-sel-desc').textContent || '',
+            asignacion: document.getElementById('input-asignacion').value,
+            cuatrimestre: document.getElementById('select-cuatrimestre').value,
+            elaborado: document.getElementById('select-elaborado').value,
+            revisado: document.getElementById('select-revisado').value,
+            aprobado: document.getElementById('select-aprobado').value,
+            adminContrato: document.getElementById('select-admin-contrato').value,
+            tecnico: document.getElementById('input-tecnico').value
+        };
+
+        localStorage.setItem('detallesActividad', JSON.stringify(detallesActividad));
+        localStorage.setItem('ultimoAdminSeleccionado', detallesActividad.adminContrato);
+
+        const contratoActual = localStorage.getItem('contratoSeleccionado');
+        if (contratoActual) localStorage.setItem('contratoSeleccionado', contratoActual);
+
+        localStorage.setItem('contadorPOA', siguienteNumero);
+        window.location.href = '/configurar-flujo.html';
+    });
+
+    // Limpiar borde rojo al editar cada campo obligatorio
+    ['input-actividad', 'input-asignacion'].forEach(id => {
+        document.getElementById(id).addEventListener('input', function() { this.classList.remove('border-red-400'); });
+    });
+    ['select-elaborado', 'select-revisado', 'select-aprobado', 'select-admin-contrato'].forEach(id => {
+        document.getElementById(id).addEventListener('change', function() { this.classList.remove('border-red-400'); });
+    });
+</script>
+
+<script>
+    // ── AUTOCOMPLETE CPC ──────────────────────────────────────────────────
+    let _cpcTimer = null;
+
+    function buscarCPC(valor) {
+        clearTimeout(_cpcTimer);
+        const dropdown = document.getElementById('dropdown-cpc');
+        document.getElementById('cpc-seleccionado').style.display = 'none';
+        if (valor.trim().length < 2) { dropdown.style.display = 'none'; return; }
+
+        _cpcTimer = setTimeout(async () => {
             try {
-                const resp = await fetch('/api/umbrales/activo');
-                umbralActivo = await resp.json();
-                actualizarHintUmbral();
-            } catch (e) {
-                umbralActivo = { montoUmbral: 10000.0 };
-            }
-        });
+                const lista = await fetch(`/api/cpc/buscar?q=${encodeURIComponent(valor.trim())}`).then(r => r.json());
+                if (!lista.length) { dropdown.style.display = 'none'; return; }
 
-        function actualizarHintUmbral() {
-            if (!umbralActivo) return;
-            const montoInfima = umbralActivo.montoUmbral;
-            const montoSubasta = umbralActivo.montoSubastaMinimo != null
-                ? umbralActivo.montoSubastaMinimo
-                : umbralActivo.montoUmbral;
-            const hint = document.getElementById('hint-umbral');
-            const tipo = tipoContratoActual.toUpperCase();
-            if (tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) {
-                hint.textContent = `Ínfima Cuantía: máximo $${montoInfima.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
-            } else if (tipo.includes('SUBASTA')) {
-                hint.textContent = `Subasta: mínimo $${montoSubasta.toLocaleString('es-EC', {minimumFractionDigits: 2})}`;
-            } else {
-                hint.textContent = `Umbral referencial: $${montoInfima.toLocaleString('es-EC', {minimumFractionDigits: 2})} (año ${umbralActivo.anio || ''})`;
-            }
-        }
+                dropdown.innerHTML = lista.map(c => `
+                    <li onclick="seleccionarCPC('${escapar(c.codigo)}', '${escapar(c.descripcion)}')">
+                        <span style="min-width:0;">
+                            <strong style="color:#1d4ed8;font-family:monospace;">${c.codigo}</strong>
+                            <span style="color:#6b7280;margin-left:6px;">— ${c.descripcion}</span>
+                        </span>
+                        ${c.umbralVae != null ? `<span style="font-size:10px;color:#9ca3af;flex-shrink:0;margin-left:8px;">$${c.umbralVae.toLocaleString()}</span>` : ''}
+                    </li>`).join('');
+                dropdown.style.display = 'block';
+            } catch { dropdown.style.display = 'none'; }
+        }, 300);
+    }
 
-        function validarAsignacion() {
-            if (!umbralActivo) return;
-            const valor = parseFloat(document.getElementById('input-asignacion').value) || 0;
-            const montoInfima = umbralActivo.montoUmbral;
-            const montoSubasta = umbralActivo.montoSubastaMinimo != null
-                ? umbralActivo.montoSubastaMinimo
-                : umbralActivo.montoUmbral;
-            const tipo = tipoContratoActual.toUpperCase();
-            const alerta = document.getElementById('alerta-asignacion');
-            const txtAlerta = document.getElementById('txt-alerta-asignacion');
-            let error = '';
+    function seleccionarCPC(codigo, descripcion) {
+        document.getElementById('input-cpc').value = codigo;
+        cerrarDropdownCPC();
+        document.getElementById('cpc-sel-codigo').textContent = codigo;
+        document.getElementById('cpc-sel-desc').textContent = descripcion;
+        document.getElementById('cpc-seleccionado').style.display = 'flex';
+    }
 
-            if ((tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) && valor > montoInfima) {
-                error = `La Ínfima Cuantía no puede superar $${montoInfima.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
-            } else if (tipo.includes('SUBASTA') && valor > 0 && valor <= montoSubasta) {
-                error = `La Subasta debe ser mayor a $${montoSubasta.toLocaleString('es-EC', {minimumFractionDigits: 2})}. Valor ingresado: $${valor.toLocaleString('es-EC', {minimumFractionDigits: 2})}.`;
-            }
+    function limpiarCPC() {
+        document.getElementById('input-cpc').value = '';
+        document.getElementById('cpc-seleccionado').style.display = 'none';
+        document.getElementById('input-cpc').focus();
+    }
 
-            if (error) {
-                txtAlerta.textContent = error;
-                alerta.classList.remove('hidden');
-                document.getElementById('input-asignacion').classList.add('border-red-400');
-            } else {
-                alerta.classList.add('hidden');
-                document.getElementById('input-asignacion').classList.remove('border-red-400');
-            }
-        }
+    function cerrarDropdownCPC() { document.getElementById('dropdown-cpc').style.display = 'none'; }
 
-        function regresarAlDashboard() { window.location.href = '/dashboard.html'; }
+    function escapar(str) {
+        return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+</script>
 
-        function aplicarTema(oscuro) {
-            document.body.classList.toggle('tema-oscuro', oscuro);
-            localStorage.setItem('temaPreferido', oscuro ? 'oscuro' : 'claro');
-        }
-        function toggleTema() { aplicarTema(!document.body.classList.contains('tema-oscuro')); }
-        function initTema() { if (localStorage.getItem('temaPreferido') === 'oscuro') aplicarTema(true); }
+<script>
+    // ── AUTOCOMPLETE ITEM ─────────────────────────────────────────────────
+    let _itemTimer = null;
 
-        document.getElementById('form-actividad').addEventListener('submit', (e) => {
-            e.preventDefault();
+    function buscarItem(valor) {
+        clearTimeout(_itemTimer);
+        const dropdown = document.getElementById('dropdown-item');
+        document.getElementById('item-seleccionado').style.display = 'none';
+        if (valor.trim().length < 2) { dropdown.style.display = 'none'; return; }
 
-            // Item 2: Bloquear submit si hay error de asignación
-            if (!document.getElementById('alerta-asignacion').classList.contains('hidden')) {
-                document.getElementById('alerta-asignacion').scrollIntoView({ behavior: 'smooth' });
-                return;
-            }
+        _itemTimer = setTimeout(async () => {
+            try {
+                const lista = await fetch(`/api/item/buscar?q=${encodeURIComponent(valor.trim())}`).then(r => r.json());
+                if (!lista.length) { dropdown.style.display = 'none'; return; }
 
-            // Validar campos obligatorios
-            const fActividad = document.getElementById('input-actividad');
-            const fAsignacion = document.getElementById('input-asignacion');
-            const fElaborado = document.getElementById('select-elaborado');
-            const fRevisado = document.getElementById('select-revisado');
-            const fAprobado = document.getElementById('select-aprobado');
-            const fAdmin = document.getElementById('select-admin-contrato');
-            [fActividad, fAsignacion, fElaborado, fRevisado, fAprobado, fAdmin].forEach(c => c.classList.remove('border-red-400'));
+                dropdown.innerHTML = lista.map(c => `
+                    <li onclick="seleccionarItem('${escapar(c.codigoCompleto)}', '${escapar(c.nombre)}')">
+                        <span style="min-width:0;">
+                            <strong style="color:#4338ca;font-family:monospace;">${c.codigoCompleto}</strong>
+                            <span style="color:#6b7280;margin-left:6px;">— ${c.nombre}</span>
+                        </span>
+                    </li>`).join('');
+                dropdown.style.display = 'block';
+            } catch { dropdown.style.display = 'none'; }
+        }, 300);
+    }
 
-            let primerError = null;
-            const marcar = (campo) => { campo.classList.add('border-red-400'); if (!primerError) primerError = campo; };
+    function seleccionarItem(codigoCompleto, nombre) {
+        document.getElementById('input-item').value = codigoCompleto;
+        cerrarDropdownItem();
+        document.getElementById('item-sel-codigo').textContent = codigoCompleto;
+        document.getElementById('item-sel-nombre').textContent = nombre;
+        document.getElementById('item-seleccionado').style.display = 'flex';
+    }
 
-            if (!fActividad.value.trim()) marcar(fActividad);
-            if (!(parseFloat(fAsignacion.value) > 0)) marcar(fAsignacion);
-            if (!fElaborado.value) marcar(fElaborado);
-            if (!fRevisado.value) marcar(fRevisado);
-            if (!fAprobado.value) marcar(fAprobado);
-            if (!fAdmin.value) marcar(fAdmin);
+    function limpiarItem() {
+        document.getElementById('input-item').value = '';
+        document.getElementById('item-seleccionado').style.display = 'none';
+        document.getElementById('input-item').focus();
+    }
 
-            if (primerError) {
-                document.getElementById('txt-alerta-asignacion').textContent = 'Por favor completa todos los campos obligatorios antes de continuar.';
-                document.getElementById('alerta-asignacion').classList.remove('hidden');
-                primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
+    function cerrarDropdownItem() { document.getElementById('dropdown-item').style.display = 'none'; }
+</script>
 
-            // Item 4: Guardar también nombre de item y descripción de CPC
-            const detallesActividad = {
-                noPoa: document.getElementById('input-poa').value,
-                estado: document.getElementById('select-estado').value,
-                actividadEspecifica: document.getElementById('input-actividad').value,
-                item: document.getElementById('input-item').value,
-                itemNombre: document.getElementById('item-sel-nombre').textContent || '',
-                cpc: document.getElementById('input-cpc').value,
-                cpcDescripcion: document.getElementById('cpc-sel-desc').textContent || '',
-                asignacion: document.getElementById('input-asignacion').value,
-                cuatrimestre: document.getElementById('select-cuatrimestre').value,
-                elaborado: document.getElementById('select-elaborado').value,
-                revisado: document.getElementById('select-revisado').value,
-                aprobado: document.getElementById('select-aprobado').value,
-                adminContrato: document.getElementById('select-admin-contrato').value,
-                tecnico: document.getElementById('input-tecnico').value
-            };
-
-            localStorage.setItem('detallesActividad', JSON.stringify(detallesActividad));
-            localStorage.setItem('ultimoAdminSeleccionado', detallesActividad.adminContrato);
-
-            const contratoActual = localStorage.getItem('contratoSeleccionado');
-            if (contratoActual) localStorage.setItem('contratoSeleccionado', contratoActual);
-
-            localStorage.setItem('contadorPOA', siguienteNumero);
-            window.location.href = '/configurar-flujo.html';
-        });
-
-        // Limpiar borde rojo al editar cada campo obligatorio
-        ['input-actividad', 'input-asignacion'].forEach(id => {
-            document.getElementById(id).addEventListener('input', function() { this.classList.remove('border-red-400'); });
-        });
-        ['select-elaborado', 'select-revisado', 'select-aprobado', 'select-admin-contrato'].forEach(id => {
-            document.getElementById(id).addEventListener('change', function() { this.classList.remove('border-red-400'); });
-        });
-    </script>
-
-    <script>
-        // ── AUTOCOMPLETE CPC ──────────────────────────────────────────────────
-        let _cpcTimer = null;
-
-        function buscarCPC(valor) {
-            clearTimeout(_cpcTimer);
-            const dropdown = document.getElementById('dropdown-cpc');
-            // Ocultar recuadro de selección mientras el usuario escribe de nuevo
-            document.getElementById('cpc-seleccionado').classList.add('hidden');
-            if (valor.trim().length < 2) { dropdown.classList.add('hidden'); return; }
-
-            _cpcTimer = setTimeout(async () => {
-                try {
-                    const lista = await fetch(`/api/cpc/buscar?q=${encodeURIComponent(valor.trim())}`).then(r => r.json());
-                    if (!lista.length) { dropdown.classList.add('hidden'); return; }
-
-                    dropdown.innerHTML = lista.map(c => `
-                        <li onclick="seleccionarCPC('${escapar(c.codigo)}', '${escapar(c.descripcion)}')"
-                            class="px-4 py-2.5 hover:bg-blue-50 cursor-pointer border-b border-gray-50 last:border-0 flex justify-between items-center gap-2">
-                            <span class="min-w-0">
-                                <strong class="text-blue-600 font-mono">${c.codigo}</strong>
-                                <span class="text-gray-500 ml-1.5">— ${c.descripcion}</span>
-                            </span>
-                            ${c.umbralVae != null ? `<span class="text-[10px] text-gray-400 flex-shrink-0 ml-2">$${c.umbralVae.toLocaleString()}</span>` : ''}
-                        </li>`).join('');
-                    dropdown.classList.remove('hidden');
-                } catch { dropdown.classList.add('hidden'); }
-            }, 300);
-        }
-
-        function seleccionarCPC(codigo, descripcion) {
-            document.getElementById('input-cpc').value = codigo;
-            cerrarDropdownCPC();
-            document.getElementById('cpc-sel-codigo').textContent = codigo;
-            document.getElementById('cpc-sel-desc').textContent = descripcion;
-            document.getElementById('cpc-seleccionado').classList.remove('hidden');
-        }
-
-        function limpiarCPC() {
-            document.getElementById('input-cpc').value = '';
-            document.getElementById('cpc-seleccionado').classList.add('hidden');
-            document.getElementById('input-cpc').focus();
-        }
-
-        function cerrarDropdownCPC() {
-            document.getElementById('dropdown-cpc').classList.add('hidden');
-        }
-
-        function escapar(str) {
-            return (str || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        }
-        // ─────────────────────────────────────────────────────────────────────
-    </script>
-
-    <script>
-        // ── AUTOCOMPLETE ITEM ─────────────────────────────────────────────────
-        let _itemTimer = null;
-
-        function buscarItem(valor) {
-            clearTimeout(_itemTimer);
-            const dropdown = document.getElementById('dropdown-item');
-            document.getElementById('item-seleccionado').classList.add('hidden');
-            if (valor.trim().length < 2) { dropdown.classList.add('hidden'); return; }
-
-            _itemTimer = setTimeout(async () => {
-                try {
-                    const lista = await fetch(`/api/item/buscar?q=${encodeURIComponent(valor.trim())}`).then(r => r.json());
-                    if (!lista.length) { dropdown.classList.add('hidden'); return; }
-
-                    dropdown.innerHTML = lista.map(c => `
-                        <li onclick="seleccionarItem('${escapar(c.codigoCompleto)}', '${escapar(c.nombre)}')"
-                            class="px-4 py-2.5 hover:bg-indigo-50 cursor-pointer border-b border-gray-50 last:border-0 flex items-center gap-2">
-                            <span class="min-w-0">
-                                <strong class="text-indigo-600 font-mono">${c.codigoCompleto}</strong>
-                                <span class="text-gray-500 ml-1.5">— ${c.nombre}</span>
-                            </span>
-                        </li>`).join('');
-                    dropdown.classList.remove('hidden');
-                } catch { dropdown.classList.add('hidden'); }
-            }, 300);
-        }
-
-        function seleccionarItem(codigoCompleto, nombre) {
-            document.getElementById('input-item').value = codigoCompleto;
-            cerrarDropdownItem();
-            document.getElementById('item-sel-codigo').textContent = codigoCompleto;
-            document.getElementById('item-sel-nombre').textContent = nombre;
-            document.getElementById('item-seleccionado').classList.remove('hidden');
-        }
-
-        function limpiarItem() {
-            document.getElementById('input-item').value = '';
-            document.getElementById('item-seleccionado').classList.add('hidden');
-            document.getElementById('input-item').focus();
-        }
-
-        function cerrarDropdownItem() {
-            document.getElementById('dropdown-item').classList.add('hidden');
-        }
-        // ─────────────────────────────────────────────────────────────────────
-    </script>
 </body>
 </html>

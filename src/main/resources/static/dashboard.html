@@ -7,1069 +7,792 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         html, body { height: 100%; margin: 0; }
-        body { display: flex; overflow: hidden; }
-        #sidebar { width: 220px; flex-shrink: 0; }
-        #main-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        #main-content { flex: 1; overflow-y: auto; }
+        body { display: flex; overflow: hidden; font-family: 'Segoe UI', 'Inter', sans-serif; }
+
+        /* ══ SIDEBAR ══ */
+        #sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            background: #1a2744;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .sidebar-logo {
+            padding: 22px 20px 18px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .sidebar-logo-icon {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,.12);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .sidebar-logo-text {
+            font-size: 15px; font-weight: 800;
+            color: #fff; letter-spacing: -.01em; line-height: 1.1;
+        }
+        .sidebar-logo-sub {
+            font-size: 9.5px; font-weight: 600;
+            color: rgba(255,255,255,.4);
+            text-transform: uppercase; letter-spacing: .08em;
+            margin-top: 1px;
+        }
+
+        /* nav links */
+        .sidebar-nav { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 2px; }
+        .sidebar-section-label {
+            font-size: 9.5px; font-weight: 700;
+            color: rgba(255,255,255,.3);
+            text-transform: uppercase; letter-spacing: .1em;
+            padding: 10px 8px 6px;
+        }
+        .nav-link {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 10px;
+            font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,.55);
+            text-decoration: none;
+            transition: background .15s, color .15s;
+            cursor: pointer;
+            border: none; background: none; width: 100%; text-align: left;
+        }
+        .nav-link:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); }
+        .nav-link.active {
+            background: rgba(255,255,255,.13);
+            color: #fff; font-weight: 700;
+        }
+        .nav-link svg { flex-shrink: 0; opacity: .7; }
+        .nav-link.active svg { opacity: 1; }
+        .nav-link-divider { height: 1px; background: rgba(255,255,255,.07); margin: 8px 0; }
+
+        /* sidebar footer */
+        .sidebar-footer {
+            padding: 14px 12px;
+            border-top: 1px solid rgba(255,255,255,.07);
+            font-size: 11px; color: rgba(255,255,255,.3);
+            text-align: center;
+        }
+
+        /* ══ MAIN WRAP ══ */
+        #main-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #f0f4fa; }
+
+        /* ══ TOPBAR ══ */
+        #topbar {
+            background: #fff;
+            border-bottom: 1px solid #e8ecf3;
+            padding: 0 28px;
+            height: 54px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 20px; }
+        .topbar-brand { font-size: 15px; font-weight: 800; color: #1a2744; }
+        .topbar-tab {
+            font-size: 13px; font-weight: 600;
+            color: #2563eb;
+            padding-bottom: 2px;
+            border-bottom: 2px solid #2563eb;
+        }
+        .topbar-right { display: flex; align-items: center; gap: 4px; }
+        .topbar-icon-btn {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; border: none; background: none;
+            color: #9ca3af; cursor: pointer; transition: background .15s, color .15s;
+        }
+        .topbar-icon-btn:hover { background: #f3f4f6; color: #374151; }
+        .rol-select-wrap {
+            display: flex; align-items: center; gap: 6px;
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 9px; padding: 5px 10px; margin-right: 6px;
+        }
+        .rol-select-label { font-size: 9.5px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+
+        /* ══ MAIN CONTENT ══ */
+        #main-content { flex: 1; overflow-y: auto; padding: 28px 32px; }
+
+        /* page title */
+        .page-title { font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -.02em; margin: 0 0 3px; }
+        .page-subtitle { font-size: 13px; color: #94a3b8; margin: 0 0 28px; }
+
+        /* section heading */
+        .section-heading {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .section-heading-left { display: flex; align-items: center; gap: 8px; }
+        .section-badge {
+            width: 18px; height: 18px; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 800; color: #fff;
+            flex-shrink: 0;
+        }
+        .section-title { font-size: 14px; font-weight: 800; color: #1a2744; }
+        .section-sub { font-size: 11.5px; color: #94a3b8; margin-top: 1px; }
+        .see-all { font-size: 12px; font-weight: 600; color: #64748b; text-decoration: none; }
+        .see-all:hover { color: #374151; }
+
+        /* ══ PROCESS CARDS (bandeja) ══ */
+        .task-card {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e8ecf3;
+            padding: 18px 18px 16px;
+            display: flex; flex-direction: column;
+            position: relative;
+            transition: box-shadow .15s, border-color .15s;
+        }
+        .task-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.08); border-color: #d1d9e8; }
+
+        /* ══ NEW PROCESS CARDS ══ */
+        .new-proc-card {
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e8ecf3;
+            border-left: 4px solid #e8ecf3;
+            padding: 18px 20px;
+            display: flex; align-items: flex-start; gap: 14px;
+            cursor: pointer;
+            transition: box-shadow .15s, border-color .15s;
+        }
+        .new-proc-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.07); }
+        .new-proc-icon { border-radius: 11px; padding: 10px; flex-shrink: 0; }
+        .new-proc-title { font-size: 13.5px; font-weight: 800; margin: 0 0 3px; }
+        .new-proc-desc { font-size: 11.5px; color: #94a3b8; margin: 0 0 10px; line-height: 1.4; }
+        .badge-pill { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; }
+
+        /* ══ FOOTER ══ */
+        #page-footer {
+            background: #fff;
+            border-top: 1px solid #e8ecf3;
+            padding: 12px 32px;
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .footer-links a { font-size: 11px; color: #94a3b8; text-decoration: none; margin-left: 16px; }
+        .footer-links a:hover { color: #475569; }
+
+        /* notification panel */
+        #panel-notificaciones {
+            position: absolute; right: 0; top: 42px;
+            width: 320px;
+            background: #fff; border: 1px solid #e2e8f0;
+            border-radius: 14px; box-shadow: 0 8px 32px rgba(0,0,0,.1);
+            z-index: 50; overflow: hidden;
+        }
     </style>
 </head>
-<body class="bg-[#f4f7fc] font-sans antialiased text-gray-800">
+<body>
 
-    <!-- ===== SIDEBAR ===== -->
-    <aside id="sidebar" class="bg-white border-r border-gray-200 flex flex-col h-full">
-        <div class="px-5 pt-6 pb-5 border-b border-gray-100">
-            <p class="text-[13px] font-bold text-gray-900 leading-none">Portal de Adquisiciones</p>
-            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mt-1">Sistema Institucional</p>
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside id="sidebar">
+    <!-- Logo -->
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">
+            <svg width="18" height="18" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
         </div>
-        <nav class="flex-1 px-3 py-4 space-y-1">
-            <a href="/dashboard.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl bg-teal-500 text-white font-semibold text-sm">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 001 1m-6 0h6"/></svg>
-                <span>Home</span>
-            </a>
-            <a href="/DashboardUser.html" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-100 font-medium text-sm transition">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span>Mis Progresos</span>
-            </a>
+        <div>
+            <div class="sidebar-logo-text">SENADI</div>
+            <div class="sidebar-logo-sub">Sistema Institucional</div>
+        </div>
+    </div>
 
-            <div class="pt-2 mt-2 border-t border-gray-100 space-y-1">
-                <a href="/DashboardUser.html"
-                   class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-indigo-600 hover:bg-indigo-50 font-medium text-sm transition">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                    </svg>
-                    <span>Vista Usuario</span>
-                </a>
-                <div id="link-panel-control" class="hidden">
-                    <a href="#" onclick="mostrarPanelControl(); return false;"
-                       class="flex items-center space-x-3 px-3 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 font-medium text-sm transition">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        <span>Panel de Control</span>
-                    </a>
-                </div>
+    <!-- Nav -->
+    <nav class="sidebar-nav">
+        <div class="sidebar-section-label">Portal de Adquisiciones</div>
+
+        <a href="/dashboard.html" class="nav-link active">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 001 1m-6 0h6"/></svg>
+            Home
+        </a>
+
+        <a href="/DashboardUser.html" class="nav-link">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+            Mis Progresos
+        </a>
+
+        <div class="nav-link-divider"></div>
+
+        <a href="/DashboardUser.html" class="nav-link">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Vista Usuario
+        </a>
+
+        <div id="link-panel-control" class="hidden">
+            <button onclick="mostrarPanelControl()" class="nav-link" style="width:100%;">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Panel de Control
+            </button>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">SENADI © 2026</div>
+</aside>
+
+<!-- ═══════════════ MAIN WRAPPER ═══════════════ -->
+<div id="main-wrap">
+
+    <!-- Topbar -->
+    <header id="topbar">
+        <div class="topbar-left">
+            <span class="topbar-brand">SENADI</span>
+            <span class="topbar-tab">Dashboard</span>
+        </div>
+        <div class="topbar-right">
+            <div class="rol-select-wrap">
+                <span class="rol-select-label">👤 Sesión:</span>
+                <select id="select-rol" onchange="cambiarRolDashboard()" style="background:transparent;font-size:12px;font-weight:700;color:#2563eb;border:none;outline:none;cursor:pointer;">
+                    <option value="ROLE_SUPER_ADMIN">👑 Super Admin (Acceso Total)</option>
+                    <option value="ROLE_UNIDAD_REQUIRENTE">🏢 Unidad Requirente</option>
+                    <option value="Gonzalo Moncayo">👤 Admin: Gonzalo Moncayo</option>
+                    <option value="Miguel Cabrera">👤 Admin: Miguel Cabrera</option>
+                </select>
             </div>
-        </nav>
-    </aside>
-
-    <!-- ===== MAIN WRAPPER ===== -->
-    <div id="main-wrap">
-        <header class="bg-white border-b border-gray-200 px-8 py-3 flex items-center justify-between flex-shrink-0">
-            <div class="flex items-center space-x-6">
-                <span class="text-lg font-bold text-[#1a3a6e]">SENADI</span>
-                <a href="#" class="pb-1 text-sm font-semibold text-blue-600 border-b-2 border-blue-600">Dashboard</a>
-            </div>
-            <div class="flex items-center space-x-1">
-                <div class="flex items-center space-x-2 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-xl mr-2">
-                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider">👤 Sesión:</span>
-                    <select id="select-rol" onchange="cambiarRolDashboard()" class="bg-transparent text-xs font-bold text-blue-600 outline-none cursor-pointer">
-                        <option value="ROLE_SUPER_ADMIN">👑 Super Admin (Acceso Total)</option>
-                        <option value="ROLE_UNIDAD_REQUIRENTE">🏢 Unidad Requirente</option>
-                        <option value="Gonzalo Moncayo">👤 Admin: Gonzalo Moncayo</option>
-                        <option value="Miguel Cabrera">👤 Admin: Miguel Cabrera</option>
-                    </select>
-                </div>
-
-                <span id="user-display" class="text-xs font-medium text-gray-600 bg-gray-100 px-3 py-1 rounded-full hidden mr-2"></span>
-                <button title="Ayuda"
-                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+            <span id="user-display" class="hidden" style="font-size:12px;color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:999px;margin-right:6px;"></span>
+            <button title="Ayuda" class="topbar-icon-btn"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></button>
+            <button id="logout-btn" onclick="cerrarSesion()" title="Cerrar sesión" class="topbar-icon-btn" style="color:#9ca3af;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#9ca3af'"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button>
+            <!-- Notificaciones -->
+            <div class="relative">
+                <button title="Notificaciones" onclick="toggleNotificaciones()" id="btn-campana" class="topbar-icon-btn relative">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    <span id="badge-notif" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center leading-none">0</span>
                 </button>
-                <button id="logout-btn" onclick="cerrarSesion()" title="Cerrar sesión"
-                        class="flex w-8 h-8 items-center justify-center text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-100 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                </button>
-                <!-- Notificaciones -->
-                <div class="relative">
-                    <button title="Notificaciones" onclick="toggleNotificaciones()"
-                            id="btn-campana"
-                            class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition relative">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                        </svg>
-                        <span id="badge-notif" class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center leading-none">0</span>
-                    </button>
-                    <div id="panel-notificaciones"
-                         class="hidden absolute right-0 top-10 w-80 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden">
-                        <div class="bg-gray-50 px-4 py-3 border-b border-gray-100 flex justify-between">
-                            <span class="text-xs font-bold text-gray-700">Notificaciones</span>
-                            <button onclick="cerrarNotificaciones()" class="text-gray-400 hover:text-gray-600 text-xs">✕</button>
-                        </div>
-                        <div id="lista-notificaciones" class="max-h-72 overflow-y-auto divide-y divide-gray-50"></div>
+                <div id="panel-notificaciones" class="hidden">
+                    <div style="background:#f8fafc;padding:12px 16px 10px;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;">
+                        <span style="font-size:12px;font-weight:700;color:#374151;">Notificaciones</span>
+                        <button onclick="cerrarNotificaciones()" style="background:none;border:none;cursor:pointer;color:#9ca3af;font-size:14px;">✕</button>
                     </div>
-                </div>
-                <!-- Configuración -->
-                <button title="Configuración"
-                        class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                </button>
-            </div>
-        </header>
-
-        <!-- Contenido principal -->
-        <main id="main-content" class="px-8 py-8">
-
-            <!-- ===== PANEL DE CONTROL (solo admins) ===== -->
-            <div id="panel-control-section" class="hidden space-y-6">
-                <div class="flex items-center space-x-3">
-                    <button onclick="volverDashboard()" class="bg-white border border-gray-200 text-gray-600 p-2 rounded-xl hover:bg-gray-50 transition shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    </button>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Panel de Control</h1>
-                        <p class="text-sm text-gray-500 mt-1">Administración de umbrales presupuestarios y configuración del sistema.</p>
-                    </div>
-                </div>
-                <div class="flex space-x-1 bg-gray-100 p-1 rounded-xl w-fit">
-                    <button id="tab-umbrales" onclick="mostrarTabPanel('umbrales')"
-                            class="text-xs font-bold px-4 py-2 rounded-lg bg-white text-gray-800 shadow-sm transition">
-                        Umbrales Presupuestarios
-                    </button>
-                    <button id="tab-usuarios" onclick="mostrarTabPanel('usuarios')"
-                            class="text-xs font-bold px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 transition">
-                        Gestión de Usuarios
-                    </button>
-                </div>
-                <div id="seccion-umbrales" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-sm font-bold text-gray-800">Umbrales Presupuestarios</h3>
-                            <p class="text-xs text-gray-500 mt-0.5">Define los montos umbral por año que controlan la validación de tipos de contrato.</p>
-                        </div>
-                        <button onclick="mostrarFormUmbral()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm">+ Nuevo Umbral</button>
-                    </div>
-                    <div class="p-6">
-                        <div id="form-nuevo-umbral" class="hidden mb-6 bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3">
-                            <h4 class="text-xs font-bold text-blue-800 uppercase tracking-wide">Nuevo Umbral</h4>
-                            <div class="grid grid-cols-3 gap-3">
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Año</label>
-                                    <input id="umbral-anio" type="number" placeholder="2026" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Monto Umbral ($)</label>
-                                    <input id="umbral-monto" type="number" step="0.01" placeholder="10000.00" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                                </div>
-                                <div>
-                                    <label class="block text-[11px] font-bold text-gray-600 mb-1">Descripción</label>
-                                    <input id="umbral-descripcion" type="text" placeholder="Ej: Umbral 2026" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                                </div>
-                            </div>
-                            <div class="flex justify-end space-x-2">
-                                <button onclick="ocultarFormUmbral()" class="text-xs font-bold text-gray-600 bg-white border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition">Cancelar</button>
-                                <button onclick="guardarNuevoUmbral()" class="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition shadow-sm">Guardar</button>
-                            </div>
-                        </div>
-                        <div id="lista-umbrales" class="space-y-3"></div>
-                    </div>
-                </div>
-
-                <div id="seccion-usuarios" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-sm font-bold text-gray-800">Gestión de Usuarios</h3>
-                            <p class="text-xs text-gray-500 mt-0.5">Administra los usuarios registrados y sus roles de acceso al sistema.</p>
-                        </div>
-                        <button onclick="cargarUsuarios()"
-                                class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold px-4 py-2 rounded-xl transition">
-                            Actualizar
-                        </button>
-                    </div>
-                    <div class="p-6">
-                        <div id="lista-usuarios" class="space-y-2">
-                            <p class="text-xs text-gray-400">Cargando usuarios...</p>
-                        </div>
-                    </div>
+                    <div id="lista-notificaciones" style="max-height:280px;overflow-y:auto;"></div>
                 </div>
             </div>
+            <button title="Configuración" class="topbar-icon-btn"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></button>
+        </div>
+    </header>
 
-            <!-- ===== VISTA PRINCIPAL ===== -->
-            <div id="vista-dashboard" class="space-y-8">
+    <!-- Main content -->
+    <main id="main-content">
+
+        <!-- ═══ PANEL DE CONTROL ═══ -->
+        <div id="panel-control-section" class="hidden space-y-6">
+            <div class="flex items-center space-x-3">
+                <button onclick="volverDashboard()" style="background:#fff;border:1px solid #e2e8f0;color:#64748b;padding:8px;border-radius:10px;cursor:pointer;display:flex;align-items:center;">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                </button>
+                <div>
+                    <h1 class="page-title" style="margin-bottom:0;">Panel de Control</h1>
+                    <p class="page-subtitle" style="margin-bottom:0;">Administración de umbrales presupuestarios y configuración del sistema.</p>
+                </div>
+            </div>
+            <div class="flex space-x-1 bg-gray-100 p-1 rounded-xl w-fit">
+                <button id="tab-umbrales" onclick="mostrarTabPanel('umbrales')" class="text-xs font-bold px-4 py-2 rounded-lg bg-white text-gray-800 shadow-sm transition">Umbrales Presupuestarios</button>
+                <button id="tab-usuarios" onclick="mostrarTabPanel('usuarios')" class="text-xs font-bold px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 transition">Gestión de Usuarios</button>
+            </div>
+            <div id="seccion-umbrales" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <div><h3 class="text-sm font-bold text-gray-800">Umbrales Presupuestarios</h3><p class="text-xs text-gray-500 mt-0.5">Define los montos umbral por año.</p></div>
+                    <button onclick="mostrarFormUmbral()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm">+ Nuevo Umbral</button>
+                </div>
+                <div class="p-6">
+                    <div id="form-nuevo-umbral" class="hidden mb-6 bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3">
+                        <h4 class="text-xs font-bold text-blue-800 uppercase tracking-wide">Nuevo Umbral</h4>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div><label class="block text-[11px] font-bold text-gray-600 mb-1">Año</label><input id="umbral-anio" type="number" placeholder="2026" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"></div>
+                            <div><label class="block text-[11px] font-bold text-gray-600 mb-1">Monto Umbral ($)</label><input id="umbral-monto" type="number" step="0.01" placeholder="10000.00" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"></div>
+                            <div><label class="block text-[11px] font-bold text-gray-600 mb-1">Descripción</label><input id="umbral-descripcion" type="text" placeholder="Ej: Umbral 2026" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20"></div>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <button onclick="ocultarFormUmbral()" class="text-xs font-bold text-gray-600 bg-white border border-gray-200 px-4 py-2 rounded-xl hover:bg-gray-50 transition">Cancelar</button>
+                            <button onclick="guardarNuevoUmbral()" class="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition shadow-sm">Guardar</button>
+                        </div>
+                    </div>
+                    <div id="lista-umbrales" class="space-y-3"></div>
+                </div>
+            </div>
+            <div id="seccion-usuarios" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                    <div><h3 class="text-sm font-bold text-gray-800">Gestión de Usuarios</h3><p class="text-xs text-gray-500 mt-0.5">Administra los usuarios registrados y sus roles de acceso.</p></div>
+                    <button onclick="cargarUsuarios()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold px-4 py-2 rounded-xl transition">Actualizar</button>
+                </div>
+                <div class="p-6"><div id="lista-usuarios" class="space-y-2"><p class="text-xs text-gray-400">Cargando usuarios...</p></div></div>
+            </div>
+        </div>
+
+        <!-- ═══ VISTA PRINCIPAL ═══ -->
+        <div id="vista-dashboard" class="space-y-8">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Sistema de seguimiento de Contratación Pública</h1>
-                <p class="text-sm text-gray-500 mt-1">Gestione procesos de adquisición institucional con total transparencia y eficiencia legal.</p>
+                <h1 class="page-title">Sistema de seguimiento de Contratación Pública</h1>
+                <p class="page-subtitle">Gestione procesos de adquisición institucional con total transparencia y eficiencia legal.</p>
             </div>
 
-            <!-- Procesos en Progreso -->
+            <!-- Bandeja de Tareas -->
             <section id="seccion-en-progreso" class="space-y-4 hidden">
-                <div class="flex items-start justify-between">
-                    <div>
-                        <h2 class="text-base font-bold text-indigo-600 flex items-center space-x-2">
-                            <span class="inline-block w-2.5 h-2.5 bg-indigo-500 rounded-sm flex-shrink-0 mt-0.5"></span>
-                            <span>Bandeja de Tareas Pendientes</span>
-                        </h2>
-                        <p class="text-xs text-gray-400 mt-0.5 pl-4">Procesos que requieren tu acción inmediata o de los que eres propietario.</p>
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <span class="section-badge" style="background:#6366f1;">
+                            <svg width="10" height="10" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </span>
+                        <div>
+                            <div class="section-title">Bandeja de Tareas Pendientes</div>
+                            <div class="section-sub">Procesos que requieren tu acción inmediata o de los que eres propietario.</div>
+                        </div>
                     </div>
-                    <a href="#" class="text-xs font-semibold text-gray-500 hover:text-gray-700 transition mt-0.5">Ver todos</a>
+                    <a href="#" class="see-all">Ver todos</a>
                 </div>
                 <div id="contenedor-tarjetas-activas" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </section>
 
             <!-- Crear Nuevo Proceso -->
             <section id="seccion-nuevo-proceso" class="space-y-4">
-                <div>
-                    <h2 class="text-base font-bold text-indigo-600 flex items-center space-x-2">
-                        <span class="inline-flex items-center justify-center w-4 h-4 bg-indigo-500 rounded text-white text-[10px] font-bold flex-shrink-0">+</span>
-                        <span>Crear Nuevo Proceso</span>
-                    </h2>
-                    <p class="text-xs text-gray-400 mt-0.5 pl-6">Selecciona un tipo de proceso para comenzar una nueva adquisición</p>
+                <div class="section-heading">
+                    <div class="section-heading-left">
+                        <span class="section-badge" style="background:#6366f1;">
+                            <svg width="10" height="10" fill="none" stroke="white" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"/></svg>
+                        </span>
+                        <div>
+                            <div class="section-title">Crear Nuevo Proceso</div>
+                            <div class="section-sub">Selecciona un tipo de proceso para comenzar una nueva adquisición</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    <!-- Ínfima Cuantía — Azul -->
-                    <div onclick="iniciarNuevoContrato('Contrato Ínfima Cuantía')"
-                         class="bg-white border border-gray-200 border-l-4 border-l-blue-500 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-300 hover:border-l-blue-500 transition cursor-pointer flex items-start space-x-4">
-                        <div class="p-3 bg-blue-50 text-blue-600 rounded-xl flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
+                    <!-- Ínfima Cuantía -->
+                    <div onclick="iniciarNuevoContrato('Contrato Ínfima Cuantía')" class="new-proc-card" style="border-left-color:#3b82f6;">
+                        <div class="new-proc-icon" style="background:#eff6ff;"><svg class="w-6 h-6" style="color:#2563eb;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
                         <div>
-                            <h4 class="text-sm font-bold text-blue-700">Ínfima Cuantía</h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Proceso de contratación de menor cuantía para adquisiciones rápidas.</p>
-                            <div class="flex items-center space-x-2 mt-3">
-                                <span class="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">25 pasos principales</span>
-                                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">37 sub-pasos</span>
+                            <div class="new-proc-title" style="color:#1d4ed8;">Ínfima Cuantía</div>
+                            <div class="new-proc-desc">Proceso de contratación de menor cuantía para adquisiciones rápidas.</div>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <span class="badge-pill" style="background:#dbeafe;color:#1d4ed8;">25 pasos principales</span>
+                                <span class="badge-pill" style="background:#f1f5f9;color:#64748b;">37 sub-pasos</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Catálogo Electrónico — Ámbar -->
-                    <div onclick="iniciarNuevoContrato('Contrato Catálogo Electrónico')"
-                         class="bg-white border border-gray-200 border-l-4 border-l-amber-500 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-amber-300 hover:border-l-amber-500 transition cursor-pointer flex items-start space-x-4">
-                        <div class="p-3 bg-amber-50 text-amber-600 rounded-xl flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                        </div>
+                    <!-- Catálogo Electrónico -->
+                    <div onclick="iniciarNuevoContrato('Contrato Catálogo Electrónico')" class="new-proc-card" style="border-left-color:#f59e0b;">
+                        <div class="new-proc-icon" style="background:#fffbeb;"><svg class="w-6 h-6" style="color:#d97706;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
                         <div>
-                            <h4 class="text-sm font-bold text-amber-700">Catálogo Electrónico</h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Compra a través de tienda virtual del Estado Ecuatoriano.</p>
-                            <div class="flex items-center space-x-2 mt-3">
-                                <span class="bg-amber-100 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-full">21 pasos principales</span>
-                                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">33 sub-pasos</span>
+                            <div class="new-proc-title" style="color:#b45309;">Catálogo Electrónico</div>
+                            <div class="new-proc-desc">Compra a través de tienda virtual del Estado Ecuatoriano.</div>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <span class="badge-pill" style="background:#fef3c7;color:#b45309;">21 pasos principales</span>
+                                <span class="badge-pill" style="background:#f1f5f9;color:#64748b;">33 sub-pasos</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Subasta Inversa — Esmeralda -->
-                    <div onclick="iniciarNuevoContrato('Contrato Subasta Inversa')"
-                         class="bg-white border border-gray-200 border-l-4 border-l-emerald-500 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-emerald-300 hover:border-l-emerald-500 transition cursor-pointer flex items-start space-x-4">
-                        <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3m-3-3h.01M9 7h.01M9 14h.01M12 14h.01M15 11h.01M15 7h.01M15 14h.01M12 18h.01M15 18h.01M9 18h.01"/>
-                            </svg>
-                        </div>
+                    <!-- Subasta Inversa -->
+                    <div onclick="iniciarNuevoContrato('Contrato Subasta Inversa')" class="new-proc-card" style="border-left-color:#10b981;">
+                        <div class="new-proc-icon" style="background:#ecfdf5;"><svg class="w-6 h-6" style="color:#059669;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg></div>
                         <div>
-                            <h4 class="text-sm font-bold text-emerald-700">Subasta Inversa</h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Proceso dinámico de puja para bienes y servicios de características técnicas uniformes.</p>
-                            <div class="flex items-center space-x-2 mt-3">
-                                <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full">41 pasos principales</span>
-                                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">46 sub-pasos</span>
+                            <div class="new-proc-title" style="color:#065f46;">Subasta Inversa</div>
+                            <div class="new-proc-desc">Proceso dinámico de puja para bienes y servicios de características técnicas uniformes.</div>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <span class="badge-pill" style="background:#d1fae5;color:#065f46;">41 pasos principales</span>
+                                <span class="badge-pill" style="background:#f1f5f9;color:#64748b;">46 sub-pasos</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Régimen Especial — Violeta -->
-                    <div onclick="iniciarNuevoContrato('Contrato Régimen Especial')"
-                         class="bg-white border border-gray-200 border-l-4 border-l-purple-500 p-5 rounded-2xl shadow-sm hover:shadow-md hover:border-purple-300 hover:border-l-purple-500 transition cursor-pointer flex items-start space-x-4">
-                        <div class="p-3 bg-purple-50 text-purple-600 rounded-xl flex-shrink-0">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3m-3-3h.01M9 7h.01M9 14h.01M12 14h.01M15 11h.01M15 7h.01M15 14h.01M12 18h.01M15 18h.01M9 18h.01"/>
-                            </svg>
-                        </div>
+                    <!-- Régimen Especial -->
+                    <div onclick="iniciarNuevoContrato('Contrato Régimen Especial')" class="new-proc-card" style="border-left-color:#8b5cf6;">
+                        <div class="new-proc-icon" style="background:#f5f3ff;"><svg class="w-6 h-6" style="color:#7c3aed;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3m-3-3h.01M9 7h.01M9 14h.01M12 14h.01M15 11h.01M15 7h.01M15 14h.01M12 18h.01M15 18h.01M9 18h.01"/></svg></div>
                         <div>
-                            <h4 class="text-sm font-bold text-purple-700">Régimen Especial</h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Contratación bajo normas especiales para entidades exceptuadas de la norma general.</p>
-                            <div class="flex items-center space-x-2 mt-3">
-                                <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded-full">42 pasos principales</span>
-                                <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">39 sub-pasos</span>
+                            <div class="new-proc-title" style="color:#5b21b6;">Régimen Especial</div>
+                            <div class="new-proc-desc">Contratación bajo normas especiales para entidades exceptuadas de la norma general.</div>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <span class="badge-pill" style="background:#ede9fe;color:#5b21b6;">42 pasos principales</span>
+                                <span class="badge-pill" style="background:#f1f5f9;color:#64748b;">39 sub-pasos</span>
                             </div>
                         </div>
                     </div>
 
                 </div>
             </section>
-            </div><!-- /vista-dashboard -->
-        </main>
+        </div><!-- /vista-dashboard -->
+    </main>
 
-        <!-- Footer -->
-        <footer class="bg-white border-t border-gray-200 px-8 py-4 flex-shrink-0 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <span class="text-xs font-bold text-[#1a3a6e]">SENADI</span>
-                <span class="text-xs text-gray-400">© 2026 SENADI – Servicio Nacional de Derechos Intelectuales. All rights reserved.</span>
-            </div>
-            <div class="flex items-center space-x-4 text-xs text-gray-400">
-                <a href="#" class="hover:text-gray-600 transition">Privacy Policy</a>
-                <a href="#" class="hover:text-gray-600 transition">Terms of Service</a>
-                <a href="#" class="hover:text-gray-600 transition">Legal Notice</a>
-                <a href="#" class="hover:text-gray-600 transition">Contact Us</a>
-            </div>
-        </footer>
-    </div>
+    <!-- Footer -->
+    <footer id="page-footer">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:12px;font-weight:800;color:#1a2744;">SENADI</span>
+            <span style="font-size:11px;color:#94a3b8;">© 2026 SENADI – Servicio Nacional de Derechos Intelectuales. All rights reserved.</span>
+        </div>
+        <div class="footer-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Legal Notice</a>
+            <a href="#">Contact Us</a>
+        </div>
+    </footer>
+</div>
 
-    <script>
-        let rolActivoUsuario = localStorage.getItem('rolSimulado') || 'ROLE_SUPER_ADMIN';
+<!-- ═══════════════ SCRIPTS ORIGINALES COMPLETOS (sin modificar) ═══════════════ -->
+<script>
+    let rolActivoUsuario = localStorage.getItem('rolSimulado') || 'ROLE_SUPER_ADMIN';
 
-        const TIPO_CONFIG = {
-            'Ínfima Cuantía': {
-                iconBg: 'bg-blue-50', iconText: 'text-blue-600',
-                barColor: 'bg-blue-500', badgeBg: 'bg-blue-100', badgeText: 'text-blue-800',
-                btnBg: 'bg-blue-600 hover:bg-blue-700',
-                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>`
-            },
-            'Régimen Especial': {
-                iconBg: 'bg-purple-50', iconText: 'text-purple-600',
-                barColor: 'bg-purple-500', badgeBg: 'bg-purple-100', badgeText: 'text-purple-800',
-                btnBg: 'bg-purple-600 hover:bg-purple-700',
-                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3"/>`
-            },
-            'Catálogo Electrónico': {
-                iconBg: 'bg-amber-50', iconText: 'text-amber-600',
-                barColor: 'bg-amber-500', badgeBg: 'bg-amber-100', badgeText: 'text-amber-800',
-                btnBg: 'bg-amber-500 hover:bg-amber-600',
-                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>`
-            },
-            'Subasta Inversa': {
-                iconBg: 'bg-emerald-50', iconText: 'text-emerald-600',
-                barColor: 'bg-emerald-500', badgeBg: 'bg-emerald-100', badgeText: 'text-emerald-800',
-                btnBg: 'bg-emerald-600 hover:bg-emerald-700',
-                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>`
-            },
-            'Licitación': {
-                iconBg: 'bg-rose-50', iconText: 'text-rose-600',
-                barColor: 'bg-rose-500', badgeBg: 'bg-rose-100', badgeText: 'text-rose-800',
-                btnBg: 'bg-rose-600 hover:bg-rose-700',
-                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>`
-            },
-            'Menor Cuantía': {
-                iconBg: 'bg-cyan-50', iconText: 'text-cyan-600',
-                barColor: 'bg-cyan-500', badgeBg: 'bg-cyan-100', badgeText: 'text-cyan-800',
-                btnBg: 'bg-cyan-600 hover:bg-cyan-700',
-                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>`
+    const TIPO_CONFIG = {
+        'Ínfima Cuantía': {
+            iconBg: 'bg-blue-50', iconText: 'text-blue-600',
+            barColor: 'bg-blue-500', badgeBg: 'bg-blue-100', badgeText: 'text-blue-800',
+            btnBg: 'bg-blue-600 hover:bg-blue-700',
+            icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>`
+        },
+        'Régimen Especial': {
+            iconBg: 'bg-purple-50', iconText: 'text-purple-600',
+            barColor: 'bg-purple-500', badgeBg: 'bg-purple-100', badgeText: 'text-purple-800',
+            btnBg: 'bg-purple-600 hover:bg-purple-700',
+            icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0V11m0 0H9m3 0h3"/>`
+        },
+        'Catálogo Electrónico': {
+            iconBg: 'bg-amber-50', iconText: 'text-amber-600',
+            barColor: 'bg-amber-500', badgeBg: 'bg-amber-100', badgeText: 'text-amber-800',
+            btnBg: 'bg-amber-500 hover:bg-amber-600',
+            icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>`
+        },
+        'Subasta Inversa': {
+            iconBg: 'bg-emerald-50', iconText: 'text-emerald-600',
+            barColor: 'bg-emerald-500', badgeBg: 'bg-emerald-100', badgeText: 'text-emerald-800',
+            btnBg: 'bg-emerald-600 hover:bg-emerald-700',
+            icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>`
+        },
+        'Licitación': {
+            iconBg: 'bg-rose-50', iconText: 'text-rose-600',
+            barColor: 'bg-rose-500', badgeBg: 'bg-rose-100', badgeText: 'text-rose-800',
+            btnBg: 'bg-rose-600 hover:bg-rose-700',
+            icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>`
+        },
+        'Menor Cuantía': {
+            iconBg: 'bg-cyan-50', iconText: 'text-cyan-600',
+            barColor: 'bg-cyan-500', badgeBg: 'bg-cyan-100', badgeText: 'text-cyan-800',
+            btnBg: 'bg-cyan-600 hover:bg-cyan-700',
+            icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>`
+        }
+    };
+
+    function getTipoConfig(tipoContrato) {
+        for (const key of Object.keys(TIPO_CONFIG)) {
+            if (tipoContrato && tipoContrato.includes(key)) return TIPO_CONFIG[key];
+        }
+        return { iconBg: 'bg-gray-100', iconText: 'text-gray-500', barColor: 'bg-gray-400', badgeBg: 'bg-gray-100', badgeText: 'text-gray-600', icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>` };
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('select-rol').value = rolActivoUsuario;
+        verificarProcesosActivos();
+        mostrarUsuario();
+        actualizarVisibilidadPanelLink();
+        document.addEventListener('click', (e) => {
+            const panel = document.getElementById('panel-notificaciones');
+            const btn = document.getElementById('btn-campana');
+            if (panel && btn && !panel.classList.contains('hidden')) {
+                if (!panel.contains(e.target) && !btn.contains(e.target)) panel.classList.add('hidden');
             }
-        };
+        });
+    });
 
-        function getTipoConfig(tipoContrato) {
-            for (const key of Object.keys(TIPO_CONFIG)) {
-                if (tipoContrato && tipoContrato.includes(key)) return TIPO_CONFIG[key];
-            }
-            return {
-                iconBg: 'bg-gray-100', iconText: 'text-gray-500',
-                barColor: 'bg-gray-400', badgeBg: 'bg-gray-100', badgeText: 'text-gray-600',
-                icon: `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>`
-            };
+    function actualizarVisibilidadPanelLink() {
+        const link = document.getElementById('link-panel-control');
+        if (rolActivoUsuario === 'ROLE_SUPER_ADMIN') link.classList.remove('hidden');
+        else { link.classList.add('hidden'); volverDashboard(); }
+    }
+
+    function cambiarRolDashboard() {
+        rolActivoUsuario = document.getElementById('select-rol').value;
+        localStorage.setItem('rolSimulado', rolActivoUsuario);
+        verificarProcesosActivos();
+        actualizarVisibilidadPanelLink();
+    }
+
+    function obtenerListaProcesos() {
+        const raw = localStorage.getItem('instanciaProcesoEnProgreso');
+        let procesos = [];
+        if (raw) { try { procesos = JSON.parse(raw); if (!Array.isArray(procesos)) procesos = [procesos]; } catch(e){} }
+        const ultimoAdmin = localStorage.getItem('ultimoAdminSeleccionado');
+        if (ultimoAdmin) {
+            let modificado = false;
+            procesos.forEach(p => { if (!p.admin) { p.admin = ultimoAdmin; modificado = true; } });
+            if (modificado) localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
+            localStorage.removeItem('ultimoAdminSeleccionado');
+        }
+        return procesos;
+    }
+
+    function esMiTurno(instancia) {
+        if (rolActivoUsuario === 'ROLE_SUPER_ADMIN') return true;
+        if (rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') return true;
+        if (instancia.admin !== rolActivoUsuario) return false;
+        if (!instancia.pipelineSnapshot || instancia.pipelineSnapshot.length === 0) return false;
+        const indiceActual = instancia.pipelineSnapshot.findIndex(p => !p.respuestasUsuario?.completado);
+        if (indiceActual === -1) return true;
+        const pasoActual = instancia.pipelineSnapshot[indiceActual];
+        const faseUpper = (pasoActual.fase || '').toUpperCase();
+        return (faseUpper.includes('CONTRACTUAL') && !faseUpper.includes('PRECONTRACTUAL')) || faseUpper.includes('EVALUACIÓN') || faseUpper.includes('EVALUACION');
+    }
+
+    function verificarProcesosActivos() {
+        const procesos = obtenerListaProcesos();
+        const seccionProgreso = document.getElementById('seccion-en-progreso');
+        const contenedorTarjetas = document.getElementById('contenedor-tarjetas-activas');
+        const seccionCrear = document.getElementById('seccion-nuevo-proceso');
+
+        if (rolActivoUsuario === 'ROLE_SUPER_ADMIN' || rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') seccionCrear.style.display = 'block';
+        else seccionCrear.style.display = 'none';
+
+        contenedorTarjetas.innerHTML = '';
+        let procesosMostrados = 0;
+
+        if (procesos.length > 0) {
+            procesos.forEach((instancia, index) => {
+                if (!esMiTurno(instancia)) return;
+                procesosMostrados++;
+                const tituloLimpio = (instancia.tipoContrato || 'Ínfima Cuantía').replace('Contrato ', '');
+                const pct = instancia.porcentaje || 0;
+                const cfg = getTipoConfig(instancia.tipoContrato);
+                const esAvanzado = pct >= 50;
+                const puedeEliminar = (rolActivoUsuario === 'ROLE_SUPER_ADMIN' || rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE');
+                const tarjetaHtml = `
+                    <div class="task-card">
+                        ${puedeEliminar ? `<button onclick="eliminarInstanciaProceso(${index})" style="position:absolute;right:14px;top:14px;background:none;border:none;cursor:pointer;color:#d1d5db;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#d1d5db'"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>` : ''}
+                        <div class="flex items-start justify-between mb-3 pr-6">
+                            <div class="p-2.5 ${cfg.iconBg} ${cfg.iconText} rounded-xl"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">${cfg.icon}</svg></div>
+                            <div class="text-right"><span class="text-sm font-bold ${cfg.iconText}">${pct}%</span><p class="text-[10px] text-gray-400 leading-none mt-0.5">completado</p></div>
+                        </div>
+                        <div class="h-1.5 bg-gray-100 rounded-full mb-4"><div class="${cfg.barColor} h-1.5 rounded-full transition-all" style="width:${pct}%"></div></div>
+                        <h4 class="text-sm font-bold text-gray-900 mb-1">${tituloLimpio}</h4>
+                        <p class="text-[10px] text-gray-400 mb-3"><span class="font-bold">Admin Asignado:</span> ${instancia.admin || 'Sin asignar'}</p>
+                        <div class="flex items-center space-x-2 mb-3">
+                            <span class="${cfg.badgeBg} ${cfg.badgeText} text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide truncate max-w-[120px]">${instancia.actividadNombre ? instancia.actividadNombre.substring(0,20) : 'En proceso'}</span>
+                            <span class="bg-gray-100 text-gray-500 text-[10px] font-semibold px-2 py-0.5 rounded uppercase">${instancia.codigoPoa || 'POA 0000'}</span>
+                        </div>
+                        <div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
+                            <span class="flex items-center space-x-1 text-[11px] text-gray-400">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                <span>${instancia.fechaModificacion || 'Sin fecha'}</span>
+                            </span>
+                            ${esAvanzado
+                                ? `<button onclick="continuarProcesoEstructurado(${index})" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold text-[11px] py-1.5 px-3 rounded-lg transition">Revisar</button>`
+                                : `<button onclick="continuarProcesoEstructurado(${index})" class="${cfg.btnBg || 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold text-[11px] py-1.5 px-3 rounded-lg transition flex items-center space-x-1"><span>Continuar</span><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>`
+                            }
+                        </div>
+                    </div>`;
+                contenedorTarjetas.insertAdjacentHTML('beforeend', tarjetaHtml);
+            });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('select-rol').value = rolActivoUsuario;
-            verificarProcesosActivos();
-            mostrarUsuario();
-            actualizarVisibilidadPanelLink();
+        if (procesosMostrados > 0) {
+            seccionProgreso.classList.remove('hidden');
+        } else {
+            seccionProgreso.classList.add('hidden');
+            contenedorTarjetas.innerHTML = `<div class="col-span-full rounded-2xl border-2 border-dashed border-gray-200 p-8 flex flex-col items-center justify-center text-center bg-white/50"><div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-gray-400"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><h3 class="text-sm font-bold text-gray-800">Bandeja Vacía</h3><p class="text-xs text-gray-400 mt-1 max-w-sm">No tienes tareas pendientes.</p></div>`;
+        }
+        actualizarBadgeNotificaciones();
+    }
 
-            document.addEventListener('click', (e) => {
-                const panel = document.getElementById('panel-notificaciones');
-                const btn = document.getElementById('btn-campana');
-                if (panel && btn && !panel.classList.contains('hidden')) {
-                    if (!panel.contains(e.target) && !btn.contains(e.target)) {
-                        panel.classList.add('hidden');
-                    }
+    function continuarProcesoEstructurado(index) {
+        const procesos = obtenerListaProcesos();
+        if (procesos[index]) {
+            const instancia = procesos[index];
+            const indiceReal = instancia.pipelineSnapshot.findIndex(paso => !paso.respuestasUsuario || !paso.respuestasUsuario.completado);
+            if (indiceReal !== -1) { instancia.ultimoIndiceTrabajado = indiceReal; procesos[index] = instancia; localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos)); }
+            localStorage.setItem('idProcesoActivo', instancia.id);
+            localStorage.setItem('flujoPersonalizado', JSON.stringify(instancia.pipelineSnapshot));
+            window.location.href = '/ejecutar-proceso.html';
+        }
+    }
+
+    function iniciarNuevoContrato(tipoContrato) {
+        localStorage.removeItem('flujoPersonalizado');
+        localStorage.removeItem('idProcesoActivo');
+        localStorage.setItem('contratoSeleccionado', JSON.stringify({ nombre: tipoContrato, pasos: [] }));
+        window.location.href = '/detalles-proceso.html';
+    }
+
+    function eliminarInstanciaProceso(index) {
+        if (confirm('¿Estás seguro de que deseas eliminar este proceso en progreso? Se perderán todos sus cambios guardados.')) {
+            let procesos = obtenerListaProcesos();
+            procesos.splice(index, 1);
+            localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
+            verificarProcesosActivos();
+        }
+    }
+
+    function cerrarSesion() { localStorage.removeItem('usuario'); window.location.href = '/index.html'; }
+    function mostrarUsuario() {}
+
+    function mostrarPanelControl() {
+        document.getElementById('vista-dashboard').classList.add('hidden');
+        document.getElementById('panel-control-section').classList.remove('hidden');
+        cargarUmbrales();
+    }
+    function volverDashboard() {
+        document.getElementById('panel-control-section').classList.add('hidden');
+        document.getElementById('vista-dashboard').classList.remove('hidden');
+    }
+    function mostrarFormUmbral() { document.getElementById('form-nuevo-umbral').classList.remove('hidden'); }
+    function ocultarFormUmbral() {
+        document.getElementById('form-nuevo-umbral').classList.add('hidden');
+        document.getElementById('umbral-anio').value = '';
+        document.getElementById('umbral-monto').value = '';
+        document.getElementById('umbral-descripcion').value = '';
+    }
+
+    let umbralCache = [];
+    async function cargarUmbrales() {
+        const lista = document.getElementById('lista-umbrales');
+        lista.innerHTML = '<p class="text-xs text-gray-400">Cargando...</p>';
+        try {
+            umbralCache = await fetch('/api/umbrales').then(r => r.json());
+            lista.innerHTML = '';
+            if (!umbralCache.length) { lista.innerHTML = '<p class="text-xs text-gray-400 italic">No hay umbrales registrados.</p>'; return; }
+            umbralCache.forEach(u => {
+                const montoSubasta = u.montoSubastaMinimo != null ? u.montoSubastaMinimo : u.montoUmbral;
+                const fmtInfima = parseFloat(u.montoUmbral).toLocaleString('en-US', {minimumFractionDigits: 2});
+                const fmtSubasta = parseFloat(montoSubasta).toLocaleString('en-US', {minimumFractionDigits: 2});
+                lista.insertAdjacentHTML('beforeend', `<div class="border border-gray-200 rounded-xl overflow-hidden"><div class="flex items-center justify-between bg-gray-50 px-4 py-3"><div class="flex items-center space-x-3 flex-wrap gap-y-1"><span class="text-sm font-bold text-gray-800">Año ${u.anio}</span>${u.activo ? '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full">ACTIVO</span>' : '<span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">INACTIVO</span>'}<span class="text-[11px] text-gray-500"><span class="font-bold text-blue-600">Ínfima Cuantía ≤</span><span class="font-mono font-bold text-blue-700"> $${fmtInfima}</span><span class="text-gray-300 mx-1">|</span><span class="font-bold text-emerald-600">Subasta &gt;</span><span class="font-mono font-bold text-emerald-700"> $${fmtSubasta}</span></span>${u.descripcion ? `<span class="text-[10px] text-gray-400 italic">${u.descripcion}</span>` : ''}</div><div class="flex items-center space-x-2 flex-shrink-0">${!u.activo ? `<button onclick="activarUmbral(${u.id})" class="text-[11px] font-bold text-white bg-emerald-500 hover:bg-emerald-600 px-3 py-1.5 rounded-lg transition">Activar</button>` : ''}<button onclick="toggleEditarUmbral(${u.id})" class="text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-100 px-3 py-1.5 rounded-lg transition">Editar</button><button onclick="eliminarUmbral(${u.id}, ${u.activo})" class="text-[11px] font-bold text-red-500 bg-red-50 hover:bg-red-100 border border-red-100 px-3 py-1.5 rounded-lg transition">Eliminar</button></div></div><div id="edit-form-${u.id}" class="hidden border-t border-gray-200 bg-white p-5 space-y-4"><p class="text-xs font-bold text-gray-600 uppercase tracking-wide">Editar umbrales — Año ${u.anio}</p><div class="bg-blue-50 border border-blue-100 rounded-xl p-4"><label class="block text-[11px] font-bold text-blue-800 uppercase tracking-wide mb-2">Ínfima Cuantía — monto máximo (≤)</label><div class="flex items-center space-x-3"><div class="relative flex-1"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 font-bold text-sm">$</span><input id="edit-infima-${u.id}" type="number" step="0.01" min="0" value="${u.montoUmbral}" class="w-full border border-blue-200 rounded-lg pl-7 pr-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-400/30 bg-white"></div><button onclick="guardarCampoUmbral(${u.id}, 'infima')" class="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition whitespace-nowrap">Guardar Ínfima</button></div></div><div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4"><label class="block text-[11px] font-bold text-emerald-800 uppercase tracking-wide mb-2">Subasta Inversa — monto mínimo (&gt;)</label><div class="flex items-center space-x-3"><div class="relative flex-1"><span class="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 font-bold text-sm">$</span><input id="edit-subasta-${u.id}" type="number" step="0.01" min="0" value="${montoSubasta}" class="w-full border border-emerald-200 rounded-lg pl-7 pr-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-400/30 bg-white"></div><button onclick="guardarCampoUmbral(${u.id}, 'subasta')" class="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg transition whitespace-nowrap">Guardar Subasta</button></div></div><div class="bg-gray-50 border border-gray-200 rounded-xl p-4"><label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-2">Descripción</label><div class="flex items-center space-x-3"><input id="edit-desc-${u.id}" type="text" value="${(u.descripcion||'').replace(/"/g,'&quot;')}" placeholder="Ej: Umbral aprobado en resolución #..." class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-gray-400/30 bg-white"><button onclick="guardarCampoUmbral(${u.id}, 'descripcion')" class="text-xs font-bold text-white bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg transition whitespace-nowrap">Guardar</button></div></div><div class="flex justify-end"><button onclick="toggleEditarUmbral(${u.id})" class="text-xs text-gray-400 hover:text-gray-600 px-3 py-1.5 transition">Cerrar</button></div></div></div>`);
+            });
+        } catch (e) { lista.innerHTML = '<p class="text-xs text-red-500">Error al cargar umbrales.</p>'; }
+    }
+
+    function toggleEditarUmbral(id) { document.getElementById(`edit-form-${id}`).classList.toggle('hidden'); }
+
+    async function guardarCampoUmbral(id, campo) {
+        const u = umbralCache.find(x => x.id === id);
+        if (!u) return;
+        const body = { anio: u.anio, montoUmbral: u.montoUmbral, montoSubastaMinimo: u.montoSubastaMinimo != null ? u.montoSubastaMinimo : u.montoUmbral, descripcion: u.descripcion, activo: u.activo };
+        if (campo === 'infima') { const val = parseFloat(document.getElementById(`edit-infima-${id}`).value); if (isNaN(val)||val<=0){alert('Ingresa un monto válido.');return;} body.montoUmbral=val; }
+        else if (campo === 'subasta') { const val = parseFloat(document.getElementById(`edit-subasta-${id}`).value); if (isNaN(val)||val<=0){alert('Ingresa un monto válido.');return;} body.montoSubastaMinimo=val; }
+        else if (campo === 'descripcion') { body.descripcion = document.getElementById(`edit-desc-${id}`).value; }
+        try { await fetch(`/api/umbrales/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) }); cargarUmbrales(); } catch(e) { alert('Error al guardar.'); }
+    }
+
+    async function guardarNuevoUmbral() {
+        const anio = parseInt(document.getElementById('umbral-anio').value);
+        const monto = parseFloat(document.getElementById('umbral-monto').value);
+        const desc = document.getElementById('umbral-descripcion').value;
+        if (!anio||!monto){alert('Ingresa año y monto.');return;}
+        try { await fetch('/api/umbrales', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({anio,montoUmbral:monto,montoSubastaMinimo:monto,descripcion:desc,activo:false}) }); ocultarFormUmbral(); cargarUmbrales(); } catch(e) { alert('Error al guardar.'); }
+    }
+
+    async function activarUmbral(id) {
+        if (!confirm('¿Activar este umbral? Se desactivarán los demás.')) return;
+        try { await fetch(`/api/umbrales/${id}/activar`, { method: 'PUT' }); cargarUmbrales(); } catch(e) { alert('Error al activar.'); }
+    }
+
+    async function eliminarUmbral(id, activo) {
+        const msg = activo ? '⚠️ Este umbral está ACTIVO. ¿Estás seguro de que deseas eliminarlo?' : '¿Eliminar este umbral?';
+        if (!confirm(msg)) return;
+        try { await fetch(`/api/umbrales/${id}`, { method: 'DELETE' }); cargarUmbrales(); } catch(e) { alert('Error al eliminar.'); }
+    }
+
+    function toggleNotificaciones() {
+        const panel = document.getElementById('panel-notificaciones');
+        const badge = document.getElementById('badge-notif');
+        if (!panel.classList.contains('hidden')) { panel.classList.add('hidden'); }
+        else { renderizarNotificaciones(); panel.classList.remove('hidden'); badge.classList.add('hidden'); badge.textContent = '0'; }
+    }
+    function cerrarNotificaciones() { document.getElementById('panel-notificaciones').classList.add('hidden'); }
+
+    function renderizarNotificaciones() {
+        const lista = document.getElementById('lista-notificaciones');
+        const procesos = obtenerListaProcesos();
+        const notificaciones = [];
+        function getColorNotif(tipoContrato) {
+            const tipo = (tipoContrato||'').toUpperCase();
+            if (tipo.includes('ÍNFIMA')||tipo.includes('INFIMA')) return '#3b82f6';
+            if (tipo.includes('CATÁLOGO')||tipo.includes('CATALOGO')) return '#f59e0b';
+            if (tipo.includes('SUBASTA')) return '#10b981';
+            if (tipo.includes('RÉGIMEN')||tipo.includes('REGIMEN')) return '#8b5cf6';
+            return '#6b7280';
+        }
+        function parsearFechaModificacion(str) {
+            if (!str) return '';
+            const meses = {'ene':0,'feb':1,'mar':2,'abr':3,'may':4,'jun':5,'jul':6,'ago':7,'sep':8,'oct':9,'nov':10,'dic':11};
+            const m = str.match(/(\d+)\s+(\w+)\s+(\d+),\s+(\d+):(\d+)/);
+            if (!m) return str;
+            const d = new Date(parseInt(m[3]),meses[m[2].toLowerCase()]??0,parseInt(m[1]),parseInt(m[4]),parseInt(m[5]));
+            return isNaN(d) ? str : d.toISOString();
+        }
+        procesos.forEach(instancia => {
+            const pipeline = instancia.pipelineSnapshot || [];
+            const tipoLimpio = (instancia.tipoContrato||'Contrato').replace('Contrato ','');
+            pipeline.forEach((paso, i) => {
+                const numPaso = paso.orden||(i+1);
+                if (paso.respuestasUsuario&&paso.respuestasUsuario.completado) {
+                    const resp = paso.respuestasUsuario;
+                    notificaciones.push({ texto:`El paso ${numPaso} — ${paso.nombrePaso} del ${tipoLimpio} ha sido guardado.`, custodio:resp.responsable||instancia.admin||'Sin asignar', fecha:resp.fecha||instancia.fechaModificacion||'Sin fecha', timestamp:resp.savedAt||parsearFechaModificacion(instancia.fechaModificacion||''), tipoContrato:tipoLimpio, poa:instancia.codigoPoa||instancia.noPoa||'N/A', colorTipo:getColorNotif(instancia.tipoContrato||'') });
+                }
+                if (paso.subpasos&&paso.subpasos.length>0) {
+                    const respSub = paso.respuestasSubpasos||{};
+                    paso.subpasos.forEach((sub,si) => {
+                        const rSub = respSub[si]||{};
+                        if (rSub.completado) {
+                            const numDisplay=(()=>{ const txt=sub.nombreSubpaso||sub.descripcion||''; const m=txt.match(/^([\d]+(?:\.[\d]+)*)(?:\s|$)/); return m?m[1]:`${numPaso}.${si+1}`; })();
+                            const nombreLimpio=(()=>{ const txt=sub.nombreSubpaso||sub.descripcion||'Subpaso'; const m=txt.match(/^[\d.]+(?:\s+[\d.]+)?\s*[–\-]\s*(.+)$/); return m?m[1].trim():txt.replace(/^[\d.]+\s+/,'').trim(); })();
+                            notificaciones.push({ texto:`El subpaso ${numDisplay} — ${nombreLimpio} del ${tipoLimpio} ha sido guardado.`, custodio:rSub.responsable||instancia.admin||'Sin asignar', fecha:rSub.fecha||instancia.fechaModificacion||'Sin fecha', timestamp:rSub.savedAt||parsearFechaModificacion(instancia.fechaModificacion||''), tipoContrato:tipoLimpio, poa:instancia.codigoPoa||instancia.noPoa||'N/A', colorTipo:getColorNotif(instancia.tipoContrato||'') });
+                        }
+                    });
                 }
             });
         });
+        if (!notificaciones.length) { lista.innerHTML='<p style="font-size:12px;color:#9ca3af;text-align:center;padding:20px 16px;">No hay notificaciones recientes.</p>'; return; }
+        notificaciones.sort((a,b)=>b.timestamp.localeCompare(a.timestamp));
+        lista.innerHTML = notificaciones.map(n=>`<div style="padding:10px 16px;border-bottom:1px solid #f8fafc;"><p style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:${n.colorTipo};margin:0 0 3px;">Tipo: ${n.tipoContrato} #${n.poa}</p><p style="font-size:12px;color:#374151;margin:0 0 3px;line-height:1.4;">${n.texto}</p><p style="font-size:11px;color:#6b7280;margin:0 0 2px;"><strong>Custodio:</strong> ${n.custodio}</p><p style="font-size:10px;color:#9ca3af;margin:0;">${n.fecha}</p></div>`).join('');
+    }
 
-        function actualizarVisibilidadPanelLink() {
-            const link = document.getElementById('link-panel-control');
-            if (rolActivoUsuario === 'ROLE_SUPER_ADMIN') {
-                link.classList.remove('hidden');
-            } else {
-                link.classList.add('hidden');
-                volverDashboard();
-            }
-        }
-
-        function cambiarRolDashboard() {
-            rolActivoUsuario = document.getElementById('select-rol').value;
-            localStorage.setItem('rolSimulado', rolActivoUsuario);
-            verificarProcesosActivos();
-            actualizarVisibilidadPanelLink();
-        }
-
-        function obtenerListaProcesos() {
-            const raw = localStorage.getItem('instanciaProcesoEnProgreso');
-            let procesos = [];
-            if (raw) { try { procesos = JSON.parse(raw); if (!Array.isArray(procesos)) procesos = [procesos]; } catch(e){} }
-
-            const ultimoAdmin = localStorage.getItem('ultimoAdminSeleccionado');
-            if (ultimoAdmin) {
-                let modificado = false;
-                procesos.forEach(p => {
-                    if (!p.admin) { p.admin = ultimoAdmin; modificado = true; }
-                });
-                if (modificado) localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
-                localStorage.removeItem('ultimoAdminSeleccionado');
-            }
-            return procesos;
-        }
-
-        function esMiTurno(instancia) {
-            if (rolActivoUsuario === 'ROLE_SUPER_ADMIN') return true;
-            if (rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') return true;
-
-            if (instancia.admin !== rolActivoUsuario) return false;
-
-            if (!instancia.pipelineSnapshot || instancia.pipelineSnapshot.length === 0) return false;
-            const indiceActual = instancia.pipelineSnapshot.findIndex(p => !p.respuestasUsuario?.completado);
-            if (indiceActual === -1) return true;
-
-            const pasoActual = instancia.pipelineSnapshot[indiceActual];
-            const faseUpper = (pasoActual.fase || '').toUpperCase();
-            const esFaseAdmin = (faseUpper.includes('CONTRACTUAL') && !faseUpper.includes('PRECONTRACTUAL')) || faseUpper.includes('EVALUACIÓN') || faseUpper.includes('EVALUACION');
-            return esFaseAdmin;
-        }
-
-        function verificarProcesosActivos() {
-            const procesos = obtenerListaProcesos();
-            const seccionProgreso = document.getElementById('seccion-en-progreso');
-            const contenedorTarjetas = document.getElementById('contenedor-tarjetas-activas');
-            const seccionCrear = document.getElementById('seccion-nuevo-proceso');
-
-            if (rolActivoUsuario === 'ROLE_SUPER_ADMIN' || rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') {
-                seccionCrear.style.display = 'block';
-            } else {
-                seccionCrear.style.display = 'none';
-            }
-
-            contenedorTarjetas.innerHTML = '';
-            let procesosMostrados = 0;
-
-            if (procesos.length > 0) {
-                procesos.forEach((instancia, index) => {
-
-                    if (!esMiTurno(instancia)) return;
-                    procesosMostrados++;
-
-                    const tituloLimpio = (instancia.tipoContrato || 'Ínfima Cuantía').replace('Contrato ', '');
-                    const pct = instancia.porcentaje || 0;
-                    const cfg = getTipoConfig(instancia.tipoContrato);
-                    const esAvanzado = pct >= 50;
-                    const puedeEliminar = (rolActivoUsuario === 'ROLE_SUPER_ADMIN' || rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE');
-
-                    const tarjetaHtml = `
-                        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 flex flex-col relative hover:shadow-md transition">
-                            ${puedeEliminar ? `
-                            <button onclick="eliminarInstanciaProceso(${index})"
-                                    class="absolute right-4 top-4 text-gray-300 hover:text-red-400 transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                            </button>` : ''}
-
-                            <div class="flex items-start justify-between mb-3 pr-6">
-                                <div class="p-2.5 ${cfg.iconBg} ${cfg.iconText} rounded-xl">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        ${cfg.icon}
-                                    </svg>
-                                </div>
-                                <div class="text-right">
-                                    <span class="text-sm font-bold ${cfg.iconText}">${pct}%</span>
-                                    <p class="text-[10px] text-gray-400 leading-none mt-0.5">completado</p>
-                                </div>
-                            </div>
-
-                            <div class="h-1.5 bg-gray-100 rounded-full mb-4">
-                                <div class="${cfg.barColor} h-1.5 rounded-full transition-all" style="width:${pct}%"></div>
-                            </div>
-
-                            <h4 class="text-sm font-bold text-gray-900 mb-1">${tituloLimpio}</h4>
-                            <p class="text-[10px] text-gray-400 mb-3"><span class="font-bold">Admin Asignado:</span> ${instancia.admin || 'Sin asignar'}</p>
-                            <div class="flex items-center space-x-2 mb-3">
-                                <span class="${cfg.badgeBg} ${cfg.badgeText} text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wide truncate max-w-[120px]">
-                                    ${instancia.actividadNombre ? instancia.actividadNombre.substring(0, 20) : 'En proceso'}
-                                </span>
-                                <span class="bg-gray-100 text-gray-500 text-[10px] font-semibold px-2 py-0.5 rounded uppercase">${instancia.codigoPoa || 'POA 0000'}</span>
-                            </div>
-
-                            <div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
-                                <span class="flex items-center space-x-1 text-[11px] text-gray-400">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                    <span>${instancia.fechaModificacion || 'Sin fecha'}</span>
-                                </span>
-                                ${esAvanzado
-                                    ? `<button onclick="continuarProcesoEstructurado(${index})"
-                                               class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-semibold text-[11px] py-1.5 px-3 rounded-lg transition">
-                                           Revisar
-                                       </button>`
-                                    : `<button onclick="continuarProcesoEstructurado(${index})"
-                                               class="${cfg.btnBg || 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold text-[11px] py-1.5 px-3 rounded-lg transition flex items-center space-x-1">
-                                           <span>Continuar</span>
-                                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                                           </svg>
-                                       </button>`
-                                }
-                            </div>
-                        </div>
-                    `;
-                    contenedorTarjetas.insertAdjacentHTML('beforeend', tarjetaHtml);
-                });
-            }
-
-            if (procesosMostrados > 0) {
-                seccionProgreso.classList.remove('hidden');
-            } else {
-                seccionProgreso.classList.add('hidden');
-                contenedorTarjetas.innerHTML = `
-                    <div class="col-span-full rounded-2xl border-2 border-dashed border-gray-200 p-8 flex flex-col items-center justify-center text-center bg-white/50">
-                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-gray-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-sm font-bold text-gray-800">Bandeja Vacía</h3>
-                        <p class="text-xs text-gray-400 mt-1 max-w-sm">No tienes tareas pendientes. Te notificaremos cuando un trámite llegue a tu fase.</p>
-                    </div>
-                `;
-            }
-            actualizarBadgeNotificaciones();
-        }
-
-        function continuarProcesoEstructurado(index) {
-            const procesos = obtenerListaProcesos();
-            if (procesos[index]) {
-                const instancia = procesos[index];
-                const indiceReal = instancia.pipelineSnapshot.findIndex(paso =>
-                    !paso.respuestasUsuario || !paso.respuestasUsuario.completado
-                );
-                if (indiceReal !== -1) {
-                    instancia.ultimoIndiceTrabajado = indiceReal;
-                    procesos[index] = instancia;
-                    localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
-                }
-                localStorage.setItem('idProcesoActivo', instancia.id);
-                localStorage.setItem('flujoPersonalizado', JSON.stringify(instancia.pipelineSnapshot));
-                window.location.href = '/ejecutar-proceso.html';
-            }
-        }
-
-        function iniciarNuevoContrato(tipoContrato) {
-            localStorage.removeItem('flujoPersonalizado');
-            localStorage.removeItem('idProcesoActivo');
-            localStorage.setItem('contratoSeleccionado', JSON.stringify({ nombre: tipoContrato, pasos: [] }));
-            window.location.href = '/detalles-proceso.html';
-        }
-
-        function eliminarInstanciaProceso(index) {
-            if (confirm('¿Estás seguro de que deseas eliminar este proceso en progreso? Se perderán todos sus cambios guardados.')) {
-                let procesos = obtenerListaProcesos();
-                procesos.splice(index, 1);
-                localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
-                verificarProcesosActivos();
-            }
-        }
-
-        function cerrarSesion() { localStorage.removeItem('usuario'); window.location.href = '/index.html'; }
-        function mostrarUsuario() { }
-
-        // ===== PANEL DE CONTROL =====
-        function mostrarPanelControl() {
-            document.getElementById('vista-dashboard').classList.add('hidden');
-            document.getElementById('panel-control-section').classList.remove('hidden');
-            cargarUmbrales();
-        }
-
-        function volverDashboard() {
-            document.getElementById('panel-control-section').classList.add('hidden');
-            document.getElementById('vista-dashboard').classList.remove('hidden');
-        }
-
-        function mostrarFormUmbral() { document.getElementById('form-nuevo-umbral').classList.remove('hidden'); }
-        function ocultarFormUmbral() {
-            document.getElementById('form-nuevo-umbral').classList.add('hidden');
-            document.getElementById('umbral-anio').value = '';
-            document.getElementById('umbral-monto').value = '';
-            document.getElementById('umbral-descripcion').value = '';
-        }
-
-        let umbralCache = [];
-
-        async function cargarUmbrales() {
-            const lista = document.getElementById('lista-umbrales');
-            lista.innerHTML = '<p class="text-xs text-gray-400">Cargando...</p>';
-            try {
-                umbralCache = await fetch('/api/umbrales').then(r => r.json());
-                lista.innerHTML = '';
-                if (!umbralCache.length) {
-                    lista.innerHTML = '<p class="text-xs text-gray-400 italic">No hay umbrales registrados.</p>';
-                    return;
-                }
-                umbralCache.forEach(u => {
-                    const montoSubasta = u.montoSubastaMinimo != null ? u.montoSubastaMinimo : u.montoUmbral;
-                    const fmtInfima = parseFloat(u.montoUmbral).toLocaleString('en-US', {minimumFractionDigits: 2});
-                    const fmtSubasta = parseFloat(montoSubasta).toLocaleString('en-US', {minimumFractionDigits: 2});
-                    lista.insertAdjacentHTML('beforeend', `
-                        <div class="border border-gray-200 rounded-xl overflow-hidden">
-                            <!-- Cabecera del registro -->
-                            <div class="flex items-center justify-between bg-gray-50 px-4 py-3">
-                                <div class="flex items-center space-x-3 flex-wrap gap-y-1">
-                                    <span class="text-sm font-bold text-gray-800">Año ${u.anio}</span>
-                                    ${u.activo ? '<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full">ACTIVO</span>' : '<span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-2 py-0.5 rounded-full">INACTIVO</span>'}
-                                    <span class="text-[11px] text-gray-500">
-                                        <span class="font-bold text-blue-600">Ínfima Cuantía ≤</span>
-                                        <span class="font-mono font-bold text-blue-700"> $${fmtInfima}</span>
-                                        <span class="text-gray-300 mx-1">|</span>
-                                        <span class="font-bold text-emerald-600">Subasta &gt;</span>
-                                        <span class="font-mono font-bold text-emerald-700"> $${fmtSubasta}</span>
-                                    </span>
-                                    ${u.descripcion ? `<span class="text-[10px] text-gray-400 italic">${u.descripcion}</span>` : ''}
-                                </div>
-                                <div class="flex items-center space-x-2 flex-shrink-0">
-                                    ${!u.activo ? `<button onclick="activarUmbral(${u.id})" class="text-[11px] font-bold text-white bg-emerald-500 hover:bg-emerald-600 px-3 py-1.5 rounded-lg transition">Activar</button>` : ''}
-                                    <button onclick="toggleEditarUmbral(${u.id})" class="text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-100 px-3 py-1.5 rounded-lg transition">Editar</button>
-                                    <button onclick="eliminarUmbral(${u.id}, ${u.activo})" class="text-[11px] font-bold text-red-500 bg-red-50 hover:bg-red-100 border border-red-100 px-3 py-1.5 rounded-lg transition">Eliminar</button>
-                                </div>
-                            </div>
-                            <!-- Formulario de edición (oculto por defecto) -->
-                            <div id="edit-form-${u.id}" class="hidden border-t border-gray-200 bg-white p-5 space-y-4">
-                                <p class="text-xs font-bold text-gray-600 uppercase tracking-wide">Editar umbrales — Año ${u.anio}</p>
-                                <!-- Ínfima Cuantía -->
-                                <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                                    <label class="block text-[11px] font-bold text-blue-800 uppercase tracking-wide mb-2">Ínfima Cuantía — monto máximo (≤)</label>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="relative flex-1">
-                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 font-bold text-sm">$</span>
-                                            <input id="edit-infima-${u.id}" type="number" step="0.01" min="0" value="${u.montoUmbral}"
-                                                   class="w-full border border-blue-200 rounded-lg pl-7 pr-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-400/30 bg-white">
-                                        </div>
-                                        <button onclick="guardarCampoUmbral(${u.id}, 'infima')"
-                                                class="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition whitespace-nowrap">
-                                            Guardar Ínfima
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- Subasta Inversa -->
-                                <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4">
-                                    <label class="block text-[11px] font-bold text-emerald-800 uppercase tracking-wide mb-2">Subasta Inversa — monto mínimo (&gt;)</label>
-                                    <div class="flex items-center space-x-3">
-                                        <div class="relative flex-1">
-                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-500 font-bold text-sm">$</span>
-                                            <input id="edit-subasta-${u.id}" type="number" step="0.01" min="0" value="${montoSubasta}"
-                                                   class="w-full border border-emerald-200 rounded-lg pl-7 pr-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-400/30 bg-white">
-                                        </div>
-                                        <button onclick="guardarCampoUmbral(${u.id}, 'subasta')"
-                                                class="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-lg transition whitespace-nowrap">
-                                            Guardar Subasta
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- Descripción -->
-                                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                                    <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-2">Descripción</label>
-                                    <div class="flex items-center space-x-3">
-                                        <input id="edit-desc-${u.id}" type="text" value="${(u.descripcion||'').replace(/"/g,'&quot;')}"
-                                               placeholder="Ej: Umbral aprobado en resolución #..."
-                                               class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-gray-400/30 bg-white">
-                                        <button onclick="guardarCampoUmbral(${u.id}, 'descripcion')"
-                                                class="text-xs font-bold text-white bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-lg transition whitespace-nowrap">
-                                            Guardar
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="flex justify-end">
-                                    <button onclick="toggleEditarUmbral(${u.id})" class="text-xs text-gray-400 hover:text-gray-600 px-3 py-1.5 transition">Cerrar</button>
-                                </div>
-                            </div>
-                        </div>`);
-                });
-            } catch (e) {
-                lista.innerHTML = '<p class="text-xs text-red-500">Error al cargar umbrales.</p>';
-            }
-        }
-
-        function toggleEditarUmbral(id) {
-            document.getElementById(`edit-form-${id}`).classList.toggle('hidden');
-        }
-
-        async function guardarCampoUmbral(id, campo) {
-            const u = umbralCache.find(x => x.id === id);
-            if (!u) return;
-            const body = {
-                anio: u.anio,
-                montoUmbral: u.montoUmbral,
-                montoSubastaMinimo: u.montoSubastaMinimo != null ? u.montoSubastaMinimo : u.montoUmbral,
-                descripcion: u.descripcion,
-                activo: u.activo
-            };
-            if (campo === 'infima') {
-                const val = parseFloat(document.getElementById(`edit-infima-${id}`).value);
-                if (isNaN(val) || val <= 0) { alert('Ingresa un monto válido.'); return; }
-                body.montoUmbral = val;
-            } else if (campo === 'subasta') {
-                const val = parseFloat(document.getElementById(`edit-subasta-${id}`).value);
-                if (isNaN(val) || val <= 0) { alert('Ingresa un monto válido.'); return; }
-                body.montoSubastaMinimo = val;
-            } else if (campo === 'descripcion') {
-                body.descripcion = document.getElementById(`edit-desc-${id}`).value;
-            }
-            try {
-                await fetch(`/api/umbrales/${id}`, {
-                    method: 'PUT',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(body)
-                });
-                cargarUmbrales();
-            } catch (e) { alert('Error al guardar.'); }
-        }
-
-        async function guardarNuevoUmbral() {
-            const anio = parseInt(document.getElementById('umbral-anio').value);
-            const monto = parseFloat(document.getElementById('umbral-monto').value);
-            const desc = document.getElementById('umbral-descripcion').value;
-            if (!anio || !monto) { alert('Ingresa año y monto.'); return; }
-            try {
-                await fetch('/api/umbrales', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ anio, montoUmbral: monto, montoSubastaMinimo: monto, descripcion: desc, activo: false })
-                });
-                ocultarFormUmbral();
-                cargarUmbrales();
-            } catch (e) { alert('Error al guardar.'); }
-        }
-
-        async function activarUmbral(id) {
-            if (!confirm('¿Activar este umbral? Se desactivarán los demás.')) return;
-            try {
-                await fetch(`/api/umbrales/${id}/activar`, { method: 'PUT' });
-                cargarUmbrales();
-            } catch (e) { alert('Error al activar.'); }
-        }
-
-        function toggleNotificaciones() {
-            const panel = document.getElementById('panel-notificaciones');
-            const badge = document.getElementById('badge-notif');
-            const estaVisible = !panel.classList.contains('hidden');
-            if (estaVisible) {
-                panel.classList.add('hidden');
-            } else {
-                renderizarNotificaciones();
-                panel.classList.remove('hidden');
-                badge.classList.add('hidden');
-                badge.textContent = '0';
-            }
-        }
-
-        function cerrarNotificaciones() {
-            document.getElementById('panel-notificaciones').classList.add('hidden');
-        }
-
-        function renderizarNotificaciones() {
-            const lista = document.getElementById('lista-notificaciones');
-            const procesos = obtenerListaProcesos();
-
-            const notificaciones = [];
-
-            function getColorNotif(tipoContrato) {
-                const tipo = (tipoContrato || '').toUpperCase();
-                if (tipo.includes('ÍNFIMA') || tipo.includes('INFIMA')) return '#3b82f6';
-                if (tipo.includes('CATÁLOGO') || tipo.includes('CATALOGO')) return '#f59e0b';
-                if (tipo.includes('SUBASTA')) return '#10b981';
-                if (tipo.includes('RÉGIMEN') || tipo.includes('REGIMEN')) return '#8b5cf6';
-                return '#6b7280';
-            }
-
-            function parsearFechaModificacion(str) {
-                if (!str) return '';
-                const meses = {
-                    'ene':0,'feb':1,'mar':2,'abr':3,'may':4,'jun':5,
-                    'jul':6,'ago':7,'sep':8,'oct':9,'nov':10,'dic':11
-                };
-                const m = str.match(/(\d+)\s+(\w+)\s+(\d+),\s+(\d+):(\d+)/);
-                if (!m) return str;
-                const d = new Date(
-                    parseInt(m[3]),
-                    meses[m[2].toLowerCase()] ?? 0,
-                    parseInt(m[1]),
-                    parseInt(m[4]),
-                    parseInt(m[5])
-                );
-                return isNaN(d) ? str : d.toISOString();
-            }
-
-            procesos.forEach(instancia => {
-                const pipeline = instancia.pipelineSnapshot || [];
-                const tipoLimpio = (instancia.tipoContrato || 'Contrato').replace('Contrato ', '');
-
-                pipeline.forEach((paso, i) => {
-                    const numPaso = paso.orden || (i + 1);
-
-                    if (paso.respuestasUsuario && paso.respuestasUsuario.completado) {
-                        const resp = paso.respuestasUsuario;
-                        notificaciones.push({
-                            texto: `El paso ${numPaso} — ${paso.nombrePaso} del ${tipoLimpio} ha sido guardado.`,
-                            custodio: resp.responsable || instancia.admin || 'Sin asignar',
-                            fecha: resp.fecha || instancia.fechaModificacion || 'Sin fecha',
-                            timestamp: resp.savedAt || parsearFechaModificacion(instancia.fechaModificacion || ''),
-                            tipoContrato: tipoLimpio,
-                            poa: instancia.codigoPoa || instancia.noPoa || 'N/A',
-                            colorTipo: getColorNotif(instancia.tipoContrato || '')
-                        });
-                    }
-
-                    if (paso.subpasos && paso.subpasos.length > 0) {
-                        const respSub = paso.respuestasSubpasos || {};
-                        paso.subpasos.forEach((sub, si) => {
-                            const rSub = respSub[si] || {};
-                            if (rSub.completado) {
-                                const numDisplay = (() => {
-                                    const txt = sub.nombreSubpaso || sub.descripcion || '';
-                                    const m = txt.match(/^([\d]+(?:\.[\d]+)*)(?:\s|$)/);
-                                    return m ? m[1] : `${numPaso}.${si + 1}`;
-                                })();
-                                const nombreLimpio = (() => {
-                                    const txt = sub.nombreSubpaso || sub.descripcion || 'Subpaso';
-                                    const m = txt.match(/^[\d.]+(?:\s+[\d.]+)?\s*[–\-]\s*(.+)$/);
-                                    return m ? m[1].trim() : txt.replace(/^[\d.]+\s+/, '').trim();
-                                })();
-                                notificaciones.push({
-                                    texto: `El subpaso ${numDisplay} — ${nombreLimpio} del ${tipoLimpio} ha sido guardado.`,
-                                    custodio: rSub.responsable || instancia.admin || 'Sin asignar',
-                                    fecha: rSub.fecha || instancia.fechaModificacion || 'Sin fecha',
-                                    timestamp: rSub.savedAt || parsearFechaModificacion(instancia.fechaModificacion || ''),
-                                    tipoContrato: tipoLimpio,
-                                    poa: instancia.codigoPoa || instancia.noPoa || 'N/A',
-                                    colorTipo: getColorNotif(instancia.tipoContrato || '')
-                                });
-                            }
-                        });
-                    }
-                });
+    function actualizarBadgeNotificaciones() {
+        const badge = document.getElementById('badge-notif');
+        if (!badge) return;
+        let count = 0;
+        obtenerListaProcesos().forEach(instancia => {
+            (instancia.pipelineSnapshot||[]).forEach(paso => {
+                if (paso.respuestasUsuario&&paso.respuestasUsuario.completado) count++;
+                if (paso.subpasos&&paso.respuestasSubpasos) paso.subpasos.forEach((_,si)=>{ const r=paso.respuestasSubpasos[si]; if(r&&r.completado) count++; });
             });
+        });
+        if (count>0) { badge.textContent=count>9?'9+':count; badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); }
+    }
 
-            if (notificaciones.length === 0) {
-                lista.innerHTML = `<p class="text-xs text-gray-400 text-center py-6 px-4">
-                    No hay notificaciones recientes.</p>`;
-                return;
-            }
+    function mostrarTabPanel(tab) {
+        const secU=document.getElementById('seccion-umbrales'), secUs=document.getElementById('seccion-usuarios');
+        const tabU=document.getElementById('tab-umbrales'), tabUs=document.getElementById('tab-usuarios');
+        const activeClass=['bg-white','text-gray-800','shadow-sm'], inactiveClass=['text-gray-500','hover:text-gray-700'];
+        if (tab==='umbrales') { secU.classList.remove('hidden'); secUs.classList.add('hidden'); activeClass.forEach(c=>tabU.classList.add(c)); inactiveClass.forEach(c=>tabU.classList.remove(c)); inactiveClass.forEach(c=>tabUs.classList.add(c)); activeClass.forEach(c=>tabUs.classList.remove(c)); }
+        else { secU.classList.add('hidden'); secUs.classList.remove('hidden'); activeClass.forEach(c=>tabUs.classList.add(c)); inactiveClass.forEach(c=>tabUs.classList.remove(c)); inactiveClass.forEach(c=>tabU.classList.add(c)); activeClass.forEach(c=>tabU.classList.remove(c)); cargarUsuarios(); }
+    }
 
-            notificaciones.sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-
-            lista.innerHTML = notificaciones.map(n => `
-                <div class="px-4 py-3 hover:bg-gray-50 transition border-b border-gray-50 last:border-0">
-                    <p class="text-[10px] font-black uppercase tracking-wide mb-1"
-                       style="color:${n.colorTipo}">
-                        Tipo de contrato: ${n.tipoContrato} #${n.poa}
-                    </p>
-                    <p class="text-xs text-gray-800 font-medium leading-snug">${n.texto}</p>
-                    <p class="text-[11px] text-gray-500 mt-1">
-                        <span class="font-bold">Custodio Actual:</span> ${n.custodio}
-                    </p>
-                    <p class="text-[10px] text-gray-400 mt-0.5">${n.fecha}</p>
-                </div>
-            `).join('');
-        }
-
-        function actualizarBadgeNotificaciones() {
-            const badge = document.getElementById('badge-notif');
-            if (!badge) return;
-            const procesos = obtenerListaProcesos();
-            let count = 0;
-
-            procesos.forEach(instancia => {
-                const pipeline = instancia.pipelineSnapshot || [];
-                pipeline.forEach(paso => {
-                    if (paso.respuestasUsuario && paso.respuestasUsuario.completado) {
-                        count++;
-                    }
-                    if (paso.subpasos && paso.respuestasSubpasos) {
-                        paso.subpasos.forEach((_, si) => {
-                            const r = paso.respuestasSubpasos[si];
-                            if (r && r.completado) count++;
-                        });
-                    }
-                });
+    async function cargarUsuarios() {
+        const lista = document.getElementById('lista-usuarios');
+        lista.innerHTML = '<p class="text-xs text-gray-400">Cargando...</p>';
+        try {
+            const usuarios = await fetch('/api/usuarios').then(r=>r.json());
+            lista.innerHTML = '';
+            if (!usuarios.length) { lista.innerHTML='<p class="text-xs text-gray-400 italic">No hay usuarios registrados.</p>'; return; }
+            usuarios.forEach(u => {
+                const rolNombre=u.rol?.nombre||u.role?.nombre||'Sin rol', esAdmin=rolNombre==='ROLE_ADMIN';
+                const badgeRol=esAdmin?'bg-purple-100 text-purple-700':'bg-blue-100 text-blue-700';
+                const badgeEstado=u.activo?'bg-emerald-100 text-emerald-700':'bg-red-100 text-red-600';
+                lista.insertAdjacentHTML('beforeend',`<div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3"><div class="flex items-center space-x-3 min-w-0"><div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm flex-shrink-0">${(u.nombreCompleto||u.email||'?')[0].toUpperCase()}</div><div class="min-w-0"><p class="text-sm font-bold text-gray-800 truncate">${u.nombreCompleto||'Sin nombre'}</p><p class="text-xs text-gray-400 truncate">${u.email}</p></div></div><div class="flex items-center space-x-2 flex-shrink-0 ml-4"><span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeRol}">${esAdmin?'👑 Admin':'👤 Usuario'}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeEstado}">${u.activo?'Activo':'Inactivo'}</span><select onchange="cambiarRolUsuario(${u.id}, this.value)" class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20"><option value="ROLE_USER" ${rolNombre==='ROLE_USER'?'selected':''}>Usuario</option><option value="ROLE_ADMIN" ${rolNombre==='ROLE_ADMIN'?'selected':''}>Admin</option></select><button onclick="toggleEstadoUsuario(${u.id},${u.activo})" class="text-[11px] font-bold px-3 py-1.5 rounded-lg transition border ${u.activo?'bg-red-50 text-red-500 border-red-100 hover:bg-red-100':'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'}">${u.activo?'Desactivar':'Activar'}</button><button onclick="eliminarUsuario(${u.id},'${(u.nombreCompleto||u.email).replace(/'/g,'')}')" class="text-[11px] font-bold px-3 py-1.5 rounded-lg transition border bg-gray-50 text-gray-400 border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-100">Eliminar</button></div></div>`);
             });
+        } catch(e) { lista.innerHTML='<p class="text-xs text-red-500">Error al cargar usuarios.</p>'; }
+    }
 
-            if (count > 0) {
-                badge.textContent = count > 9 ? '9+' : count;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
-
-        async function eliminarUmbral(id, activo) {
-            const msg = activo
-                ? '⚠️ Este umbral está ACTIVO. ¿Estás seguro de que deseas eliminarlo?'
-                : '¿Eliminar este umbral?';
-            if (!confirm(msg)) return;
-            try {
-                await fetch(`/api/umbrales/${id}`, { method: 'DELETE' });
-                cargarUmbrales();
-            } catch (e) { alert('Error al eliminar.'); }
-        }
-
-        function mostrarTabPanel(tab) {
-            const secUmbrales = document.getElementById('seccion-umbrales');
-            const secUsuarios = document.getElementById('seccion-usuarios');
-            const tabU = document.getElementById('tab-umbrales');
-            const tabUs = document.getElementById('tab-usuarios');
-
-            const activeClass = ['bg-white', 'text-gray-800', 'shadow-sm'];
-            const inactiveClass = ['text-gray-500', 'hover:text-gray-700'];
-
-            if (tab === 'umbrales') {
-                secUmbrales.classList.remove('hidden');
-                secUsuarios.classList.add('hidden');
-                activeClass.forEach(c => tabU.classList.add(c));
-                inactiveClass.forEach(c => tabU.classList.remove(c));
-                inactiveClass.forEach(c => tabUs.classList.add(c));
-                activeClass.forEach(c => tabUs.classList.remove(c));
-            } else {
-                secUmbrales.classList.add('hidden');
-                secUsuarios.classList.remove('hidden');
-                activeClass.forEach(c => tabUs.classList.add(c));
-                inactiveClass.forEach(c => tabUs.classList.remove(c));
-                inactiveClass.forEach(c => tabU.classList.add(c));
-                activeClass.forEach(c => tabU.classList.remove(c));
-                cargarUsuarios();
-            }
-        }
-
-        async function cargarUsuarios() {
-            const lista = document.getElementById('lista-usuarios');
-            lista.innerHTML = '<p class="text-xs text-gray-400">Cargando...</p>';
-            try {
-                const usuarios = await fetch('/api/usuarios').then(r => r.json());
-                lista.innerHTML = '';
-
-                if (!usuarios.length) {
-                    lista.innerHTML = '<p class="text-xs text-gray-400 italic">No hay usuarios registrados.</p>';
-                    return;
-                }
-
-                usuarios.forEach(u => {
-                    const rolNombre = u.rol?.nombre || u.role?.nombre || 'Sin rol';
-                    const esAdmin = rolNombre === 'ROLE_ADMIN';
-                    const badgeRol = esAdmin
-                        ? 'bg-purple-100 text-purple-700'
-                        : 'bg-blue-100 text-blue-700';
-                    const badgeEstado = u.activo
-                        ? 'bg-emerald-100 text-emerald-700'
-                        : 'bg-red-100 text-red-600';
-
-                    lista.insertAdjacentHTML('beforeend', `
-                        <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
-                            <div class="flex items-center space-x-3 min-w-0">
-                                <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
-                                    ${(u.nombreCompleto || u.email || '?')[0].toUpperCase()}
-                                </div>
-                                <div class="min-w-0">
-                                    <p class="text-sm font-bold text-gray-800 truncate">${u.nombreCompleto || 'Sin nombre'}</p>
-                                    <p class="text-xs text-gray-400 truncate">${u.email}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-2 flex-shrink-0 ml-4">
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeRol}">
-                                    ${esAdmin ? '👑 Admin' : '👤 Usuario'}
-                                </span>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${badgeEstado}">
-                                    ${u.activo ? 'Activo' : 'Inactivo'}
-                                </span>
-                                <select onchange="cambiarRolUsuario(${u.id}, this.value)"
-                                        class="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                                    <option value="ROLE_USER" ${rolNombre === 'ROLE_USER' ? 'selected' : ''}>Usuario</option>
-                                    <option value="ROLE_ADMIN" ${rolNombre === 'ROLE_ADMIN' ? 'selected' : ''}>Admin</option>
-                                </select>
-                                <button onclick="toggleEstadoUsuario(${u.id}, ${u.activo})"
-                                        class="text-[11px] font-bold px-3 py-1.5 rounded-lg transition border ${u.activo ? 'bg-red-50 text-red-500 border-red-100 hover:bg-red-100' : 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'}">
-                                    ${u.activo ? 'Desactivar' : 'Activar'}
-                                </button>
-                                <button onclick="eliminarUsuario(${u.id}, '${(u.nombreCompleto || u.email).replace(/'/g, '')}')"
-                                        class="text-[11px] font-bold px-3 py-1.5 rounded-lg transition border bg-gray-50 text-gray-400 border-gray-200 hover:bg-red-50 hover:text-red-500 hover:border-red-100">
-                                    Eliminar
-                                </button>
-                            </div>
-                        </div>
-                    `);
-                });
-            } catch (e) {
-                lista.innerHTML = '<p class="text-xs text-red-500">Error al cargar usuarios.</p>';
-            }
-        }
-
-        async function cambiarRolUsuario(id, rolNombre) {
-            try {
-                const res = await fetch(`/api/usuarios/${id}/rol`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ rolNombre })
-                });
-                if (res.ok) {
-                    cargarUsuarios();
-                } else {
-                    alert('Error al cambiar el rol.');
-                }
-            } catch (e) {
-                alert('No se pudo conectar con el servidor.');
-            }
-        }
-
-        async function toggleEstadoUsuario(id, estadoActual) {
-            const nuevoEstado = !estadoActual;
-            const accion = nuevoEstado ? 'activar' : 'desactivar';
-            if (!confirm(`¿Deseas ${accion} este usuario?`)) return;
-            try {
-                const res = await fetch(`/api/usuarios/${id}/estado`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ activo: nuevoEstado })
-                });
-                if (res.ok) {
-                    cargarUsuarios();
-                } else {
-                    alert('Error al cambiar el estado.');
-                }
-            } catch (e) {
-                alert('No se pudo conectar con el servidor.');
-            }
-        }
-
-        async function eliminarUsuario(id, nombre) {
-            if (!confirm(`¿Eliminar al usuario "${nombre}"? Esta acción no se puede deshacer.`)) return;
-            try {
-                const res = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
-                if (res.ok) {
-                    cargarUsuarios();
-                } else {
-                    alert('Error al eliminar el usuario.');
-                }
-            } catch (e) {
-                alert('No se pudo conectar con el servidor.');
-            }
-        }
-    </script>
+    async function cambiarRolUsuario(id, rolNombre) {
+        try { const res=await fetch(`/api/usuarios/${id}/rol`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({rolNombre})}); if(res.ok) cargarUsuarios(); else alert('Error al cambiar el rol.'); } catch(e) { alert('No se pudo conectar con el servidor.'); }
+    }
+    async function toggleEstadoUsuario(id, estadoActual) {
+        const nuevoEstado=!estadoActual, accion=nuevoEstado?'activar':'desactivar';
+        if (!confirm(`¿Deseas ${accion} este usuario?`)) return;
+        try { const res=await fetch(`/api/usuarios/${id}/estado`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({activo:nuevoEstado})}); if(res.ok) cargarUsuarios(); else alert('Error al cambiar el estado.'); } catch(e) { alert('No se pudo conectar con el servidor.'); }
+    }
+    async function eliminarUsuario(id, nombre) {
+        if (!confirm(`¿Eliminar al usuario "${nombre}"? Esta acción no se puede deshacer.`)) return;
+        try { const res=await fetch(`/api/usuarios/${id}`,{method:'DELETE'}); if(res.ok) cargarUsuarios(); else alert('Error al eliminar el usuario.'); } catch(e) { alert('No se pudo conectar con el servidor.'); }
+    }
+</script>
 </body>
 </html>
