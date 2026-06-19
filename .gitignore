@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Configuración sensible ###
+src/main/resources/application.properties
+
+### Claude Code ###
+.claude/
+
+### Datos institucionales ###
+src/main/resources/umbral_vae.csv
+src/main/resources/clasificador_presupuestario.csv
