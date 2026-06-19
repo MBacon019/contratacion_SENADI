@@ -1,4 +1,4 @@
-# 📋 Sistema de Contratación Pública — SENADI
+# 📋 Sistema de Seguimiento de Contratación Pública — SENADI
 
 Aplicativo web desarrollado como parte del programa de pasantías en el **Servicio Nacional de Derechos Intelectuales (SENADI)**, destinado al seguimiento y gestión de procesos de contratación pública institucional, en cumplimiento de la normativa del Sistema Nacional de Contratación Pública del Ecuador (SERCOP).
 
