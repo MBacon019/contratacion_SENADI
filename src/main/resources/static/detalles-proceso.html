@@ -420,7 +420,7 @@
                     <span id="txt-alerta-asignacion"></span>
                 </div>
 
-                <div class="g2" style="margin-top:16px; align-items:start;">
+                <div class="g3" style="margin-top:16px; align-items:start;">
                     <!-- Asignación -->
                     <div>
                         <label class="lbl">$ Asignación Presupuestaria</label>
@@ -430,6 +430,15 @@
                                    oninput="validarAsignacion()" class="inp">
                         </div>
                         <p id="hint-umbral" class="hint"></p>
+                    </div>
+                    <!-- Detalle de Compra -->
+                    <div>
+                        <label class="lbl">$ Detalle de Compra</label>
+                        <div class="inp-prefix-wrap">
+                            <span class="prefix-sym">$</span>
+                            <input id="input-detalle-compra" type="number" step="0.01" min="0" placeholder="0.00" class="inp">
+                        </div>
+                        <p class="hint">Opcional</p>
                     </div>
                     <!-- Cuatrimestre -->
                     <div>
@@ -696,6 +705,7 @@
             cpc: document.getElementById('input-cpc').value,
             cpcDescripcion: document.getElementById('cpc-sel-desc').textContent || '',
             asignacion: document.getElementById('input-asignacion').value,
+            detalleCompra: document.getElementById('input-detalle-compra').value || '0',
             cuatrimestre: document.getElementById('select-cuatrimestre').value,
             elaborado: document.getElementById('select-elaborado').value,
             revisado: document.getElementById('select-revisado').value,

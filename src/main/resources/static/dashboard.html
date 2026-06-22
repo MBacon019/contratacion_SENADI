@@ -227,6 +227,7 @@
                 Panel de Control
             </button>
         </div>
+
     </nav>
 
     <div class="sidebar-footer">SENADI © 2026</div>
@@ -286,9 +287,10 @@
                     <p class="page-subtitle" style="margin-bottom:0;">Administración de umbrales presupuestarios y configuración del sistema.</p>
                 </div>
             </div>
-            <div class="flex space-x-1 bg-gray-100 p-1 rounded-xl w-fit">
+            <div id="tabs-panel-control" class="flex space-x-1 bg-gray-100 p-1 rounded-xl w-fit">
                 <button id="tab-umbrales" onclick="mostrarTabPanel('umbrales')" class="text-xs font-bold px-4 py-2 rounded-lg bg-white text-gray-800 shadow-sm transition">Umbrales Presupuestarios</button>
                 <button id="tab-usuarios" onclick="mostrarTabPanel('usuarios')" class="text-xs font-bold px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 transition">Gestión de Usuarios</button>
+                <button id="tab-presupuesto" onclick="mostrarTabPanel('presupuesto')" class="text-xs font-bold px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 transition">Edición de Presupuestos</button>
             </div>
             <div id="seccion-umbrales" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
@@ -317,6 +319,17 @@
                     <button onclick="cargarUsuarios()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold px-4 py-2 rounded-xl transition">Actualizar</button>
                 </div>
                 <div class="p-6"><div id="lista-usuarios" class="space-y-2"><p class="text-xs text-gray-400">Cargando usuarios...</p></div></div>
+            </div>
+            <div id="seccion-presupuesto" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-800">Edición de Presupuestos de Contratos</h3>
+                    <p class="text-xs text-gray-500 mt-0.5">Modifica el valor asignado y cuatrimestre. Solo editable antes del paso límite según el tipo de contrato.</p>
+                </div>
+                <div class="p-6">
+                    <div id="lista-contratos-presupuesto" class="space-y-4">
+                        <p class="text-xs text-gray-400">Cargando contratos...</p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -496,9 +509,26 @@
     });
 
     function actualizarVisibilidadPanelLink() {
-        const link = document.getElementById('link-panel-control');
-        if (rolActivoUsuario === 'ROLE_SUPER_ADMIN') link.classList.remove('hidden');
-        else { link.classList.add('hidden'); volverDashboard(); }
+        const linkPanel = document.getElementById('link-panel-control');
+        if (rolActivoUsuario === 'ROLE_SUPER_ADMIN' || rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') {
+            linkPanel.classList.remove('hidden');
+            // Ajustar pestañas visibles según rol
+            const tabUmbrales = document.getElementById('tab-umbrales');
+            const tabUsuarios = document.getElementById('tab-usuarios');
+            const tabPresupuesto = document.getElementById('tab-presupuesto');
+            if (rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') {
+                if (tabUmbrales) tabUmbrales.classList.add('hidden');
+                if (tabUsuarios) tabUsuarios.classList.add('hidden');
+                if (tabPresupuesto) tabPresupuesto.classList.remove('hidden');
+            } else {
+                if (tabUmbrales) tabUmbrales.classList.remove('hidden');
+                if (tabUsuarios) tabUsuarios.classList.remove('hidden');
+                if (tabPresupuesto) tabPresupuesto.classList.remove('hidden');
+            }
+        } else {
+            linkPanel.classList.add('hidden');
+            volverDashboard();
+        }
     }
 
     function cambiarRolDashboard() {
@@ -627,7 +657,12 @@
     function mostrarPanelControl() {
         document.getElementById('vista-dashboard').classList.add('hidden');
         document.getElementById('panel-control-section').classList.remove('hidden');
-        cargarUmbrales();
+        // Para UNIDAD_REQUIRENTE, abrir directamente en la pestaña de presupuestos
+        if (rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') {
+            mostrarTabPanel('presupuesto');
+        } else {
+            mostrarTabPanel('umbrales');
+        }
     }
     function volverDashboard() {
         document.getElementById('panel-control-section').classList.add('hidden');
@@ -758,11 +793,34 @@
     }
 
     function mostrarTabPanel(tab) {
-        const secU=document.getElementById('seccion-umbrales'), secUs=document.getElementById('seccion-usuarios');
-        const tabU=document.getElementById('tab-umbrales'), tabUs=document.getElementById('tab-usuarios');
-        const activeClass=['bg-white','text-gray-800','shadow-sm'], inactiveClass=['text-gray-500','hover:text-gray-700'];
-        if (tab==='umbrales') { secU.classList.remove('hidden'); secUs.classList.add('hidden'); activeClass.forEach(c=>tabU.classList.add(c)); inactiveClass.forEach(c=>tabU.classList.remove(c)); inactiveClass.forEach(c=>tabUs.classList.add(c)); activeClass.forEach(c=>tabUs.classList.remove(c)); }
-        else { secU.classList.add('hidden'); secUs.classList.remove('hidden'); activeClass.forEach(c=>tabUs.classList.add(c)); inactiveClass.forEach(c=>tabUs.classList.remove(c)); inactiveClass.forEach(c=>tabU.classList.add(c)); activeClass.forEach(c=>tabU.classList.remove(c)); cargarUsuarios(); }
+        const secU = document.getElementById('seccion-umbrales');
+        const secUs = document.getElementById('seccion-usuarios');
+        const secP = document.getElementById('seccion-presupuesto');
+        const tabU = document.getElementById('tab-umbrales');
+        const tabUs = document.getElementById('tab-usuarios');
+        const tabP = document.getElementById('tab-presupuesto');
+        const activeClass = ['bg-white', 'text-gray-800', 'shadow-sm'];
+        const inactiveClass = ['text-gray-500', 'hover:text-gray-700'];
+
+        // Ocultar todas las secciones y desactivar todas las pestañas
+        [secU, secUs, secP].forEach(s => s && s.classList.add('hidden'));
+        [tabU, tabUs, tabP].forEach(t => {
+            if (!t) return;
+            inactiveClass.forEach(c => t.classList.add(c));
+            activeClass.forEach(c => t.classList.remove(c));
+        });
+
+        // Activar la pestaña y sección seleccionada
+        let secActiva = null, tabActivo = null;
+        if (tab === 'umbrales') { secActiva = secU; tabActivo = tabU; cargarUmbrales(); }
+        else if (tab === 'usuarios') { secActiva = secUs; tabActivo = tabUs; cargarUsuarios(); }
+        else if (tab === 'presupuesto') { secActiva = secP; tabActivo = tabP; cargarContratosParaEdicion(); }
+
+        if (secActiva) secActiva.classList.remove('hidden');
+        if (tabActivo) {
+            activeClass.forEach(c => tabActivo.classList.add(c));
+            inactiveClass.forEach(c => tabActivo.classList.remove(c));
+        }
     }
 
     async function cargarUsuarios() {
@@ -792,6 +850,252 @@
     async function eliminarUsuario(id, nombre) {
         if (!confirm(`¿Eliminar al usuario "${nombre}"? Esta acción no se puede deshacer.`)) return;
         try { const res=await fetch(`/api/usuarios/${id}`,{method:'DELETE'}); if(res.ok) cargarUsuarios(); else alert('Error al eliminar el usuario.'); } catch(e) { alert('No se pudo conectar con el servidor.'); }
+    }
+
+    // ═══════════════════════════════════════════════════════
+    // EDICIÓN DE PRESUPUESTOS DE CONTRATOS (pestaña en Panel de Control)
+    // ═══════════════════════════════════════════════════════
+
+    // Verifica si el proceso ya superó el paso límite (true = solo lectura)
+    function verificarPasadoLimite(instancia) {
+        const tipo = (instancia.tipoContrato || '').toLowerCase();
+        const pipeline = instancia.pipelineSnapshot || [];
+        if (!pipeline.length) return false;
+
+        if (tipo.includes('ínfima') || tipo.includes('infima')) {
+            // Límite: paso 8.1 (primer subpaso del paso con orden "8")
+            const paso8 = pipeline.find(p => String(p.orden) === '8') || pipeline[7];
+            if (!paso8) return false;
+            const respSub = paso8.respuestasSubpasos || {};
+            return !!(respSub[0] && respSub[0].completado);
+        } else if (tipo.includes('subasta')) {
+            // Límite: paso 11
+            const paso11 = pipeline.find(p => String(p.orden) === '11') || pipeline[10];
+            if (!paso11) return false;
+            return !!(paso11.respuestasUsuario && paso11.respuestasUsuario.completado);
+        } else if (tipo.includes('régimen') || tipo.includes('regimen')) {
+            // Límite: paso 11
+            const paso11 = pipeline.find(p => String(p.orden) === '11') || pipeline[10];
+            if (!paso11) return false;
+            return !!(paso11.respuestasUsuario && paso11.respuestasUsuario.completado);
+        }
+        return false;
+    }
+
+    function obtenerMensajeLimite(instancia) {
+        const tipo = (instancia.tipoContrato || '').toLowerCase();
+        if (tipo.includes('ínfima') || tipo.includes('infima')) return 'el paso 8.1';
+        if (tipo.includes('subasta')) return 'el paso 11';
+        if (tipo.includes('régimen') || tipo.includes('regimen')) return 'el paso 11';
+        return 'el paso límite definido';
+    }
+
+    // Normaliza cualquier formato de cuatrimestre al valor corto C1/C2/C3
+    function normalizarCuatrimestre(val) {
+        if (!val) return '';
+        const v = val.toLowerCase();
+        if (v === 'c1' || v.includes('1er') || v.includes('ene')) return 'C1';
+        if (v === 'c2' || v.includes('2do') || v.includes('may')) return 'C2';
+        if (v === 'c3' || v.includes('3er') || v.includes('sep')) return 'C3';
+        return val;
+    }
+
+    async function cargarContratosParaEdicion() {
+        const contenedor = document.getElementById('lista-contratos-presupuesto');
+        const procesos = obtenerListaProcesos();
+
+        if (!procesos.length) {
+            contenedor.innerHTML = `<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 text-center">
+                <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <p class="text-sm font-bold text-gray-500">No hay contratos creados actualmente.</p>
+                <p class="text-xs text-gray-400 mt-1">Crea un proceso desde el Dashboard para ver contratos aquí.</p>
+            </div>`;
+            return;
+        }
+
+        // Renderizar estructura base primero (sin umbral VAE)
+        contenedor.innerHTML = procesos.map((inst, i) => renderizarContratoEdicion(inst, i)).join('');
+
+        // Forzar el valor del select de cuatrimestre (selected en innerHTML no siempre aplica en todos los navegadores)
+        procesos.forEach((inst, i) => {
+            const sel = document.getElementById(`input-cuatrimestre-${i}`);
+            if (sel) {
+                const val = normalizarCuatrimestre(inst.cuatrimestre || '');
+                if (val) sel.value = val;
+            }
+        });
+
+        // Luego cargar umbrales VAE en segundo plano (no bloquea el UI)
+        for (let i = 0; i < procesos.length; i++) {
+            const inst = procesos[i];
+            const pastLimit = verificarPasadoLimite(inst);
+            if (!pastLimit && inst.codigoCpc) {
+                try {
+                    const cpcs = await fetch(`/api/cpc/buscar?q=${encodeURIComponent(inst.codigoCpc)}`).then(r => r.json());
+                    const cpcMatch = cpcs.find(c => c.codigo === inst.codigoCpc) || cpcs[0];
+                    if (cpcMatch && cpcMatch.umbralVae && cpcMatch.umbralVae > 0) {
+                        const fmtUmbral = parseFloat(cpcMatch.umbralVae).toLocaleString('en-US', {minimumFractionDigits: 2});
+                        const umbralEl = document.getElementById(`umbral-vae-${i}`);
+                        if (umbralEl) {
+                            umbralEl.textContent = `Ref. CPC VAE: $${fmtUmbral}`;
+                            umbralEl.classList.remove('text-gray-300');
+                            umbralEl.classList.add('text-gray-400');
+                        }
+                    } else {
+                        const umbralEl = document.getElementById(`umbral-vae-${i}`);
+                        if (umbralEl) umbralEl.textContent = 'Sin umbral VAE registrado para este CPC';
+                    }
+                } catch (e) {
+                    const umbralEl = document.getElementById(`umbral-vae-${i}`);
+                    if (umbralEl) umbralEl.textContent = 'No se pudo cargar el umbral VAE';
+                }
+            }
+        }
+    }
+
+    function renderizarContratoEdicion(instancia, index) {
+        const tituloLimpio = (instancia.tipoContrato || '').replace('Contrato ', '');
+        const valorActual = parseFloat(instancia.asignacion || 0);
+        const detalleCompraActual = parseFloat(instancia.detalleCompra || 0);
+        const cuatrimestreActual = normalizarCuatrimestre(instancia.cuatrimestre || '');
+        const pct = instancia.porcentaje || 0;
+        const pastLimit = verificarPasadoLimite(instancia);
+        const cfg = getTipoConfig(instancia.tipoContrato || '');
+
+        const fmtValorActual = valorActual.toLocaleString('en-US', {minimumFractionDigits: 2});
+        const fmtDetalleActual = detalleCompraActual.toLocaleString('en-US', {minimumFractionDigits: 2});
+
+        const optionsCuat = ['C1','C2','C3'].map(c => `<option value="${c}" ${cuatrimestreActual === c ? 'selected' : ''}>${c}</option>`).join('');
+
+        let cuerpo = '';
+        if (pastLimit) {
+            const limNombre = obtenerMensajeLimite(instancia);
+            cuerpo = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Valor Asignado Actual</label>
+                        <div class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs bg-gray-50 text-gray-500 font-mono">$ ${fmtValorActual}</div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Detalle de Compra</label>
+                        <div class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs bg-gray-50 text-gray-500 font-mono">$ ${fmtDetalleActual}</div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Cuatrimestre</label>
+                        <div class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs bg-gray-50 text-gray-500">${cuatrimestreActual || '—'}</div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center space-x-2 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                    <svg class="w-4 h-4 text-amber-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    <p class="text-xs text-amber-700"><strong>Solo lectura:</strong> Este proceso ha superado el limite establecido y su presupuesto ya no puede modificarse.</p>
+                </div>`;
+        } else {
+            cuerpo = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Valor Actual ($)</label>
+                        <div class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs bg-gray-50 text-gray-500 font-mono">$ ${fmtValorActual}</div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 mb-1">Nuevo Valor ($)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">$</span>
+                            <input id="input-nuevo-valor-${index}" type="number" step="0.01" min="0.01" placeholder="0.00" value="${valorActual}"
+                                class="w-full border border-gray-300 rounded-lg pl-6 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 mb-1">Cuatrimestre</label>
+                        <select id="input-cuatrimestre-${index}" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20">
+                            <option value="" ${!cuatrimestreActual ? 'selected' : ''}>Seleccionar...</option>
+                            ${optionsCuat}
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-500 mb-1">Detalle de Compra Actual ($)</label>
+                        <div class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs bg-gray-50 text-gray-500 font-mono">$ ${fmtDetalleActual}</div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-700 mb-1">Nuevo Detalle de Compra ($)</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">$</span>
+                            <input id="input-detalle-compra-${index}" type="number" step="0.01" min="0" placeholder="0.00" value="${detalleCompraActual || ''}"
+                                class="w-full border border-gray-300 rounded-lg pl-6 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center justify-between">
+                    <span id="umbral-vae-${index}" class="text-[10px] text-gray-300 italic">Cargando umbral VAE...</span>
+                    <button onclick="guardarPresupuestoContrato(${index})" class="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-xl transition shadow-sm flex items-center space-x-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <span>Guardar</span>
+                    </button>
+                </div>`;
+        }
+
+        return `
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div class="bg-gray-50 px-5 py-3 border-b border-gray-100 flex items-center justify-between flex-wrap gap-2">
+                    <div class="flex items-center space-x-3 min-w-0">
+                        <span class="${cfg.badgeBg || 'bg-gray-100'} ${cfg.badgeText || 'text-gray-600'} text-[10px] font-bold px-2 py-0.5 rounded uppercase flex-shrink-0">${tituloLimpio}</span>
+                        <span class="text-sm font-bold text-gray-800 truncate">${instancia.actividadNombre || 'Sin nombre'}</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400 font-mono flex-shrink-0">
+                        POA: ${instancia.codigoPoa || 'N/A'} &nbsp;|&nbsp; Avance: ${pct}%
+                        ${instancia.cuatrimestre ? `&nbsp;|&nbsp; <span class="text-blue-500 font-bold">${instancia.cuatrimestre}</span>` : ''}
+                    </div>
+                </div>
+                <div class="p-5 space-y-0">${cuerpo}</div>
+            </div>`;
+    }
+
+    async function guardarPresupuestoContrato(index) {
+        const procesos = obtenerListaProcesos();
+        if (!procesos[index]) return;
+
+        const inputValor = document.getElementById(`input-nuevo-valor-${index}`);
+        const inputCuat = document.getElementById(`input-cuatrimestre-${index}`);
+        const inputDetalle = document.getElementById(`input-detalle-compra-${index}`);
+        if (!inputValor) return;
+
+        const nuevoValor = parseFloat(inputValor.value);
+        const nuevoCuatrimestre = inputCuat ? inputCuat.value : '';
+        const nuevoDetalle = inputDetalle && inputDetalle.value !== '' ? parseFloat(inputDetalle.value) : null;
+
+        if (isNaN(nuevoValor) || nuevoValor <= 0) {
+            alert('Por favor ingresa un valor válido mayor a 0.');
+            return;
+        }
+
+        // Validar contra el umbral activo del tipo de contrato
+        const instancia = procesos[index];
+        const tipo = (instancia.tipoContrato || '').toLowerCase();
+        if (tipo.includes('ínfima') || tipo.includes('infima')) {
+            try {
+                const umbrales = await fetch('/api/umbrales').then(r => r.json());
+                const umbralActivo = umbrales.find(u => u.activo);
+                if (umbralActivo && nuevoValor > parseFloat(umbralActivo.montoUmbral)) {
+                    const fmtLimite = parseFloat(umbralActivo.montoUmbral).toLocaleString('en-US', {minimumFractionDigits: 2});
+                    alert(`⚠️ El nuevo valor supera el límite de Ínfima Cuantía ($${fmtLimite}) para el año ${umbralActivo.anio}.\n\nNo se puede guardar un presupuesto mayor al umbral del tipo de contrato.`);
+                    return;
+                }
+            } catch (e) { /* si falla la API, se permite guardar */ }
+        }
+
+        // Guardar
+        procesos[index].asignacion = nuevoValor;
+        if (nuevoCuatrimestre) procesos[index].cuatrimestre = nuevoCuatrimestre;
+        if (nuevoDetalle !== null && !isNaN(nuevoDetalle)) procesos[index].detalleCompra = nuevoDetalle;
+
+        localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
+
+        const fmtGuardado = nuevoValor.toLocaleString('en-US', {minimumFractionDigits: 2});
+        alert(`✅ Presupuesto actualizado a $${fmtGuardado}${nuevoCuatrimestre ? `\nCuatrimestre: ${nuevoCuatrimestre}` : ''}`);
+
+        // Recargar la vista
+        cargarContratosParaEdicion();
     }
 </script>
 </body>

@@ -136,7 +136,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                     <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm border-l-4 border-l-blue-500">
                         <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tiempo Total Invertido</p>
                         <p id="kpi-dias" class="text-2xl font-black text-gray-800 mt-1">0 <span class="text-sm text-gray-500 font-medium">días</span></p>
@@ -144,6 +144,14 @@
                     <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm border-l-4 border-l-emerald-500">
                         <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Asignación Presupuestaria</p>
                         <p class="text-2xl font-black text-emerald-600 mt-1" id="kpi-presupuesto">$0.00</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm border-l-4 border-l-teal-500">
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Detalle de Compra</p>
+                        <p class="text-2xl font-black text-teal-600 mt-1" id="kpi-detalle-compra">$0.00</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm border-l-4 border-l-indigo-500">
+                        <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Saldo Disponible</p>
+                        <p class="text-2xl font-black text-indigo-600 mt-1" id="kpi-saldo-disponible">$0.00</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm border-l-4 border-l-purple-500">
                         <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Fases Atendidas</p>
@@ -503,7 +511,11 @@
 
             let dTotales = Math.round(totalDiasAcumulados);
             document.getElementById('kpi-dias').innerHTML = `${dTotales} <span class="text-sm text-gray-500 font-medium">días</span>`;
-            document.getElementById('kpi-presupuesto').innerText = `$ ${parseFloat(procesoActivoAuditoria.asignacion || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            const asignacionKpi = parseFloat(procesoActivoAuditoria.asignacion || 0);
+            const detalleCompraKpi = parseFloat(procesoActivoAuditoria.detalleCompra || 0);
+            document.getElementById('kpi-presupuesto').innerText = `$ ${asignacionKpi.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpi-detalle-compra').innerText = `$ ${detalleCompraKpi.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('kpi-saldo-disponible').innerText = `$ ${(asignacionKpi - detalleCompraKpi).toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('kpi-areas').innerText = `${procesoActivoAuditoria.pasosCompletados || 0} / ${pipeline.length}`;
             document.getElementById('kpi-documentos').innerText = totalDocumentos;
             
@@ -675,6 +687,32 @@
                             archivosSubHTML += '</div>';
                         }
 
+                        let responsablesSubHTML = '';
+                        if (rSub.elaborado || rSub.revisado || rSub.aprobado || rSub.administrador) {
+                            responsablesSubHTML = `
+                                <div class="mt-2 pt-2 border-t border-gray-100">
+                                    <p class="text-[8px] font-bold text-gray-400 uppercase tracking-wide mb-1.5">Responsables del Documento</p>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-1.5">
+                                        <div class="text-center p-1.5 bg-indigo-50/50 rounded-lg border border-indigo-100/60">
+                                            <p class="text-[8px] font-bold text-indigo-400 uppercase tracking-wide mb-0.5">Elaborado por</p>
+                                            <p class="text-[9px] font-semibold text-gray-700">${rSub.elaborado || '<span class="text-gray-300">—</span>'}</p>
+                                        </div>
+                                        <div class="text-center p-1.5 bg-indigo-50/50 rounded-lg border border-indigo-100/60">
+                                            <p class="text-[8px] font-bold text-indigo-400 uppercase tracking-wide mb-0.5">Revisado por</p>
+                                            <p class="text-[9px] font-semibold text-gray-700">${rSub.revisado || '<span class="text-gray-300">—</span>'}</p>
+                                        </div>
+                                        <div class="text-center p-1.5 bg-indigo-50/50 rounded-lg border border-indigo-100/60">
+                                            <p class="text-[8px] font-bold text-indigo-400 uppercase tracking-wide mb-0.5">Aprobado por</p>
+                                            <p class="text-[9px] font-semibold text-gray-700">${rSub.aprobado || '<span class="text-gray-300">—</span>'}</p>
+                                        </div>
+                                        <div class="text-center p-1.5 bg-indigo-50/50 rounded-lg border border-indigo-100/60">
+                                            <p class="text-[8px] font-bold text-indigo-400 uppercase tracking-wide mb-0.5">Admin. Contrato</p>
+                                            <p class="text-[9px] font-semibold text-gray-700">${rSub.administrador || '<span class="text-gray-300">—</span>'}</p>
+                                        </div>
+                                    </div>
+                                </div>`;
+                        }
+
                         subpasosHTML += `
                             <div class="pl-3 border-l-2 ${subCompletado ? 'border-emerald-300' : 'border-gray-200'} ml-1">
                                 <div class="p-2.5 rounded-lg border ${borderColor} ${bgColor}">
@@ -693,6 +731,7 @@
                                         </div>
                                         ${tiempoHTML(diasSub, subCompletado, subOmitido)}
                                     </div>
+                                    ${responsablesSubHTML}
                                     ${archivosSubHTML}
                                 </div>
                             </div>`;
@@ -701,20 +740,27 @@
                 }
 
                 let responsablesHTML = '';
-                if (respuestas.elaborado || respuestas.revisado || respuestas.aprobado) {
+                if (respuestas.elaborado || respuestas.revisado || respuestas.aprobado || respuestas.administrador) {
                     responsablesHTML = `
-                        <div class="mt-3 pt-3 border-t border-gray-100 grid grid-cols-3 gap-2">
-                            <div class="text-center">
-                                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-0.5">Elaborado por</p>
-                                <p class="text-[10px] font-semibold text-gray-700">${respuestas.elaborado || '<span class="text-gray-300">—</span>'}</p>
-                            </div>
-                            <div class="text-center border-x border-gray-100">
-                                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-0.5">Revisado por</p>
-                                <p class="text-[10px] font-semibold text-gray-700">${respuestas.revisado || '<span class="text-gray-300">—</span>'}</p>
-                            </div>
-                            <div class="text-center">
-                                <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-0.5">Aprobado por</p>
-                                <p class="text-[10px] font-semibold text-gray-700">${respuestas.aprobado || '<span class="text-gray-300">—</span>'}</p>
+                        <div class="mt-3 pt-3 border-t border-gray-100">
+                            <p class="text-[9px] font-bold text-gray-400 uppercase tracking-wide mb-2">Responsables del Documento</p>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                <div class="text-center p-2 bg-indigo-50/50 rounded-lg border border-indigo-100/60">
+                                    <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wide mb-0.5">Elaborado por</p>
+                                    <p class="text-[10px] font-semibold text-gray-700">${respuestas.elaborado || '<span class="text-gray-300">—</span>'}</p>
+                                </div>
+                                <div class="text-center p-2 bg-indigo-50/50 rounded-lg border border-indigo-100/60">
+                                    <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wide mb-0.5">Revisado por</p>
+                                    <p class="text-[10px] font-semibold text-gray-700">${respuestas.revisado || '<span class="text-gray-300">—</span>'}</p>
+                                </div>
+                                <div class="text-center p-2 bg-indigo-50/50 rounded-lg border border-indigo-100/60">
+                                    <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wide mb-0.5">Aprobado por</p>
+                                    <p class="text-[10px] font-semibold text-gray-700">${respuestas.aprobado || '<span class="text-gray-300">—</span>'}</p>
+                                </div>
+                                <div class="text-center p-2 bg-indigo-50/50 rounded-lg border border-indigo-100/60">
+                                    <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wide mb-0.5">Admin. Contrato</p>
+                                    <p class="text-[10px] font-semibold text-gray-700">${respuestas.administrador || '<span class="text-gray-300">—</span>'}</p>
+                                </div>
                             </div>
                         </div>`;
                 }
@@ -739,8 +785,8 @@
                                 </div>
                                 ${tiempoHTML(diasPaso, estaCompletado, estaOmitido)}
                             </div>
-                            ${subpasosHTML}
                             ${responsablesHTML}
+                            ${subpasosHTML}
                             ${archivosPasoHTML(archivosP, `Paso_${paso.orden || index + 1}`)}
                         </div>
                     </div>

@@ -77,7 +77,7 @@
                 </span>
                 <svg id="icono-acordeon" class="w-4 h-4 text-gray-400 transition-transform transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </div>
-            <div id="cuerpo-acordeon" class="p-5 grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+            <div id="cuerpo-acordeon" class="p-5 grid grid-cols-2 md:grid-cols-6 gap-4 text-xs">
                 <div>
                     <span class="text-gray-400 block font-medium">POA NRO:</span>
                     <span id="info-poa" class="font-bold text-gray-800">-</span>
@@ -95,6 +95,14 @@
                 <div>
                     <span class="text-gray-400 block font-medium">ASIGNACIÓN:</span>
                     <span id="info-asignacion" class="font-bold text-blue-600 font-mono">$ 0,00</span>
+                </div>
+                <div>
+                    <span class="text-gray-400 block font-medium">DETALLE DE COMPRA:</span>
+                    <span id="info-detalle-compra" class="font-bold text-emerald-600 font-mono">$ 0,00</span>
+                </div>
+                <div>
+                    <span class="text-gray-400 block font-medium">CUATRIMESTRE:</span>
+                    <span id="info-cuatrimestre" class="font-bold text-gray-800">-</span>
                 </div>
             </div>
         </div>
@@ -196,6 +204,45 @@
                         </div>
                     </form>
 
+                    <!-- ══ RESPONSABLES DEL PROCESO (opcional por paso) ══ -->
+                    <div class="mt-5 pt-4 border-t border-gray-100">
+                        <button id="btn-toggle-responsables" onclick="toggleResponsables()" class="flex items-center space-x-2 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-3 py-2 rounded-xl transition w-full justify-between">
+                            <div class="flex items-center space-x-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <span>Responsables del Proceso</span>
+                                <span class="text-[9px] font-normal text-indigo-400">(Opcional)</span>
+                            </div>
+                            <svg id="icono-responsables" class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div id="form-responsables" class="hidden mt-3 p-4 bg-indigo-50/40 border border-indigo-100 rounded-xl space-y-3">
+                            <p class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Responsables del documento para este paso</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                <div>
+                                    <label class="block font-bold text-gray-700 mb-1">Elaborado por</label>
+                                    <select id="input-elaborado" class="w-full bg-white border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300/40"></select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-gray-700 mb-1">Revisado por</label>
+                                    <select id="input-revisado" class="w-full bg-white border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300/40"></select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-gray-700 mb-1">Aprobado por</label>
+                                    <select id="input-aprobado" class="w-full bg-white border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300/40"></select>
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-gray-700 mb-1">Admin. de Contrato / Orden</label>
+                                    <select id="input-administrador" class="w-full bg-white border border-gray-200 p-2.5 rounded-xl transition-colors focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300/40"></select>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button id="btn-guardar-responsables" onclick="guardarResponsables()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm flex items-center space-x-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    <span>Guardar Responsables</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center">
                         <button onclick="ejecutarNavegacion(-1)" id="btn-anterior" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs py-2 px-4 rounded-xl transition disabled:opacity-40">
                             ← Anterior
@@ -220,6 +267,48 @@
 
         </div>
     </main>
+
+    <!-- ══ MODAL: Agregar Subpaso ══ -->
+    <div id="modal-agregar-paso" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="bg-blue-600 px-5 py-4 flex items-center justify-between">
+                <div>
+                    <h3 class="text-white font-black text-sm uppercase tracking-wider">Agregar Subpaso</h3>
+                    <p id="modal-num-preview" class="text-blue-200 text-xs mt-0.5 font-mono">Numeración: —</p>
+                </div>
+                <button onclick="cerrarModalAgregar()" class="text-white/70 hover:text-white transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-5 space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Descripción <span class="text-red-500">*</span></label>
+                    <input id="modal-descripcion" type="text" placeholder="Nombre del nuevo subpaso..."
+                        class="w-full border border-gray-300 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400"
+                        onkeydown="if(event.key==='Enter') confirmarAgregarPaso()">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Custodio Actual</label>
+                    <input id="modal-custodio" type="text" placeholder="Área / responsable..."
+                        class="w-full border border-gray-300 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400">
+                </div>
+                <div>
+                    <label class="block font-bold text-gray-700 mb-1">Dirigido A</label>
+                    <input id="modal-dirigido-a" type="text" placeholder="Destinatario..."
+                        class="w-full border border-gray-300 rounded-xl p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400/30 focus:border-blue-400">
+                </div>
+            </div>
+            <div class="px-5 pb-5 flex justify-end space-x-2">
+                <button onclick="cerrarModalAgregar()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold px-4 py-2 rounded-xl transition">
+                    Cancelar
+                </button>
+                <button onclick="confirmarAgregarPaso()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm flex items-center space-x-1.5">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    <span>Agregar Subpaso</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         let procesosGlobales = [];
@@ -367,6 +456,9 @@
 
             const asig = parseFloat(procesoActivo.asignacion || detallesGlobales.asignacion || 0);
             document.getElementById('info-asignacion').innerText = '$ ' + asig.toLocaleString('es-EC', { minimumFractionDigits: 2 });
+            const detCompra = parseFloat(procesoActivo.detalleCompra || detallesGlobales.detalleCompra || 0);
+            document.getElementById('info-detalle-compra').innerText = '$ ' + detCompra.toLocaleString('es-EC', { minimumFractionDigits: 2 });
+            document.getElementById('info-cuatrimestre').innerText = procesoActivo.cuatrimestre || detallesGlobales.cuatrimestre || '-';
 
             cargarPasoActual();
             renderizarIndiceLateral();
@@ -388,11 +480,11 @@
             return match ? match[1] : null;
         }
 
-        function agregarSubpaso(indexSubpaso = -1) {
+        function agregarSubpaso(indexSubpaso = -1, nombre = '', area = '', dirigidoA = '') {
+            if (!nombre || nombre.trim() === "") return;
+            const nuevoNombre = nombre;
             const paso = pasosFlujo[indicePasoActual];
             const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
-            const nuevoNombre = prompt("Escribe el nombre de la nueva subfase/tarea:", "Nueva subfase/tarea");
-            if (!nuevoNombre || nuevoNombre.trim() === "") return;
 
             if (!paso.subpasos) paso.subpasos = [];
 
@@ -431,9 +523,12 @@
 
             paso.subpasos.splice(insertIndex, 0, {
                 nombreSubpaso: `${nuevoNumero} – ${nuevoNombre.trim()}`,
+                descripcion: nuevoNombre.trim(),
                 completado: false,
                 numeroInterno: nuevoNumero,
-                parentId: parentNum
+                parentId: parentNum,
+                area: area || '',
+                dirigidoA: dirigidoA || ''
             });
 
             if (paso.respuestasUsuario && paso.respuestasUsuario.estadosSubpasos) {
@@ -464,6 +559,7 @@
         // =============================================
 
         function cargarPasoActual() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             const paso = pasosFlujo[indicePasoActual];
             const esMiPaso = tienePermisoEnPaso(paso);
             const tieneSubpasos = paso.subpasos && paso.subpasos.length > 0;
@@ -545,7 +641,11 @@
                                 ${metaLine}
                             </div>
                         </div>
-                        ${esMiPaso ? `<button onclick="event.stopPropagation(); saltarASubpaso(${indicePasoActual}, ${i})" class="flex-shrink-0 ml-2 text-[9px] font-bold bg-white/15 hover:bg-white/25 text-white px-2 py-1 rounded-md transition">Ir ➔</button>` : ''}
+                        ${esMiPaso ? `<div class="flex items-center space-x-1 flex-shrink-0 ml-2">
+                            ${!subDone ? `<button type="button" onclick="event.stopPropagation(); omitirSubpasoDirecto(${i})" class="text-[9px] font-bold bg-amber-500/25 hover:bg-amber-500/50 text-amber-200 border border-amber-400/30 px-2 py-1 rounded-md transition">Omitir</button>` : ''}
+                            <button type="button" onclick="event.stopPropagation(); abrirModalAgregar(${i})" class="text-[9px] font-bold bg-white/10 hover:bg-white/25 text-white border border-white/20 px-2 py-1 rounded-md transition">+ Agregar</button>
+                            <button type="button" onclick="event.stopPropagation(); saltarASubpaso(${indicePasoActual}, ${i})" class="text-[9px] font-bold bg-white/15 hover:bg-white/30 text-white border border-white/25 px-2 py-1 rounded-md transition">Ir ➔</button>
+                        </div>` : ''}
                     `;
                     wrapper.appendChild(div);
                     contenedorSubpasos.appendChild(wrapper);
@@ -555,7 +655,7 @@
                 summary.className = 'mt-2 pt-2 border-t border-white/20 flex items-center justify-between';
                 summary.innerHTML = `
                     <span class="text-[10px] text-white/60">${completados} de ${numSubs} subpasos completados</span>
-                    ${esMiPaso ? `<button onclick="agregarSubpaso(-1)" class="text-[9px] font-bold bg-white/10 hover:bg-white/20 text-white px-2.5 py-1 rounded-md transition border border-white/20">+ Agregar subfase</button>` : ''}
+                    ${esMiPaso ? `<button onclick="abrirModalAgregar(-1)" class="text-[9px] font-bold bg-white/10 hover:bg-white/20 text-white px-2.5 py-1 rounded-md transition border border-white/20">+ Agregar subfase</button>` : ''}
                 `;
                 contenedorSubpasos.appendChild(summary);
             } else {
@@ -582,6 +682,7 @@
                 archivosAdjuntosTemporales = respuestas.archivos;
             } else { archivosAdjuntosTemporales = []; }
             renderizarListaArchivos();
+            cargarResponsablesEnForm();
         }
 
         function cargarVistaSubpaso(paso, esMiPaso) {
@@ -623,7 +724,15 @@
                 const div = document.createElement('div');
                 div.className = `flex items-center space-x-2 px-2 py-1 rounded-lg cursor-pointer ${esActualSub ? 'bg-white/20 border border-white/30' : 'hover:bg-white/10'} transition mt-1`;
                 div.onclick = esMiPaso ? () => saltarASubpaso(indicePasoActual, i) : null;
-                div.innerHTML = `<span class="text-xs flex-shrink-0">${icon}</span><span class="font-bold text-[10px] text-white/80 flex-shrink-0">${numS}</span><span class="text-[9px] text-white/60 truncate">${nombreS}</span>`;
+                div.innerHTML = `
+                    <span class="text-xs flex-shrink-0">${icon}</span>
+                    <span class="font-bold text-[10px] text-white/80 flex-shrink-0">${numS}</span>
+                    <span class="text-[9px] text-white/60 truncate flex-1">${nombreS}</span>
+                    ${esMiPaso ? `<div class="flex items-center space-x-1 flex-shrink-0">
+                        ${!sDone ? `<button type="button" onclick="event.stopPropagation(); omitirSubpasoDirecto(${i})" class="text-[8px] font-bold bg-amber-500/25 hover:bg-amber-500/50 text-amber-200 border border-amber-400/30 px-1.5 py-0.5 rounded transition">Omitir</button>` : ''}
+                        <button type="button" onclick="event.stopPropagation(); abrirModalAgregar(${i})" class="text-[8px] font-bold bg-white/10 hover:bg-white/25 text-white border border-white/20 px-1.5 py-0.5 rounded transition">+ Agregar</button>
+                    </div>` : ''}
+                `;
                 contenedorSubpasos.appendChild(div);
             });
 
@@ -648,6 +757,7 @@
                 archivosAdjuntosTemporales = respuestas.archivos;
             } else { archivosAdjuntosTemporales = []; }
             renderizarListaArchivos();
+            cargarResponsablesEnForm();
         }
 
         function configurarUIporRol(esMiPaso, modo) {
@@ -705,6 +815,11 @@
                 if (!pasoActual.respuestasSubpasos) pasoActual.respuestasSubpasos = {};
                 const prevResp = pasoActual.respuestasSubpasos[indiceSubpasoActual] || {};
                 formData.completado = formData.completado || prevResp.completado || false;
+                // Preservar responsables guardados en el subpaso
+                if (prevResp.elaborado) formData.elaborado = prevResp.elaborado;
+                if (prevResp.revisado) formData.revisado = prevResp.revisado;
+                if (prevResp.aprobado) formData.aprobado = prevResp.aprobado;
+                if (prevResp.administrador) formData.administrador = prevResp.administrador;
                 pasoActual.respuestasSubpasos[indiceSubpasoActual] = formData;
 
                 if (!pasoActual.respuestasUsuario) pasoActual.respuestasUsuario = {};
@@ -722,6 +837,11 @@
                 const respuestasActuales = pasoActual.respuestasUsuario || {};
                 formData.estadosSubpasos = respuestasActuales.estadosSubpasos || {};
                 formData.skips = respuestasActuales.skips || {};
+                // Preservar responsables del proceso (campos opcionales guardados por guardarResponsables())
+                if (respuestasActuales.elaborado) formData.elaborado = respuestasActuales.elaborado;
+                if (respuestasActuales.revisado) formData.revisado = respuestasActuales.revisado;
+                if (respuestasActuales.aprobado) formData.aprobado = respuestasActuales.aprobado;
+                if (respuestasActuales.administrador) formData.administrador = respuestasActuales.administrador;
                 if (pasoActual.subpasos && pasoActual.subpasos.length > 0) {
                     formData.completado = respuestasActuales.completado || false;
                 } else {
@@ -983,6 +1103,201 @@
         function obtenerFechaHoy() { return new Date().toISOString().split('T')[0]; }
         function toggleAcordeon() { document.getElementById('cuerpo-acordeon').classList.toggle('hidden'); document.getElementById('icono-acordeon').classList.toggle('rotate-180'); }
         function irAlDashboard() { window.location.href = '/dashboard.html'; }
+
+        // =============================================
+        // RESPONSABLES DEL PROCESO (por paso, opcional)
+        // =============================================
+        function toggleResponsables() {
+            const form = document.getElementById('form-responsables');
+            const icono = document.getElementById('icono-responsables');
+            form.classList.toggle('hidden');
+            icono.classList.toggle('rotate-180');
+        }
+
+        function poblarSelectsFuncionarios() {
+            const opciones = LISTA_FUNCIONARIOS.map(nombre =>
+                `<option value="${nombre === '— Seleccionar —' ? '' : nombre}">${nombre}</option>`
+            ).join('');
+            ['elaborado', 'revisado', 'aprobado', 'administrador'].forEach(campo => {
+                const sel = document.getElementById(`input-${campo}`);
+                if (sel && sel.options.length === 0) sel.innerHTML = opciones;
+            });
+        }
+
+        function cargarResponsablesEnForm() {
+            poblarSelectsFuncionarios();
+            const paso = pasosFlujo[indicePasoActual];
+            const esMiPaso = tienePermisoEnPaso(paso);
+            // Si estamos en un subpaso, leer de respuestasSubpasos; si no, de respuestasUsuario
+            let respuestas;
+            if (indiceSubpasoActual >= 0) {
+                const rSub = paso.respuestasSubpasos || {};
+                respuestas = rSub[indiceSubpasoActual] || {};
+            } else {
+                respuestas = paso.respuestasUsuario || {};
+            }
+
+            const campos = ['elaborado', 'revisado', 'aprobado', 'administrador'];
+            campos.forEach(campo => {
+                const el = document.getElementById(`input-${campo}`);
+                if (el) {
+                    el.value = respuestas[campo] || '';
+                    el.disabled = !esMiPaso;
+                }
+            });
+
+            const btnGuardar = document.getElementById('btn-guardar-responsables');
+            if (btnGuardar) btnGuardar.style.display = esMiPaso ? '' : 'none';
+
+            // Auto-abrir si ya tiene datos
+            const tieneData = campos.some(c => respuestas[c] && respuestas[c].trim());
+            if (tieneData) {
+                document.getElementById('form-responsables').classList.remove('hidden');
+                document.getElementById('icono-responsables').classList.add('rotate-180');
+            }
+        }
+
+        // =============================================
+        // OMITIR / AGREGAR SUBPASO (desde la lista)
+        // =============================================
+        let _modalAgregarIndex = -1;
+
+        function omitirSubpasoDirecto(subpasoIndex) {
+            const paso = pasosFlujo[indicePasoActual];
+            if (!tienePermisoEnPaso(paso)) return;
+
+            if (!paso.respuestasSubpasos) paso.respuestasSubpasos = {};
+            const prevResp = paso.respuestasSubpasos[subpasoIndex] || {};
+            paso.respuestasSubpasos[subpasoIndex] = Object.assign({}, prevResp, {
+                estado: 'Omitido',
+                completado: true,
+                savedAt: new Date().toISOString()
+            });
+
+            if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
+            if (!paso.respuestasUsuario.estadosSubpasos) paso.respuestasUsuario.estadosSubpasos = {};
+            paso.respuestasUsuario.estadosSubpasos[subpasoIndex] = 'omitido';
+
+            const allDone = paso.subpasos && paso.subpasos.every((_, si) => {
+                const r = paso.respuestasSubpasos[si];
+                return r && (r.completado || r.estado === 'Omitido');
+            });
+            if (allDone) paso.respuestasUsuario.completado = true;
+
+            procesoActivo.pipelineSnapshot = pasosFlujo;
+            const idxBase = procesosGlobales.findIndex(p => p.id === procesoActivo.id);
+            if (idxBase !== -1) procesosGlobales[idxBase] = procesoActivo;
+            localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
+
+            cargarPasoActual();
+            renderizarIndiceLateral();
+        }
+
+        function abrirModalAgregar(indexSubpaso = -1) {
+            _modalAgregarIndex = indexSubpaso;
+
+            const paso = pasosFlujo[indicePasoActual];
+            const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
+            if (!paso.subpasos) paso.subpasos = [];
+
+            paso.subpasos.forEach((sub, i) => {
+                if (!sub.numeroInterno) sub.numeroInterno = `${numeroPasoPrincipal}.${i + 1}`;
+            });
+
+            const getDisplayNum = s => extraerPrefijoSubpaso(s.nombreSubpaso || s.descripcion || '') || s.numeroInterno || '';
+            let parentNum = `${numeroPasoPrincipal}`;
+
+            if (indexSubpaso !== -1 && paso.subpasos[indexSubpaso]) {
+                parentNum = getDisplayNum(paso.subpasos[indexSubpaso]);
+            }
+
+            const hermanos = paso.subpasos.filter(s => {
+                const num = getDisplayNum(s);
+                if (!num.startsWith(parentNum + '.')) return false;
+                return !num.slice(parentNum.length + 1).includes('.');
+            });
+
+            let siguienteHijo = 1;
+            if (hermanos.length > 0) {
+                const maxHijo = Math.max(...hermanos.map(h => parseInt(getDisplayNum(h).split('.').pop()) || 0));
+                siguienteHijo = maxHijo + 1;
+            }
+            const nuevoNumero = `${parentNum}.${siguienteHijo}`;
+
+            document.getElementById('modal-num-preview').textContent = `Numeración automática: ${nuevoNumero}`;
+            document.getElementById('modal-descripcion').value = '';
+            document.getElementById('modal-descripcion').classList.remove('border-red-400');
+            document.getElementById('modal-custodio').value = '';
+            document.getElementById('modal-dirigido-a').value = '';
+
+            document.getElementById('modal-agregar-paso').classList.remove('hidden');
+            setTimeout(() => document.getElementById('modal-descripcion').focus(), 80);
+        }
+
+        function cerrarModalAgregar() {
+            document.getElementById('modal-agregar-paso').classList.add('hidden');
+        }
+
+        function confirmarAgregarPaso() {
+            const desc = document.getElementById('modal-descripcion').value.trim();
+            if (!desc) {
+                document.getElementById('modal-descripcion').classList.add('border-red-400');
+                document.getElementById('modal-descripcion').focus();
+                return;
+            }
+            document.getElementById('modal-descripcion').classList.remove('border-red-400');
+
+            const custodio = document.getElementById('modal-custodio').value;
+            const dirigidoA = document.getElementById('modal-dirigido-a').value;
+
+            cerrarModalAgregar();
+            agregarSubpaso(_modalAgregarIndex, desc, custodio, dirigidoA);
+        }
+
+        function guardarResponsables() {
+            const paso = pasosFlujo[indicePasoActual];
+            if (!tienePermisoEnPaso(paso)) { alert('No tienes permiso para editar este paso.'); return; }
+
+            const elaborado = (document.getElementById('input-elaborado').value || '').trim();
+            const revisado = (document.getElementById('input-revisado').value || '').trim();
+            const aprobado = (document.getElementById('input-aprobado').value || '').trim();
+            const administrador = (document.getElementById('input-administrador').value || '').trim();
+
+            if (indiceSubpasoActual >= 0) {
+                if (!paso.respuestasSubpasos) paso.respuestasSubpasos = {};
+                if (!paso.respuestasSubpasos[indiceSubpasoActual]) paso.respuestasSubpasos[indiceSubpasoActual] = {};
+                paso.respuestasSubpasos[indiceSubpasoActual].elaborado = elaborado;
+                paso.respuestasSubpasos[indiceSubpasoActual].revisado = revisado;
+                paso.respuestasSubpasos[indiceSubpasoActual].aprobado = aprobado;
+                paso.respuestasSubpasos[indiceSubpasoActual].administrador = administrador;
+            } else {
+                if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
+                paso.respuestasUsuario.elaborado = elaborado;
+                paso.respuestasUsuario.revisado = revisado;
+                paso.respuestasUsuario.aprobado = aprobado;
+                paso.respuestasUsuario.administrador = administrador;
+            }
+
+            procesoActivo.pipelineSnapshot = pasosFlujo;
+            const idxBase = procesosGlobales.findIndex(p => p.id === procesoActivo.id);
+            if (idxBase !== -1) procesosGlobales[idxBase] = procesoActivo;
+
+            try {
+                localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesosGlobales));
+                const btn = document.getElementById('btn-guardar-responsables');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span>Guardado</span>';
+                btn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+                btn.classList.add('bg-emerald-500');
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('bg-emerald-500');
+                    btn.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+                }, 2000);
+            } catch (e) {
+                alert('Error al guardar los responsables.');
+            }
+        }
     </script>
 </body>
 </html>

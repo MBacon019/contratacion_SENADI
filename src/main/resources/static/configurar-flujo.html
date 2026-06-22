@@ -888,6 +888,8 @@
                 itemPresupuestario: actividadGuardada.item || '-',
                 codigoCpc: actividadGuardada.cpc || '-',
                 asignacion: actividadGuardada.asignacion || '0',
+                detalleCompra: parseFloat(actividadGuardada.detalleCompra) || 0,
+                cuatrimestre: actividadGuardada.cuatrimestre || 'C1',
                 fechaModificacion: new Date().toLocaleString('es-ES', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
                 pasosTotales: pasosSeleccionados.length,
                 pasosCompletados: 0,
