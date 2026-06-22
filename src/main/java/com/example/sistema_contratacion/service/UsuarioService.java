@@ -55,7 +55,9 @@ public class UsuarioService {
         nuevo.setEmail(email);
         nuevo.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         nuevo.setActivo(true);
-        nuevo.setRol(rolUser);
+        
+        // --- AQUÍ ESTÁ EL CAMBIO QUE SOLUCIONA EL ERROR ---
+        nuevo.addRol(rolUser);
 
         return usuarioRepository.save(nuevo);
     }

@@ -221,7 +221,7 @@
         </div>
     </main>
 
-    <script>
+<script>
         let procesosGlobales = [];
         let procesoActivo = null;
         let indicePasoActual = 0;
@@ -230,8 +230,23 @@
         let archivosAdjuntosTemporales = [];
         let indiceSubpasoActual = -1;
 
-        // MANEJO DE ROLES
-        let rolActivoUsuario = localStorage.getItem('rolSimulado') || 'ROLE_SUPER_ADMIN';
+        // --- 1. LECTURA DE ROL REAL Y USUARIO (SIN DROPDOWN) ---
+        const userData = JSON.parse(localStorage.getItem('usuario')) || {};
+        let rolActivoUsuario = localStorage.getItem('rolActivo');
+
+        if (!rolActivoUsuario) {
+            let roles = Array.isArray(userData.roles) ? userData.roles : [userData.rol];
+            rolActivoUsuario = roles[0] || 'ROLE_USER';
+            localStorage.setItem('rolActivo', rolActivoUsuario);
+        }
+
+        const NOMBRES_ROLES_BD = {
+            'ROLE_SUPER_ADMIN': '👑 Super Admin',
+            'ROLE_ADMIN': '👑 Administrador',
+            'ROLE_UNIDAD_REQUIRENTE': '🏢 Unidad Requirente',
+            'ROLE_ADMIN_CONTRATO': '👤 Admin. de Contrato',
+            'ROLE_USER': '👁️ Usuario Básico'
+        };
 
         const LISTA_FUNCIONARIOS = [
             "— Seleccionar —", "Gonzalo Moncayo", "Marco Molina", "Juan Pablo Ponce",
@@ -240,25 +255,44 @@
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('select-rol').value = rolActivoUsuario;
+            // MAGIA EN EL DOM: Ocultamos el selector y ponemos el nombre del usuario y el rol fijo
+            const selectContainer = document.getElementById('select-rol');
+            if (selectContainer) {
+                const nombreMostrar = userData.nombre || userData.nombreCompleto || userData.email || 'Funcionario';
+                const nombreRol = NOMBRES_ROLES_BD[rolActivoUsuario] || rolActivoUsuario;
+                const parent = selectContainer.parentElement;
+                
+                parent.innerHTML = `
+                    <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mr-1">👤</span>
+                    <span class="text-xs font-bold text-gray-800 mr-2">${nombreMostrar}</span>
+                    <span class="text-gray-300 mr-2">|</span>
+                    <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">${nombreRol}</span>
+                `;
+            }
+
             inicializarPantallaEjecucion();
             configurarValidacionPDF();
         });
 
+        // Este método ya no se usará desde el HTML, pero lo dejamos por seguridad
         function cambiarRol() {
             rolActivoUsuario = document.getElementById('select-rol').value;
-            localStorage.setItem('rolSimulado', rolActivoUsuario);
+            localStorage.setItem('rolActivo', rolActivoUsuario);
             cargarPasoActual();
             renderizarIndiceLateral();
         }
 
+        // --- 2. LÓGICA DE PERMISOS ESTRICTA ---
         function tienePermisoEnPaso(paso) {
-            if (rolActivoUsuario === 'ROLE_SUPER_ADMIN') return true;
+            if (rolActivoUsuario === 'ROLE_SUPER_ADMIN' || rolActivoUsuario === 'ROLE_ADMIN') return true;
+            
             const fase = (paso.fase || '').toUpperCase();
             const esPreparatoria = fase.includes('PREPARATORIA') || fase.includes('PRECONTRACTUAL');
 
             if (rolActivoUsuario === 'ROLE_UNIDAD_REQUIRENTE') return esPreparatoria;
-            if (rolActivoUsuario === 'Gonzalo Moncayo' || rolActivoUsuario === 'Miguel Cabrera') {
+            
+            // Administrador de contrato (o nombres directos por compatibilidad) actúan en el resto
+            if (rolActivoUsuario === 'ROLE_ADMIN_CONTRATO' || rolActivoUsuario === 'Gonzalo Moncayo' || rolActivoUsuario === 'Miguel Cabrera') {
                 return !esPreparatoria;
             }
             return false;
@@ -268,7 +302,10 @@
         // LÓGICA DE MANEJO MULTIPLE DE ARCHIVOS PDF
         // ----------------------------------------------------
         function configurarValidacionPDF() {
-            document.getElementById('input-pdf-multiple').addEventListener('change', function(e) {
+            const inputFile = document.getElementById('input-pdf-multiple');
+            if(!inputFile) return;
+
+            inputFile.addEventListener('change', function(e) {
                 const files = e.target.files;
                 if (!files || files.length === 0) return;
                 
@@ -390,6 +427,8 @@
 
         function agregarSubpaso(indexSubpaso = -1) {
             const paso = pasosFlujo[indicePasoActual];
+            if(!tienePermisoEnPaso(paso)) return;
+
             const numeroPasoPrincipal = paso.orden || (indicePasoActual + 1);
             const nuevoNombre = prompt("Escribe el nombre de la nueva subfase/tarea:", "Nueva subfase/tarea");
             if (!nuevoNombre || nuevoNombre.trim() === "") return;
@@ -651,21 +690,24 @@
         }
 
         function configurarUIporRol(esMiPaso, modo) {
-            const inputs = document.querySelectorAll('#form-paso-dinamico input:not(.skip-cb), #form-paso-dinamico select, #form-paso-dinamico textarea');
+            const inputs = document.querySelectorAll('#form-paso-dinamico input, #form-paso-dinamico select, #form-paso-dinamico textarea');
             inputs.forEach(input => input.disabled = !esMiPaso);
 
             const alerta = document.getElementById('alerta-rol');
             const btnSiguiente = document.getElementById('btn-siguiente');
             const btnOmitir = document.getElementById('btn-omitir');
+            const btnGuardarParcial = document.getElementById('btn-guardar-parcial');
 
             if (!esMiPaso) {
                 alerta.classList.remove('hidden');
                 btnOmitir.classList.add('hidden');
+                if (btnGuardarParcial) btnGuardarParcial.classList.add('hidden');
                 btnSiguiente.innerHTML = "Siguiente (Lectura) ➔";
-                btnSiguiente.className = "bg-gray-800 text-white font-bold text-xs py-2 px-5 rounded-xl transition";
+                btnSiguiente.className = "bg-gray-800 text-white font-bold text-xs py-2 px-5 rounded-xl transition shadow-sm";
             } else {
                 alerta.classList.add('hidden');
                 btnOmitir.classList.remove('hidden');
+                if (btnGuardarParcial) btnGuardarParcial.classList.remove('hidden');
                 btnSiguiente.className = "bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2 px-5 rounded-xl shadow-sm transition";
 
                 if (modo === 'paso-con-subpasos') {
@@ -685,7 +727,10 @@
 
         function guardarProgresoActual(silencioso = true) {
             const pasoActual = pasosFlujo[indicePasoActual];
-            if (!tienePermisoEnPaso(pasoActual)) return;
+            if (!tienePermisoEnPaso(pasoActual)) {
+                if (!silencioso) alert("Modo lectura: No tienes permisos para guardar cambios en esta fase.");
+                return;
+            }
 
             const estadoSeleccionado = document.getElementById('input-estado').value;
             const formData = {
@@ -772,11 +817,12 @@
             const esMiPaso = tienePermisoEnPaso(paso);
             const tieneSubpasos = paso.subpasos && paso.subpasos.length > 0;
 
-            if (!document.getElementById('input-estado').value) {
-                document.getElementById('input-estado').value = "Completado";
+            if (esMiPaso) {
+                if (!document.getElementById('input-estado').value) {
+                    document.getElementById('input-estado').value = "Completado";
+                }
+                guardarProgresoActual(true);
             }
-
-            guardarProgresoActual(true);
 
             if (indiceSubpasoActual === -1) {
                 if (tieneSubpasos) {
@@ -807,8 +853,10 @@
                         alert("⚠️ Hay subpasos sin completar. Puedes usar 'Omitir Subpaso' si alguno no aplica.");
                         return;
                     }
-                    if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
-                    paso.respuestasUsuario.completado = true;
+                    if (esMiPaso) {
+                        if (!paso.respuestasUsuario) paso.respuestasUsuario = {};
+                        paso.respuestasUsuario.completado = true;
+                    }
                     avanzarAlSiguientePasoPrincipal();
                 }
             }
@@ -822,7 +870,9 @@
                 cargarPasoActual();
                 renderizarIndiceLateral();
             } else {
-                guardarProgresoActual(true);
+                if (tienePermisoEnPaso(pasosFlujo[indicePasoActual])) {
+                    guardarProgresoActual(true);
+                }
                 alert("¡Has llegado al final del flujo del proceso!");
                 irAlDashboard();
             }
@@ -854,7 +904,10 @@
         function ejecutarNavegacion(direccion) {
             if (direccion >= 0) return;
 
-            guardarProgresoActual(true);
+            const pasoActual = pasosFlujo[indicePasoActual];
+            if (tienePermisoEnPaso(pasoActual)) {
+                guardarProgresoActual(true);
+            }
 
             if (indiceSubpasoActual > 0) {
                 indiceSubpasoActual--;
@@ -896,7 +949,11 @@
                 }
             }
 
-            guardarProgresoActual(true);
+            const pasoActual = pasosFlujo[indicePasoActual];
+            if (tienePermisoEnPaso(pasoActual)) {
+                guardarProgresoActual(true);
+            }
+            
             indicePasoActual = pasoIndex;
             indiceSubpasoActual = subpasoIndex;
             cargarPasoActual();

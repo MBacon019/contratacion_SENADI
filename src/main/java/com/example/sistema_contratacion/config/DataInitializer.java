@@ -67,7 +67,7 @@ public class DataInitializer implements CommandLineRunner {
 
             admin.setActivo(true);
 
-            admin.setRol(adminRole);
+            admin.addRol(adminRole);
 
             usuarioRepository.save(admin);
         }
@@ -86,7 +86,7 @@ public class DataInitializer implements CommandLineRunner {
 
             user.setActivo(true);
 
-            user.setRol(userRole);
+            user.addRol(userRole);
 
             usuarioRepository.save(user);
         }

@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <!-- JSZip: Librería para comprimir múltiples PDFs en un archivo .zip desde el navegador -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
@@ -19,6 +18,13 @@
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
     </style>
+
+    <script>
+        const userDataRaw = localStorage.getItem('usuario');
+        if (!userDataRaw) {
+            window.location.replace('/index.html');
+        }
+    </script>
 </head>
 <body class="bg-[#f4f7fc] font-sans antialiased text-gray-800 h-screen flex flex-col">
 
@@ -28,14 +34,31 @@
                 <div class="w-3 h-3 bg-blue-600 rounded-full"></div>
                 <span class="text-xs font-bold text-gray-700 tracking-wider uppercase">SENADI ESTADÍSTICAS</span>
             </div>
-            <span class="text-gray-300">|</span>
-            <a href="/dashboard.html" class="flex items-center space-x-1 text-xs font-medium text-gray-500 hover:text-blue-600 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                <span>Volver al Inicio</span>
-            </a>
+            
+            <div id="btn-volver-inicio" class="flex items-center space-x-3">
+                <span class="text-gray-300">|</span>
+                <a href="/dashboard.html" class="flex items-center space-x-1 text-xs font-medium text-gray-500 hover:text-blue-600 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <span>Volver al Inicio</span>
+                </a>
+            </div>
         </div>
-        <div class="flex items-center space-x-4">
-            <span class="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-xl">Módulo de Auditoría y Tiempos</span>
+
+        <div class="flex items-center space-x-3">
+            <span class="hidden md:block text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-xl mr-2">Módulo de Auditoría y Tiempos</span>
+            
+            <div class="flex items-center space-x-3 bg-gray-50 border border-gray-200 px-4 py-1.5 rounded-xl">
+                <span id="header-user-name" class="text-xs font-bold text-gray-700 tracking-wide">
+                    👤 Funcionario
+                </span>
+                <span class="text-gray-300">|</span>
+                <div id="contenedor-roles" class="flex items-center">
+                    </div>
+            </div>
+
+            <button onclick="cerrarSesion()" title="Cerrar sesión" class="flex w-8 h-8 items-center justify-center text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-100 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </button>
         </div>
     </nav>
 
@@ -51,7 +74,6 @@
                 </button>
             </div>
 
-            <!-- VISTA: DASHBOARD GLOBAL -->
             <div id="vista-global" class="space-y-6 block">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Estadísticas Generales del SENADI</h1>
@@ -88,7 +110,6 @@
                     </div>
                 </div>
 
-                <!-- Items 7 y 8: Desglose individual de presupuesto y avance -->
                 <div class="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
                     <h3 class="text-sm font-bold text-gray-800 mb-4 border-b border-gray-50 pb-2">Desglose Individual por Proceso</h3>
                     <div id="tabla-desglose-global" class="overflow-x-auto">
@@ -110,8 +131,6 @@
                 </div>
             </div>
 
-            <!-- VISTA: ADMIN UMBRALES (Item 3) -->
-            <!-- VISTA: LISTADO DE CONTRATOS -->
             <div id="vista-lista" class="space-y-6 hidden">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Auditoría de Procesos Activos</h1>
@@ -120,7 +139,6 @@
                 <div id="grid-contratos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
             </div>
 
-            <!-- VISTA: DASHBOARD INDIVIDUAL DETALLADO -->
             <div id="vista-estadisticas" class="space-y-6 hidden">
                 <div class="flex items-start space-x-4">
                     <button onclick="cambiarPestaña('lista')" class="bg-white border border-gray-200 text-gray-600 p-2.5 rounded-xl hover:bg-gray-50 transition shadow-sm">
@@ -173,14 +191,12 @@
                     </div>
                 </div>
 
-                <!-- LÍNEA DE TIEMPO / AUDITORÍA CON BOTÓN DE DESCARGA GLOBAL -->
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mt-6">
                     <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
                         <div>
                             <h3 class="text-base font-bold text-gray-800">Trazabilidad y Auditoría de Pasos</h3>
                             <p class="text-xs text-gray-500 mt-0.5">Historial detallado de ejecución y documentos de respaldo.</p>
                         </div>
-                        <!-- BOTÓN DE DESCARGA DE EXPEDIENTE COMPLETO -->
                         <button id="btn-descargar-expediente" onclick="descargarExpedienteCompleto()" class="hidden flex items-center space-x-2 text-white bg-blue-600 hover:bg-blue-700 text-xs font-bold px-4 py-2 rounded-xl transition shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                             <span>Descargar Todo (ZIP)</span>
@@ -192,11 +208,93 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </main>
 
     <script>
+        // --- 1. LECTURA Y CONFIGURACIÓN DEL USUARIO ---
+        const userData = JSON.parse(localStorage.getItem('usuario')) || {};
+        let userRoles = [];
+        
+        if (Array.isArray(userData.roles) && userData.roles.length > 0) {
+            userRoles = userData.roles.map(r => typeof r === 'string' ? r : (r.nombre || r));
+        } else if (userData.rol) {
+            userRoles = typeof userData.rol === 'string' ? [userData.rol] : [userData.rol.nombre];
+        } else {
+            userRoles = ['ROLE_USER']; 
+        }
+
+        const NOMBRES_ROLES_BD = {
+            'ROLE_SUPER_ADMIN': '👑 Super Admin',
+            'ROLE_ADMIN': '👑 Administrador',
+            'ROLE_UNIDAD_REQUIRENTE': '🏢 Unidad Requirente',
+            'ROLE_ADMIN_CONTRATO': '👤 Admin de Contrato',
+            'ROLE_USER': '👁️ Usuario Básico (Lectura)'
+        };
+
+        let rolActivoUsuario = localStorage.getItem('rolActivo');
+        if (!rolActivoUsuario || !userRoles.includes(rolActivoUsuario)) {
+            rolActivoUsuario = userRoles[0] || 'ROLE_USER';
+            localStorage.setItem('rolActivo', rolActivoUsuario);
+        }
+
+        // --- 2. INICIALIZACIÓN DE LA INTERFAZ ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Construir la sección del perfil (Nombre + Roles)
+            const nombreMostrar = userData.nombre || userData.nombreCompleto || userData.email || 'Funcionario';
+            document.getElementById('header-user-name').innerHTML = `👤 ${nombreMostrar}`;
+
+            const contenedorRoles = document.getElementById('contenedor-roles');
+            
+            // Si tiene más de un rol, creamos el selector (<select>)
+            if (userRoles.length > 1) {
+                let opts = userRoles.map(r => `<option value="${r}" ${r === rolActivoUsuario ? 'selected' : ''} class="text-gray-900 font-bold">${NOMBRES_ROLES_BD[r] || r}</option>`).join('');
+                contenedorRoles.innerHTML = `
+                    <select id="select-rol" onchange="cambiarRolDashboardUser()" class="bg-transparent text-xs font-bold text-blue-600 outline-none cursor-pointer">
+                        ${opts}
+                    </select>
+                `;
+            } else {
+                // Si solo tiene un rol, solo mostramos texto fijo
+                const unicoRol = userRoles[0];
+                contenedorRoles.innerHTML = `
+                    <span class="text-xs font-bold text-blue-600">${NOMBRES_ROLES_BD[unicoRol] || unicoRol}</span>
+                    <input type="hidden" id="select-rol" value="${unicoRol}">
+                `;
+            }
+
+            // Ocultar el botón de "Volver al Inicio" si SOLO es Usuario Básico
+            const esSoloLectura = (userRoles.length === 1 && userRoles.includes('ROLE_USER'));
+            if (esSoloLectura) {
+                const btnVolver = document.getElementById('btn-volver-inicio');
+                if(btnVolver) btnVolver.classList.add('hidden');
+            }
+
+            cargarProcesosDesdeLocalStorage();
+        });
+
+        function cambiarRolDashboardUser() {
+            rolActivoUsuario = document.getElementById('select-rol').value;
+            localStorage.setItem('rolActivo', rolActivoUsuario);
+            
+            // Si elige un rol superior, lo mandamos al dashboard principal con todos los permisos
+            if (rolActivoUsuario !== 'ROLE_USER') {
+                window.location.replace('/dashboard.html');
+            } else {
+                window.location.reload();
+            }
+        }
+
+        function cerrarSesion() { 
+            localStorage.removeItem('usuario'); 
+            localStorage.removeItem('rolActivo'); 
+            window.location.replace('/index.html'); 
+        }
+
+        // ========================================================
+        // VARIABLES GLOBALES Y UTILIDADES (LÓGICA ORIGINAL INTACTA)
+        // ========================================================
         function diasLaborablesEntre(fecha1, fecha2) {
             let count = 0;
             let current = new Date(fecha1);
@@ -219,7 +317,6 @@
         let procesosReales = [];
         let procesoActivoAuditoria = null;
 
-        // Item 9: Mapa de colores consistentes por tipo de contrato
         const COLORES_TIPO = {
             'ÍNFIMA CUANTÍA': '#3b82f6',      // Azul
             'INFIMA CUANTIA': '#3b82f6',
@@ -241,10 +338,6 @@
             }
             return '#94a3b8'; // Gris por defecto
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarProcesosDesdeLocalStorage();
-        });
 
         function cambiarPestaña(tab) {
             const tabs = document.getElementById('contenedor-tabs');
@@ -363,7 +456,6 @@
         function renderizarChartGlobalTipos(conteoTipos) {
             const ctx = document.getElementById('chartGlobalTipos').getContext('2d');
             if (chartGlobalTiposInstance) chartGlobalTiposInstance.destroy();
-            // Item 9: usar colores consistentes
             const colores = Object.keys(conteoTipos).map(t => colorPorTipo('Contrato ' + t));
             chartGlobalTiposInstance = new Chart(ctx, {
                 type: 'doughnut',
@@ -405,7 +497,6 @@
             procesosReales.forEach(proc => {
                 const pct = proc.porcentaje || 0;
                 const tituloLimpio = (proc.tipoContrato || 'Contrato').replace('Contrato ', '');
-                // Item 9: color consistente por tipo
                 const color = colorPorTipo(proc.tipoContrato || '');
                 let colorEstado = pct === 100 ? "bg-emerald-100 text-emerald-700" : (pct === 0 ? "bg-gray-100 text-gray-600" : "bg-blue-100 text-blue-700");
                 let textEstado = pct === 100 ? "FINALIZADO" : (pct === 0 ? "POR EJECUTAR" : "EN EJECUCIÓN");
@@ -455,7 +546,6 @@
 
             const pipeline = procesoActivoAuditoria.pipelineSnapshot || [];
 
-            // Secuencia plana (paso principal + subpasos intercalados) para días reales
             const secPlana = [];
             pipeline.forEach((paso, pasoIdx) => {
                 const rP = paso.respuestasUsuario || {};
@@ -470,7 +560,6 @@
                 }
             });
 
-            // Contar documentos y registrar áreas
             pipeline.forEach(paso => {
                 const area = paso.area || 'UNIDAD';
                 if (!areasData[area]) areasData[area] = { real: 0 };
@@ -479,7 +568,6 @@
                 else if (rP.archivoBase64) totalDocumentos++;
             });
 
-            // Acumular días reales por área desde la secuencia plana
             secPlana.forEach((item, i) => {
                 if (!item.completado || i === 0) return;
                 const fAnt = secPlana[i - 1].fecha, fAct = item.fecha;
@@ -494,7 +582,6 @@
                 }
             });
 
-            // Mostrar u ocultar el botón global de descarga ZIP dependiendo de si hay archivos
             if (totalDocumentos > 0) {
                 document.getElementById('btn-descargar-expediente').classList.remove('hidden');
             } else {
@@ -524,8 +611,6 @@
             const contenedor = document.getElementById('contenedor-linea-tiempo');
             contenedor.innerHTML = '';
 
-            // ── Construir secuencia plana para calcular "Demoró" ──
-            // Orden: paso_principal → sus subpasos → siguiente paso_principal → ...
             const secuenciaPlana = [];
             pipeline.forEach((paso, pasoIdx) => {
                 const respPaso = paso.respuestasUsuario || {};
@@ -539,7 +624,6 @@
                 }
             });
 
-            // Días entre ítem actual y el anterior (null si primero o sin fecha)
             const diasPorItemPlano = secuenciaPlana.map((item, i) => {
                 if (i === 0) return null;
                 const fAnt = secuenciaPlana[i - 1].fecha;
@@ -551,14 +635,12 @@
                 return dias >= 0 ? dias : null;
             });
 
-            // Índices de demora por clave
             const demoroMap = {};
             secuenciaPlana.forEach((item, i) => {
                 const clave = item.tipo === 'paso' ? `p:${item.pasoIdx}` : `s:${item.pasoIdx}.${item.subIdx}`;
                 demoroMap[clave] = diasPorItemPlano[i];
             });
 
-            // ── Helpers ──
             function tiempoHTML(dias, completado, omitido) {
                 if (!completado || omitido || dias === null) return '';
                 return `<span class="flex items-center space-x-1 text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-md flex-shrink-0">
@@ -612,7 +694,6 @@
                 return m ? m[1] : null;
             }
 
-            // ── Renderizar cada paso ──
             pipeline.forEach((paso, index) => {
                 const respuestas = paso.respuestasUsuario || {};
                 const estaCompletado = respuestas.completado || false;
@@ -625,7 +706,6 @@
                 const fechaPasoHTML = respuestas.fecha
                     ? `<span class="text-[10px] text-gray-400">${respuestas.fecha}</span>` : '';
 
-                // Subpasos como tarjetas individuales
                 let subpasosHTML = '';
                 if (paso.subpasos && paso.subpasos.length > 0) {
                     const respSub = paso.respuestasSubpasos || {};
@@ -749,44 +829,31 @@
             });
         }
 
-        // ==========================================================
-        // FUNCIONES JSZip PARA DESCARGAS (GLOBAL Y POR PASO)
-        // ==========================================================
-
-        // Descarga de un array específico de archivos (Usado en un solo paso)
         function descargarArchivosComoZip(archivos, nombreCarpeta) {
             const zip = new JSZip();
-            
             archivos.forEach(doc => {
                 const base64Data = doc.base64.split(',')[1];
                 zip.file(doc.nombre, base64Data, {base64: true});
             });
-
             zip.generateAsync({type:"blob"}).then(function(content) {
                 saveAs(content, `${nombreCarpeta}.zip`);
             });
         }
 
-        // Descarga Global: RECORRE TODO EL PROCESO, CREA CARPETAS INTERNAS POR PASO Y DESCARGA
         function descargarExpedienteCompleto() {
             if(!procesoActivoAuditoria) return;
-            
             const zip = new JSZip();
             let hasFiles = false;
 
-            // Recorremos todo el pipeline (todos los pasos)
             procesoActivoAuditoria.pipelineSnapshot.forEach((paso, index) => {
                 const numPaso = paso.orden || (index + 1);
                 const respuestas = paso.respuestasUsuario || {};
                 const archivos = respuestas.archivos || (respuestas.archivoBase64 ? [{nombre: respuestas.archivoNombre, base64: respuestas.archivoBase64}] : []);
                 
-                // Si el paso tiene archivos, creamos una carpeta dentro del ZIP para ese paso
                 if(archivos.length > 0) {
                     hasFiles = true;
-                    // Limpiamos el nombre del área para usarlo como carpeta
                     const areaLimpia = (paso.area || 'Area').replace(/[^a-z0-9]/gi, '_').toUpperCase();
                     const carpetaPaso = zip.folder(`Paso_${numPaso}_${areaLimpia}`);
-                    
                     archivos.forEach(doc => {
                         const base64Data = doc.base64.split(',')[1];
                         carpetaPaso.file(doc.nombre, base64Data, {base64: true});
@@ -804,7 +871,6 @@
             }
         }
 
-        // --- CHART.JS (DETALLES) ---
         function renderizarGraficoTiempos(labels, dataReal) {
             const ctx = document.getElementById('chartTiempos').getContext('2d');
             if (chartTiemposInstance) chartTiemposInstance.destroy();
