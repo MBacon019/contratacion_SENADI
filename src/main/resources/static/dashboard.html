@@ -439,6 +439,44 @@
     </footer>
 </div>
 
+<!-- ═══════════════ MODALES DASHBOARD ═══════════════ -->
+
+<!-- Modal: Advertencia / error (un solo botón Aceptar) -->
+<div id="modal-dash-alerta" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.45);">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+        <h3 id="modal-dash-alerta-titulo" class="text-sm font-bold text-gray-900 mb-2"></h3>
+        <p id="modal-dash-alerta-msg" class="text-sm text-gray-600 leading-relaxed mb-5"></p>
+        <div class="flex justify-end">
+            <button onclick="cerrarModalDashAlerta()" class="text-sm font-bold px-5 py-2 rounded-xl bg-[#12336b] hover:bg-[#0e2755] text-white transition">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Confirmación detalle de compra supera asignación -->
+<div id="modal-dash-confirm" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.45);">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm">
+        <h3 class="text-sm font-bold text-gray-900 mb-2">⚠️ Advertencia</h3>
+        <p id="modal-dash-confirm-msg" class="text-sm text-gray-600 leading-relaxed mb-5"></p>
+        <div class="flex justify-end gap-2">
+            <button onclick="resolverModalDashConfirm(false)" class="text-sm font-bold px-4 py-2 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition">Cancelar</button>
+            <button onclick="resolverModalDashConfirm(true)" class="text-sm font-bold px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white transition">Sí, continuar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Éxito al guardar presupuesto -->
+<div id="modal-dash-exito" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4" style="background:rgba(0,0,0,.45);">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-xs text-center">
+        <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+        <p class="text-sm font-bold text-gray-900 mb-4">Presupuesto actualizado correctamente</p>
+        <button onclick="cerrarModalDashExito()" class="text-sm font-bold px-6 py-2 rounded-xl bg-[#12336b] hover:bg-[#0e2755] text-white transition">Aceptar</button>
+    </div>
+</div>
+
 <!-- ═══════════════ SCRIPTS ORIGINALES COMPLETOS (sin modificar) ═══════════════ -->
 <script>
     let rolActivoUsuario = localStorage.getItem('rolSimulado') || 'ROLE_SUPER_ADMIN';
@@ -847,6 +885,47 @@
         try { const res=await fetch(`/api/usuarios/${id}`,{method:'DELETE'}); if(res.ok) cargarUsuarios(); else alert('Error al eliminar el usuario.'); } catch(e) { alert('No se pudo conectar con el servidor.'); }
     }
 
+    // ═══ Helpers: modales propios (reemplazan alert/confirm del navegador) ═══
+    let _resolverDashAlerta = null;
+    let _resolverDashConfirm = null;
+    let _resolverDashExito = null;
+
+    function mostrarDashAlerta(titulo, mensaje) {
+        return new Promise(resolve => {
+            _resolverDashAlerta = resolve;
+            document.getElementById('modal-dash-alerta-titulo').textContent = titulo;
+            document.getElementById('modal-dash-alerta-msg').textContent = mensaje;
+            document.getElementById('modal-dash-alerta').classList.remove('hidden');
+        });
+    }
+    function cerrarModalDashAlerta() {
+        document.getElementById('modal-dash-alerta').classList.add('hidden');
+        if (_resolverDashAlerta) { _resolverDashAlerta(); _resolverDashAlerta = null; }
+    }
+
+    function mostrarDashConfirm(mensaje) {
+        return new Promise(resolve => {
+            _resolverDashConfirm = resolve;
+            document.getElementById('modal-dash-confirm-msg').textContent = mensaje;
+            document.getElementById('modal-dash-confirm').classList.remove('hidden');
+        });
+    }
+    function resolverModalDashConfirm(resultado) {
+        document.getElementById('modal-dash-confirm').classList.add('hidden');
+        if (_resolverDashConfirm) { _resolverDashConfirm(resultado); _resolverDashConfirm = null; }
+    }
+
+    function mostrarDashExito() {
+        return new Promise(resolve => {
+            _resolverDashExito = resolve;
+            document.getElementById('modal-dash-exito').classList.remove('hidden');
+        });
+    }
+    function cerrarModalDashExito() {
+        document.getElementById('modal-dash-exito').classList.add('hidden');
+        if (_resolverDashExito) { _resolverDashExito(); _resolverDashExito = null; }
+    }
+
     // ═══════════════════════════════════════════════════════
     // EDICIÓN DE PRESUPUESTOS DE CONTRATOS (pestaña en Panel de Control)
     // ═══════════════════════════════════════════════════════
@@ -933,6 +1012,7 @@
                         const umbralEl = document.getElementById(`umbral-vae-${i}`);
                         if (umbralEl) {
                             umbralEl.textContent = `Ref. CPC VAE: $${fmtUmbral}`;
+                            umbralEl.dataset.umbralVae = cpcMatch.umbralVae;
                             umbralEl.classList.remove('text-gray-300');
                             umbralEl.classList.add('text-gray-400');
                         }
@@ -1059,13 +1139,27 @@
         const nuevoCuatrimestre = inputCuat ? inputCuat.value : '';
         const nuevoDetalle = inputDetalle && inputDetalle.value !== '' ? parseFloat(inputDetalle.value) : null;
 
+        const instancia = procesos[index];
+        // asignacionActual = mismo valor que muestra el campo readonly "Valor Actual ($)" de la tarjeta
+        const asignacionActual = parseFloat(instancia.asignacion || 0);
+
+        // 1. Nuevo Valor debe ser positivo
         if (isNaN(nuevoValor) || nuevoValor <= 0) {
-            alert('Por favor ingresa un valor válido mayor a 0.');
+            await mostrarDashAlerta('Valor inválido', 'Por favor ingresa un valor válido mayor a 0.');
             return;
         }
 
-        // Validar contra el umbral activo del tipo de contrato
-        const instancia = procesos[index];
+        // 2. Nuevo Detalle de Compra vs Valor Actual ($): solo advertencia, puede continuar
+        if (nuevoDetalle !== null && !isNaN(nuevoDetalle) && nuevoDetalle > asignacionActual) {
+            const fmtDetalle = nuevoDetalle.toLocaleString('en-US', {minimumFractionDigits: 2});
+            const fmtAsig = asignacionActual.toLocaleString('en-US', {minimumFractionDigits: 2});
+            const ok = await mostrarDashConfirm(
+                `El detalle de compra ($${fmtDetalle}) supera la asignación presupuestaria actual ($${fmtAsig}). ¿Estás seguro de continuar?`
+            );
+            if (!ok) return;
+        }
+
+        // 3. Nuevo Valor vs umbral ínfima cuantía (bloqueo)
         const tipo = (instancia.tipoContrato || '').toLowerCase();
         if (tipo.includes('ínfima') || tipo.includes('infima')) {
             try {
@@ -1073,23 +1167,23 @@
                 const umbralActivo = umbrales.find(u => u.activo);
                 if (umbralActivo && nuevoValor > parseFloat(umbralActivo.montoUmbral)) {
                     const fmtLimite = parseFloat(umbralActivo.montoUmbral).toLocaleString('en-US', {minimumFractionDigits: 2});
-                    alert(`⚠️ El nuevo valor supera el límite de Ínfima Cuantía ($${fmtLimite}) para el año ${umbralActivo.anio}.\n\nNo se puede guardar un presupuesto mayor al umbral del tipo de contrato.`);
+                    await mostrarDashAlerta('⚠️ Umbral superado',
+                        `El nuevo valor supera el límite de Ínfima Cuantía ($${fmtLimite}) para el año ${umbralActivo.anio}. No se puede guardar un presupuesto mayor al umbral del tipo de contrato.`
+                    );
                     return;
                 }
             } catch (e) { /* si falla la API, se permite guardar */ }
         }
 
-        // Guardar
+        // 5. Guardar en localStorage
         procesos[index].asignacion = nuevoValor;
         if (nuevoCuatrimestre) procesos[index].cuatrimestre = nuevoCuatrimestre;
         if (nuevoDetalle !== null && !isNaN(nuevoDetalle)) procesos[index].detalleCompra = nuevoDetalle;
 
         localStorage.setItem('instanciaProcesoEnProgreso', JSON.stringify(procesos));
 
-        const fmtGuardado = nuevoValor.toLocaleString('en-US', {minimumFractionDigits: 2});
-        alert(`✅ Presupuesto actualizado a $${fmtGuardado}${nuevoCuatrimestre ? `\nCuatrimestre: ${nuevoCuatrimestre}` : ''}`);
-
-        // Recargar la vista
+        // 6. Modal de éxito — esperar cierre antes de recargar la vista
+        await mostrarDashExito();
         cargarContratosParaEdicion();
     }
 </script>
