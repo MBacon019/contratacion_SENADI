@@ -1,6 +1,8 @@
 package com.example.sistema_contratacion.entity;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "usuarios")
@@ -21,27 +23,29 @@ public class Usuario {
 
     private boolean activo = true;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id", nullable = false)
-    private Role rol;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "usuarios_roles",
+        joinColumns = @JoinColumn(name = "usuario_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     // --- CONSTRUCTORES ---
-    
-    // Constructor vacío obligatorio para JPA
+
     public Usuario() {
     }
 
-    // Constructor completo para cuando necesites crear instancias
-    public Usuario(Long id, String email, String password, String nombreCompleto, boolean activo, Role rol) {
+    public Usuario(Long id, String email, String password, String nombreCompleto, boolean activo, Set<Role> roles) {
         this.id = id;
         this.email = email;
         this.password = password;
         this.nombreCompleto = nombreCompleto;
         this.activo = activo;
-        this.rol = rol;
+        this.roles = roles != null ? roles : new HashSet<>();
     }
 
-    // --- GETTERS Y SETTERS (Métodos explícitos) ---
+    // --- GETTERS Y SETTERS ---
 
     public Long getId() {
         return id;
@@ -83,11 +87,11 @@ public class Usuario {
         this.activo = activo;
     }
 
-    public Role getRol() {
-        return rol;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    public void setRol(Role rol) {
-        this.rol = rol;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles != null ? roles : new HashSet<>();
     }
 }

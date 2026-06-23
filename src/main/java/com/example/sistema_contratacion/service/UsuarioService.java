@@ -7,7 +7,9 @@ import com.example.sistema_contratacion.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UsuarioService {
@@ -55,7 +57,7 @@ public class UsuarioService {
         nuevo.setEmail(email);
         nuevo.setPassword(BCrypt.hashpw(password, BCrypt.gensalt()));
         nuevo.setActivo(true);
-        nuevo.setRol(rolUser);
+        nuevo.setRoles(new HashSet<>(Set.of(rolUser)));
 
         return usuarioRepository.save(nuevo);
     }

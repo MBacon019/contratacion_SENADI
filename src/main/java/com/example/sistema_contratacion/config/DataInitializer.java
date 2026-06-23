@@ -6,7 +6,9 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
@@ -67,7 +69,7 @@ public class DataInitializer implements CommandLineRunner {
 
             admin.setActivo(true);
 
-            admin.setRol(adminRole);
+            admin.setRoles(new HashSet<>(Set.of(adminRole)));
 
             usuarioRepository.save(admin);
         }
@@ -86,7 +88,7 @@ public class DataInitializer implements CommandLineRunner {
 
             user.setActivo(true);
 
-            user.setRol(userRole);
+            user.setRoles(new HashSet<>(Set.of(userRole)));
 
             usuarioRepository.save(user);
         }
