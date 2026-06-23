@@ -228,6 +228,11 @@
             </button>
         </div>
 
+        <a href="/gestion-usuarios.html" class="nav-link">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Gestión Usuarios
+        </a>
+
     </nav>
 
     <div class="sidebar-footer">SENADI © 2026</div>
@@ -253,7 +258,6 @@
                 </select>
             </div>
             <span id="user-display" class="hidden" style="font-size:12px;color:#64748b;background:#f1f5f9;padding:4px 10px;border-radius:999px;margin-right:6px;"></span>
-            <button title="Ayuda" class="topbar-icon-btn"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></button>
             <button id="logout-btn" onclick="cerrarSesion()" title="Cerrar sesión" class="topbar-icon-btn" style="color:#9ca3af;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#9ca3af'"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></button>
             <!-- Notificaciones -->
             <div class="relative">
@@ -269,7 +273,6 @@
                     <div id="lista-notificaciones" style="max-height:280px;overflow-y:auto;"></div>
                 </div>
             </div>
-            <button title="Configuración" class="topbar-icon-btn"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg></button>
         </div>
     </header>
 
@@ -289,7 +292,6 @@
             </div>
             <div id="tabs-panel-control" class="flex space-x-1 bg-gray-100 p-1 rounded-xl w-fit">
                 <button id="tab-umbrales" onclick="mostrarTabPanel('umbrales')" class="text-xs font-bold px-4 py-2 rounded-lg bg-white text-gray-800 shadow-sm transition">Umbrales Presupuestarios</button>
-                <button id="tab-usuarios" onclick="mostrarTabPanel('usuarios')" class="text-xs font-bold px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 transition">Gestión de Usuarios</button>
                 <button id="tab-presupuesto" onclick="mostrarTabPanel('presupuesto')" class="text-xs font-bold px-4 py-2 rounded-lg text-gray-500 hover:text-gray-700 transition">Edición de Presupuestos</button>
             </div>
             <div id="seccion-umbrales" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -313,14 +315,7 @@
                     <div id="lista-umbrales" class="space-y-3"></div>
                 </div>
             </div>
-            <div id="seccion-usuarios" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div class="bg-gray-50 px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                    <div><h3 class="text-sm font-bold text-gray-800">Gestión de Usuarios</h3><p class="text-xs text-gray-500 mt-0.5">Administra los usuarios registrados y sus roles de acceso.</p></div>
-                    <button onclick="cargarUsuarios()" class="bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-bold px-4 py-2 rounded-xl transition">Actualizar</button>
-                </div>
-                <div class="p-6"><div id="lista-usuarios" class="space-y-2"><p class="text-xs text-gray-400">Cargando usuarios...</p></div></div>
-            </div>
-            <div id="seccion-presupuesto" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+<div id="seccion-presupuesto" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div class="bg-gray-50 px-6 py-4 border-b border-gray-100">
                     <h3 class="text-sm font-bold text-gray-800">Edición de Presupuestos de Contratos</h3>
                     <p class="text-xs text-gray-500 mt-0.5">Modifica el valor asignado y cuatrimestre. Solo editable antes del paso límite según el tipo de contrato.</p>
