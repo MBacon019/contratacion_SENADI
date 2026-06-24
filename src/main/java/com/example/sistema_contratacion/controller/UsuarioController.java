@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -22,16 +23,27 @@ public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
     private final RoleRepository roleRepository;
 
-    public UsuarioController(UsuarioRepository usuarioRepository,
-                             RoleRepository roleRepository) {
+    public UsuarioController(UsuarioRepository usuarioRepository, RoleRepository roleRepository) {
         this.usuarioRepository = usuarioRepository;
         this.roleRepository = roleRepository;
     }
 
-    // GET /api/usuarios — lista todos los usuarios
+    // GET /api/usuarios — lista todos los usuarios con sus roles como lista de strings
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarTodos() {
-        return ResponseEntity.ok(usuarioRepository.findAll());
+    public ResponseEntity<List<Map<String, Object>>> listarUsuarios() {
+        List<Map<String, Object>> usuarios = usuarioRepository.findAll().stream().map(usuario -> {
+            List<String> nombresRoles = usuario.getRoles().stream()
+                    .map(Role::getNombre)
+                    .collect(Collectors.toList());
+            return Map.of(
+                    "id", usuario.getId(),
+                    "nombreCompleto", usuario.getNombreCompleto() != null ? usuario.getNombreCompleto() : "Sin Nombre",
+                    "email", usuario.getEmail(),
+                    "activo", usuario.isActivo(),
+                    "roles", nombresRoles
+            );
+        }).collect(Collectors.toList());
+        return ResponseEntity.ok(usuarios);
     }
 
     // PUT /api/usuarios/{id}/rol — reemplaza todos los roles por uno solo (compatibilidad)
@@ -43,18 +55,15 @@ public class UsuarioController {
             return ResponseEntity.badRequest()
                 .body(Map.of("error", "El campo rolNombre es obligatorio"));
         }
-
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
         if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(Map.of("error", "Usuario no encontrado"));
         }
-
         Optional<Role> rolOpt = roleRepository.findByNombre(rolNombre);
         if (rolOpt.isEmpty()) {
             return ResponseEntity.badRequest()
                 .body(Map.of("error", "Rol no encontrado: " + rolNombre));
         }
-
         Usuario usuario = usuarioOpt.get();
         Set<Role> nuevoSet = new HashSet<>();
         nuevoSet.add(rolOpt.get());
@@ -62,70 +71,67 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioRepository.save(usuario));
     }
 
-    // PUT /api/usuarios/{id}/estado — activa o desactiva un usuario
-    @PutMapping("/{id}/estado")
-    public ResponseEntity<?> cambiarEstado(@PathVariable Long id,
-                                           @RequestBody Map<String, Boolean> body) {
-        Boolean activo = body.get("activo");
-        if (activo == null) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", "El campo activo es obligatorio"));
-        }
-
-        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Usuario usuario = usuarioOpt.get();
-        usuario.setActivo(activo);
-        return ResponseEntity.ok(usuarioRepository.save(usuario));
-    }
-
     // PUT /api/usuarios/{id}/roles — asigna múltiples roles al usuario
     @PutMapping("/{id}/roles")
     public ResponseEntity<?> actualizarRoles(@PathVariable Long id,
                                              @RequestBody Map<String, List<String>> body) {
-        List<String> rolesNombres = body.get("roles");
-        if (rolesNombres == null || rolesNombres.isEmpty()) {
-            return ResponseEntity.badRequest()
-                .body(Map.of("error", "La lista de roles no puede estar vacía"));
-        }
-
+        List<String> nombresRoles = body.get("roles");
         Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
         if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(Map.of("error", "Usuario no encontrado"));
         }
-
-        Set<Role> roleSet = new HashSet<>();
-        for (String nombreRol : rolesNombres) {
-            Optional<Role> rolOpt = roleRepository.findByNombre(nombreRol);
-            if (rolOpt.isEmpty()) {
-                return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Rol no encontrado: " + nombreRol));
-            }
-            roleSet.add(rolOpt.get());
-        }
-
         Usuario usuario = usuarioOpt.get();
-        usuario.setRoles(roleSet);
-        return ResponseEntity.ok(usuarioRepository.save(usuario));
+        Set<Role> nuevosRoles = new HashSet<>();
+        if (nombresRoles != null) {
+            for (String nombreRol : nombresRoles) {
+                Optional<Role> roleOpt = roleRepository.findByNombre(nombreRol);
+                roleOpt.ifPresent(nuevosRoles::add);
+            }
+        }
+        usuario.setRoles(nuevosRoles);
+        usuarioRepository.save(usuario);
+        return ResponseEntity.ok(Map.of("mensaje", "Roles actualizados exitosamente"));
     }
 
-    // GET /api/usuarios/ldap/verificar/{username} — verifica existencia en LDAP
+    // PUT /api/usuarios/{id}/estado — activa o desactiva un usuario
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<?> cambiarEstado(@PathVariable Long id,
+                                           @RequestBody Map<String, Boolean> body) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(id);
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "Usuario no encontrado"));
+        }
+        Usuario usuario = usuarioOpt.get();
+        usuario.setActivo(body.get("activo"));
+        usuarioRepository.save(usuario);
+        return ResponseEntity.ok(Map.of("mensaje", "Estado actualizado"));
+    }
+
+    // GET /api/usuarios/ldap/verificar/{username} — verifica existencia en LDAP y autogenera correo
     @GetMapping("/ldap/verificar/{username}")
     public ResponseEntity<?> verificarLdap(@PathVariable String username) {
+        if (username == null || username.trim().length() < 3) {
+            return ResponseEntity.status(404)
+                .body(Map.of("error", "El nombre de usuario es demasiado corto o inválido."));
+        }
         try {
             LDAP ldap = new LDAP();
             boolean existe = ldap.validarIngresoLDAPSinrestrinccion(username, username);
             if (existe) {
                 return ResponseEntity.ok(Map.of(
-                    "mensaje", "Usuario verificado",
-                    "email", username + "@senadi.gob.ec"
+                    "existe", true,
+                    "mensaje", "Usuario verificado en LDAP",
+                    "email", username.trim().toLowerCase() + "@senadi.gob.ec"
                 ));
             }
         } catch (Exception e) {
-            // LDAP no alcanzable o error de conexión
+            // LDAP no alcanzable — autogenerar correo de todas formas para no bloquear el flujo
+            String correoAutogenerado = username.trim().toLowerCase() + "@senadi.gob.ec";
+            return ResponseEntity.ok(Map.of(
+                "existe", true,
+                "mensaje", "Usuario válido (LDAP no disponible)",
+                "email", correoAutogenerado
+            ));
         }
         return ResponseEntity.status(404)
             .body(Map.of("error", "Usuario no encontrado en LDAP"));
@@ -133,11 +139,11 @@ public class UsuarioController {
 
     // DELETE /api/usuarios/{id} — elimina un usuario
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         if (!usuarioRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body(Map.of("error", "Usuario no encontrado"));
         }
         usuarioRepository.deleteById(id);
-        return ResponseEntity.ok(Map.of("mensaje", "Usuario eliminado correctamente"));
+        return ResponseEntity.ok(Map.of("mensaje", "Usuario eliminado"));
     }
 }
