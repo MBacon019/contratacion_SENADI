@@ -132,6 +132,7 @@ public class LDAP {
             }
         }
 
+
         for (Iterator entry = unProcessedUserGroups.keySet().iterator(); entry.hasNext();) {
             String unprocessedGroupDistinguishedName = (String) entry.next();
             String unprocessedGroupCN = (String) unProcessedUserGroups.get(unprocessedGroupDistinguishedName);

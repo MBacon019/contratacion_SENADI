@@ -5,12 +5,122 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios - SENADI</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
-        .senadi-bg { background-color: #12336b; }
+        /* ════ ESTILOS DEL DISEÑO BASE ════ */
+        html, body { height: 100%; margin: 0; }
+        body { display: flex; overflow: hidden; font-family: 'Segoe UI', 'Inter', sans-serif; background: #f0f4fa; }
+
+        /* ══ SIDEBAR ══ */
+        #sidebar {
+            width: 240px;
+            flex-shrink: 0;
+            background: #1a2744;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .sidebar-logo {
+            padding: 22px 20px 18px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .sidebar-logo-icon {
+            width: 36px; height: 36px;
+            background: rgba(255,255,255,.12);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+            color: white;
+        }
+        .sidebar-logo-text {
+            font-size: 15px; font-weight: 800;
+            color: #fff; letter-spacing: -.01em; line-height: 1.1;
+        }
+        .sidebar-logo-sub {
+            font-size: 9.5px; font-weight: 600;
+            color: rgba(255,255,255,.4);
+            text-transform: uppercase; letter-spacing: .08em;
+            margin-top: 1px;
+        }
+
+        /* nav links */
+        .sidebar-nav { flex: 1; padding: 14px 12px; display: flex; flex-direction: column; gap: 2px; }
+        .sidebar-section-label {
+            font-size: 9.5px; font-weight: 700;
+            color: rgba(255,255,255,.3);
+            text-transform: uppercase; letter-spacing: .1em;
+            padding: 10px 8px 6px;
+        }
+        .nav-link {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 10px;
+            font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,.55);
+            text-decoration: none;
+            transition: background .15s, color .15s;
+            cursor: pointer;
+            border: none; background: none; width: 100%; text-align: left;
+        }
+        .nav-link:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); }
+        .nav-link.active {
+            background: rgba(255,255,255,.13);
+            color: #fff; font-weight: 700;
+        }
+        .nav-link svg { flex-shrink: 0; opacity: .7; width: 18px; height: 18px; }
+        .nav-link.active svg { opacity: 1; }
+        .nav-link-divider { height: 1px; background: rgba(255,255,255,.07); margin: 8px 0; }
+
+        /* sidebar footer */
+        .sidebar-footer {
+            padding: 14px 12px;
+            border-top: 1px solid rgba(255,255,255,.07);
+            font-size: 11px; color: rgba(255,255,255,.3);
+            text-align: center;
+        }
+
+        /* ══ MAIN WRAP ══ */
+        #main-wrap { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* ══ TOPBAR ══ */
+        #topbar {
+            background: #fff;
+            border-bottom: 1px solid #e8ecf3;
+            padding: 0 28px;
+            height: 54px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 20px; }
+        .topbar-brand { font-size: 15px; font-weight: 800; color: #1a2744; }
+        .topbar-tab {
+            font-size: 13px; font-weight: 600;
+            color: #2563eb;
+            padding-bottom: 2px;
+            border-bottom: 2px solid #2563eb;
+        }
+        .topbar-right { display: flex; align-items: center; gap: 4px; }
+        .topbar-icon-btn {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; border: none; background: none;
+            color: #9ca3af; cursor: pointer; transition: background .15s, color .15s;
+        }
+        .topbar-icon-btn:hover { background: #f3f4f6; color: #374151; }
+
+        /* ══ MAIN CONTENT ══ */
+        #main-content { flex: 1; overflow-y: auto; padding: 28px 32px; }
+
+        .page-title { font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -.02em; margin: 0 0 3px; }
+        .page-subtitle { font-size: 13px; color: #94a3b8; margin: 0 0 24px; }
+
+        /* Estilos base inputs y roles */
+        input:focus { outline: none; }
         .role-checkbox { accent-color: #2563eb; }
     </style>
     
     <script>
+        // Guardia de autenticación original
         const userDataRaw = localStorage.getItem('usuario');
         if (!userDataRaw) {
             window.location.replace('/login.html');
@@ -25,97 +135,130 @@
         }
     </script>
 </head>
-<body class="bg-slate-50 min-h-screen font-sans">
+<body>
 
-    <nav class="senadi-bg text-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                    </svg>
-                    <span class="font-bold text-lg tracking-wide">SENADI | Administración de Accesos</span>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <a href="/dashboard.html" class="text-sm font-bold bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition">
-                        ← Volver al Dashboard
-                    </a>
-                    <button onclick="cerrarSesion()" class="text-sm bg-red-500/80 hover:bg-red-500 px-4 py-2 rounded-lg transition font-bold">
-                        Cerrar Sesión
-                    </button>
-                </div>
-            </div>
-        </div>
-    </nav>
-
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        
-        <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Directorio de Usuarios Activos</h1>
-                <p class="text-sm text-gray-500 mt-1">Registra nuevos funcionarios LDAP, asígnales roles o dales de baja.</p>
-            </div>
-            
-            <div class="relative w-full md:w-72">
-                <input type="text" id="buscador" onkeyup="filtrarTabla()" placeholder="Buscar por nombre o correo..." 
-                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-sm">
-                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+    <div id="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
             </div>
-        </div>
-
-        <div id="notificacion" class="hidden mb-4 p-4 rounded-lg text-sm font-medium transition-all"></div>
-
-        <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mb-6">
-            <h2 class="text-sm font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2">➕ Registrar Nuevo Funcionario (Verificación LDAP)</h2>
-            <form id="form-agregar-usuario" class="flex flex-col gap-2">
-                <div class="flex flex-col md:flex-row gap-4 items-end">
-                    
-                    <div class="flex-1 w-full">
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Usuario LDAP</label>
-                        <div class="flex space-x-2">
-                            <input type="text" id="nuevo-username" required placeholder="Ej: jperez" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-                            <button type="button" onclick="verificarEnLdap()" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 font-bold px-4 py-2 rounded-lg transition text-xs whitespace-nowrap flex items-center space-x-1 shadow-sm">
-                                <span>🔍 Verificar</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="flex-1 w-full">
-                        <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Correo Institucional (Automático)</label>
-                        <input type="email" id="nuevo-email" readonly placeholder="Se autocompletará tras verificar..." class="w-full bg-gray-100 border border-gray-200 text-gray-500 rounded-lg px-3 py-2 text-sm outline-none cursor-not-allowed">
-                    </div>
-                    
-                    <button type="submit" id="btn-guardar-nuevo" disabled class="bg-gray-300 text-white cursor-not-allowed font-bold px-6 py-2 rounded-lg shadow-sm transition flex-shrink-0 text-sm h-[38px] flex items-center space-x-2">
-                        <span>Añadir al Sistema</span>
-                    </button>
-                </div>
-                
-                <p id="ldap-feedback" class="text-xs font-bold hidden mt-1"></p>
-            </form>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Funcionario</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Correo Institucional</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/3">Roles Asignados</th>
-                            <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-usuarios" class="bg-white divide-y divide-gray-200">
-                        <tr>
-                            <td colspan="4" class="px-6 py-10 text-center text-gray-500">Cargando usuarios...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div>
+                <div class="sidebar-logo-text">SENADI</div>
+                <div class="sidebar-logo-sub">Administración</div>
             </div>
         </div>
-    </main>
+        
+        <div class="sidebar-nav">
+            <div class="sidebar-section-label">Menú Principal</div>
+            <a href="/dashboard.html" class="nav-link">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                Dashboard
+            </a>
+            <a href="#" class="nav-link active">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                Accesos LDAP
+            </a>
+            
+            <div class="nav-link-divider"></div>
+            
+            <button onclick="cerrarSesion()" class="nav-link" style="color: #f87171;">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                Cerrar Sesión
+            </button>
+        </div>
+        <div class="sidebar-footer">
+            Gestión SENADI © 2026
+        </div>
+    </div>
+
+    <div id="main-wrap">
+        
+        <div id="topbar">
+            <div class="topbar-left">
+                <div class="topbar-brand">Panel de Accesos</div>
+                <div class="topbar-tab">Directorio Activo</div>
+            </div>
+            <div class="topbar-right">
+                <button class="topbar-icon-btn">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="main-content">
+            
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 gap-4">
+                <div>
+                    <h1 class="page-title">Directorio de Usuarios Activos</h1>
+                    <p class="page-subtitle">Registra nuevos funcionarios LDAP, asígnales roles o dales de baja.</p>
+                </div>
+                
+                <div class="relative w-full md:w-72">
+                    <input type="text" id="buscador" onkeyup="filtrarTabla()" placeholder="Buscar por nombre o correo..." 
+                           class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 shadow-sm transition">
+                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <div id="notificacion" class="hidden mb-4 p-4 rounded-lg text-sm font-medium transition-all"></div>
+
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mb-6">
+                <h2 class="text-sm font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
+                    <span class="bg-blue-100 text-blue-700 w-6 h-6 flex items-center justify-center rounded-md text-xs">➕</span> 
+                    Registrar Nuevo Funcionario (Verificación LDAP)
+                </h2>
+                <form id="form-agregar-usuario" class="flex flex-col gap-2">
+                    <div class="flex flex-col md:flex-row gap-4 items-end">
+                        
+                        <div class="flex-1 w-full">
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Usuario LDAP</label>
+                            <div class="flex space-x-2">
+                                <input type="text" id="nuevo-username" required placeholder="Ej: jperez" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition">
+                                <button type="button" onclick="verificarEnLdap()" class="bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 font-bold px-4 py-2 rounded-lg transition text-xs whitespace-nowrap flex items-center space-x-1 shadow-sm">
+                                    <span>🔍 Verificar</span>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 w-full">
+                            <label class="block text-[11px] font-bold text-gray-600 uppercase tracking-wide mb-1">Correo Institucional (Automático)</label>
+                            <input type="email" id="nuevo-email" readonly placeholder="Se autocompletará tras verificar..." class="w-full bg-gray-100 border border-gray-200 text-gray-500 rounded-lg px-3 py-2 text-sm outline-none cursor-not-allowed">
+                        </div>
+                        
+                        <button type="submit" id="btn-guardar-nuevo" disabled class="bg-gray-300 text-white cursor-not-allowed font-bold px-6 py-2 rounded-lg shadow-sm transition flex-shrink-0 text-sm h-[38px] flex items-center space-x-2">
+                            <span>Añadir al Sistema</span>
+                        </button>
+                    </div>
+                    
+                    <p id="ldap-feedback" class="text-xs font-bold hidden mt-1"></p>
+                </form>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Funcionario</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Correo Institucional</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-1/3">Roles Asignados</th>
+                                <th scope="col" class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-usuarios" class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td colspan="4" class="px-6 py-10 text-center text-gray-500">Cargando usuarios...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -155,10 +298,8 @@
                     feedback.textContent = '✅ ' + data.mensaje;
                     feedback.className = 'text-xs font-bold mt-1 text-emerald-600';
                     
-                    // Autocompletar el correo
                     emailInput.value = data.email;
                     
-                    // Desbloquear el botón de "Añadir al Sistema"
                     btnGuardar.disabled = false;
                     btnGuardar.classList.remove('bg-gray-300', 'cursor-not-allowed');
                     btnGuardar.classList.add('bg-emerald-600', 'hover:bg-emerald-700');
@@ -167,7 +308,6 @@
                     feedback.className = 'text-xs font-bold mt-1 text-red-600';
                     emailInput.value = '';
                     
-                    // Bloquear el botón
                     btnGuardar.disabled = true;
                     btnGuardar.classList.add('bg-gray-300', 'cursor-not-allowed');
                     btnGuardar.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
@@ -178,7 +318,6 @@
             }
         }
 
-        // Si el usuario escribe algo nuevo, bloqueamos el botón hasta que vuelva a verificar
         document.getElementById('nuevo-username').addEventListener('input', () => {
             const btnGuardar = document.getElementById('btn-guardar-nuevo');
             btnGuardar.disabled = true;
@@ -201,7 +340,7 @@
                     body: JSON.stringify({ 
                         nombre: username, 
                         email: email, 
-                        password: username + '2026*' // Contraseña de relleno (LDAP valida la real en el Login)
+                        password: username + '2026*' 
                     })
                 });
 
@@ -214,7 +353,7 @@
                     document.getElementById('btn-guardar-nuevo').disabled = true;
                     document.getElementById('btn-guardar-nuevo').classList.add('bg-gray-300', 'cursor-not-allowed');
                     document.getElementById('btn-guardar-nuevo').classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
-                    cargarUsuarios(); // Refresca la tabla
+                    cargarUsuarios();
                 } else {
                     mostrarNotificacion(data.error || 'Este correo/usuario ya existe en el sistema.', 'error');
                 }
@@ -223,7 +362,7 @@
             }
         });
 
-        // --- 3. CARGA DE TABLA ---
+        // --- 3. CARGA DE TABLA (Actualizada con Grid) ---
         async function cargarUsuarios() {
             try {
                 const response = await fetch('/api/usuarios');
@@ -245,13 +384,14 @@
                         rolesDelUsuario = [typeof user.rol === 'string' ? user.rol : user.rol.nombre];
                     }
 
+                    // Construcción de checkboxes optimizada para Grid
                     let checkboxesRoles = ROLES_DISPONIBLES.map(r => {
                         const estaMarcado = rolesDelUsuario.includes(r.id) ? 'checked' : '';
                         return `
-                            <label class="inline-flex items-center mt-1 mr-4 cursor-pointer">
-                                <input type="checkbox" class="role-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300" 
+                            <label class="flex items-center cursor-pointer hover:bg-gray-50 p-1 rounded transition">
+                                <input type="checkbox" class="role-checkbox form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" 
                                        data-user-id="${user.id}" value="${r.id}" ${estaMarcado}>
-                                <span class="ml-1.5 text-xs text-gray-700 font-medium">${r.nombre}</span>
+                                <span class="ml-2 text-xs text-gray-700 font-medium whitespace-nowrap">${r.nombre}</span>
                             </label>
                         `;
                     }).join('');
@@ -274,7 +414,7 @@
                                 ${user.email}
                             </td>
                             <td class="px-6 py-3 text-sm">
-                                <div class="flex flex-wrap">
+                                <div class="grid grid-cols-1 xl:grid-cols-2 gap-x-4 gap-y-2">
                                     ${checkboxesRoles}
                                 </div>
                             </td>
@@ -336,7 +476,7 @@
                 const response = await fetch(`/api/usuarios/${idUsuario}`, { method: 'DELETE' });
                 if (response.ok) {
                     mostrarNotificacion(`Usuario ${nombreFuncionario} eliminado permanentemente.`, 'exito');
-                    cargarUsuarios(); // Refrescar la tabla
+                    cargarUsuarios();
                 } else {
                     const data = await response.json();
                     mostrarNotificacion(data.error || 'Error al eliminar el usuario', 'error');
